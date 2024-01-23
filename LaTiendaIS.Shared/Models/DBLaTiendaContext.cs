@@ -9,7 +9,11 @@ namespace LaTiendaIS.Shared.Models
 
         }
 
-        //public DbSet<Empleado> Empleado { get; set; }
+        public DbSet<Articulo> Articulo { get; set; }
+        public DbSet<Categoria> Categoria { get; set; }
+        public DbSet<Marca> Marca{ get; set; }
+        public DbSet<Talle> Talle { get; set; }
+        public DbSet<ColorArticulo> ColorArticulo { get; set; }
 
     }
 }

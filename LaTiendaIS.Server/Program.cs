@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using LaTiendaIS.Shared.Models;
+using LaTiendaIS.Utilidades;
+using AutoMapper;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +12,30 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<DBLaTiendaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Conexion"))
+);
+
+
+builder.Services.AddCors(opciones =>
+{
+    opciones.AddPolicy("nuevaPolitica", app =>
+    {   
+        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
+    dataContext.Database.Migrate();
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -15,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("nuevaPolitica");
 
 app.UseAuthorization();
 

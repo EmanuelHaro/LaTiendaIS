@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Server", "LaTiendaIS.Server\LaTiendaIS.Server.csproj", "{131978F7-7411-4E6A-BF52-C1313DB7DB76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Server", "LaTiendaIS.Server\LaTiendaIS.Server.csproj", "{131978F7-7411-4E6A-BF52-C1313DB7DB76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Shared", "LaTiendaIS.Shared\LaTiendaIS.Shared.csproj", "{6FF2251D-BBE7-414B-B37E-1FF581CE1391}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Shared", "LaTiendaIS.Shared\LaTiendaIS.Shared.csproj", "{6FF2251D-BBE7-414B-B37E-1FF581CE1391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Utilidades", "LaTiendaIS.Utilidades\LaTiendaIS.Utilidades.csproj", "{5DF3751A-8666-40EE-83D4-7670D923D5DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Client", "LaTiendaIS.Client\LaTiendaIS.Client.csproj", "{650E6214-FA68-43CC-AB07-2713302F8830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{6FF2251D-BBE7-414B-B37E-1FF581CE1391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FF2251D-BBE7-414B-B37E-1FF581CE1391}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FF2251D-BBE7-414B-B37E-1FF581CE1391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DF3751A-8666-40EE-83D4-7670D923D5DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF3751A-8666-40EE-83D4-7670D923D5DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF3751A-8666-40EE-83D4-7670D923D5DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF3751A-8666-40EE-83D4-7670D923D5DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{650E6214-FA68-43CC-AB07-2713302F8830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{650E6214-FA68-43CC-AB07-2713302F8830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{650E6214-FA68-43CC-AB07-2713302F8830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{650E6214-FA68-43CC-AB07-2713302F8830}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
