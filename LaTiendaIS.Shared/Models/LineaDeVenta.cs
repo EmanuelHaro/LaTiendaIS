@@ -8,16 +8,22 @@ using System.Threading.Tasks;
 
 namespace LaTiendaIS.Shared.Models
 {
-    public class Stock
+    public class LineaDeVenta
     {
         [Key]
-        public int IdStock { get; set; }
+        public int IdLineaDeVenta { get; set; }
 
         public int Cantidad { get; set; }
 
-
-        public int IdArticulo { get; set; } 
-        [ForeignKey("IdArticulo")] 
+        // Relación de navegación
+        public int IdArticulo { get; set; }
+        [ForeignKey("IdArticulo")]
         public virtual Articulo Articulo { get; set; }
+
+
+        public int IdVenta { get; set; }
+        [ForeignKey("IdVenta")]
+        public virtual Venta Venta { get; set; }
+
     }
 }

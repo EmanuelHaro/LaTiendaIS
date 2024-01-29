@@ -12,14 +12,11 @@ namespace LaTiendaIS.Shared.Models
     public class Articulo
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)] //No incremental
-        public int Codigo { get; set; }
+        public int IdCodigo { get; set; }
         public string Descripcion { get; set; }
         public double Costo { get; set; }
         public float MargenDeGanacia { get; set; }
-        public float NetoGravado { get; set; } //No sabemos que es
-        public float IVA { get; set; }
-        public double PrecioDeVenta { get; set; }
+        public float PorcentajeIVA { get; set; }
 
         public int IdMarca { get; set; } //ID FK Marca
         [ForeignKey("IdMarca")] //FK Marca
@@ -36,6 +33,8 @@ namespace LaTiendaIS.Shared.Models
         public int IdCategoria { get; set; } //ID FK Categoria
         [ForeignKey("IdCategoria")] //FK Categoria
         public virtual Categoria? Categoria { get; set; }
+
+
 
 
     }

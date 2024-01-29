@@ -4,6 +4,7 @@ using LaTiendaIS.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LaTiendaIS.Shared.Migrations
 {
     [DbContext(typeof(DBLaTiendaContext))]
-    partial class DBLaTiendaContextModelSnapshot : ModelSnapshot
+    [Migration("20240129203634_ModificoArticulos")]
+    partial class ModificoArticulos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -384,6 +387,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<DateTime>("FechaVencimiento")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("IdPagoConTarjeta")
+                        .HasColumnType("int");
+
                     b.Property<string>("NombreTitular")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -397,6 +403,9 @@ namespace LaTiendaIS.Shared.Migrations
             modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoEfectivo", b =>
                 {
                     b.HasBaseType("LaTiendaIS.Shared.Models.Pago");
+
+                    b.Property<int>("IdPagoEfectivo")
+                        .HasColumnType("int");
 
                     b.Property<double>("Monto")
                         .HasColumnType("float");
@@ -472,7 +481,7 @@ namespace LaTiendaIS.Shared.Migrations
             modelBuilder.Entity("LaTiendaIS.Shared.Models.LineaDeVenta", b =>
                 {
                     b.HasOne("LaTiendaIS.Shared.Models.Articulo", "Articulo")
-                        .WithMany()
+                        .WithMany("LineasVenta")
                         .HasForeignKey("IdArticulo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -530,6 +539,11 @@ namespace LaTiendaIS.Shared.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoTalle");
+                });
+
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.Articulo", b =>
+                {
+                    b.Navigation("LineasVenta");
                 });
 
             modelBuilder.Entity("LaTiendaIS.Shared.Models.Venta", b =>

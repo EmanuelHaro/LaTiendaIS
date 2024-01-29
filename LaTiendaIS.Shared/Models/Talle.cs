@@ -11,8 +11,12 @@ namespace LaTiendaIS.Shared.Models
     public class Talle
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)] //No incremental
         public int IdTalle { get; set; }
         public string DescripcionTalle { get; set; }
+
+
+        public int IdTipoTalle{ get; set; } //ID FK TipoTalle
+        [ForeignKey("IdTipoTalle")] //FK TipoTalle
+        public virtual TipoTalle? TipoTalle { get; set; }
     }
 }

@@ -48,15 +48,15 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpGet]
-        [Route("{Codigo}")]
-        public async Task<ActionResult> ObtenerArticulo(int Codigo)
+        [Route("{IdCodigo}")]
+        public async Task<ActionResult> ObtenerArticulo(int IdCodigo)
         {
             var responseApi = new ResponseAPI<ArticuloDTO>();
             var ArticuloDTO = new ArticuloDTO();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.Codigo == Codigo);
+                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
 
                 if (dbArticulo != null)
                 {
@@ -92,10 +92,10 @@ namespace LaTiendaIS.Server.Controllers
                 _dbContext.Articulo.Add(dbArticulo);
                 await _dbContext.SaveChangesAsync();
 
-                if (dbArticulo.Codigo != 0)
+                if (dbArticulo.IdCodigo != 0)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbArticulo.Codigo;
+                    responseApi.Valor = dbArticulo.IdCodigo;
                 }
                 else
                 {
@@ -113,13 +113,13 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPut("{legajo}")]
-        public async Task<ActionResult> ModificarArticulo(int Codigo, ArticuloDTO ArticuloDTO)
+        public async Task<ActionResult> ModificarArticulo(int IdCodigo, ArticuloDTO ArticuloDTO)
         {
             var responseApi = new ResponseAPI<int>();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.Where(c => c.Codigo == Codigo).FirstOrDefaultAsync();
+                var dbArticulo = await _dbContext.Articulo.Where(c => c.IdCodigo == IdCodigo).FirstOrDefaultAsync();
 
                 if (dbArticulo == null)
                 {
@@ -136,7 +136,7 @@ namespace LaTiendaIS.Server.Controllers
                 await _dbContext.SaveChangesAsync();
 
                 responseApi.EsCorrecto = true;
-                responseApi.Valor = dbArticulo.Codigo;
+                responseApi.Valor = dbArticulo.IdCodigo;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -158,14 +158,14 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpDelete]
-        [Route("{Codigo}")]
-        public async Task<IActionResult> EliminarArticulo(int Codigo)
+        [Route("{IdCodigo}")]
+        public async Task<IActionResult> EliminarArticulo(int IdCodigo)
         {
             var responseApi = new ResponseAPI<int>();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.Codigo == Codigo);
+                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
                 if (dbArticulo != null)
                 {
                     _dbContext.Articulo.Remove(dbArticulo);
