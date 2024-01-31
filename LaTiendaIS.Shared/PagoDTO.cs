@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace LaTiendaIS.Shared
 {
-    public class TalleDTO
+    public class PagoDTO
     {
-        public int IdTalle { get; set; }
-        public string DescripcionTalle { get; set; }
+        public int IdPago { get; set; }
+        public double Cantidad { get; set; }
 
-
-        public int IdTipoTalle { get; set; } //ID FK TipoTalle
-        public virtual TipoTalleDTO? TipoTalle { get; set; }
+        public int IdVenta { get; set; }
+        public virtual VentaDTO Venta { get; set; }
     }
 }

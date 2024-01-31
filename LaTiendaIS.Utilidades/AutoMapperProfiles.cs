@@ -8,11 +8,20 @@ namespace LaTiendaIS.Utilidades
     {
         public AutoMapperProfiles()
         {
+            CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<Articulo, ArticuloDTO>().ReverseMap();
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
-            CreateMap<Marca, MarcaDTO>().ReverseMap();
-            CreateMap<Talle, TalleDTO>().ReverseMap();
             CreateMap<ColorArticulo, ColorArticuloDTO>().ReverseMap();
+            CreateMap<Comprobante, ComprobanteDTO>().ReverseMap();
+            CreateMap<CondicionTributaria, CondicionTributariaDTO>().ReverseMap();
+            CreateMap<LineaDeVenta, LineaDeVentaDTO>().ReverseMap();
+            CreateMap<Marca, MarcaDTO>().ReverseMap();
+            CreateMap<Pago, PagoDTO>().ReverseMap();
+            CreateMap<PagoEfectivo, PagoEfectivoDTO>().ReverseMap();
+            CreateMap<PagoConTarjeta, PagoConTarjetaDTO>().ReverseMap();
+            CreateMap<PuntoDeVenta, PuntoDeVentaDTO>().ReverseMap();
+            CreateMap<Stock, StockDTO>().ReverseMap();
+            CreateMap<Talle, TalleDTO>().ReverseMap();
         }
     }
 }
