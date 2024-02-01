@@ -17,6 +17,23 @@ namespace LaTiendaIS.Shared
         public float MargenDeGanacia { get; set; }
         public float PorcentajeIVA { get; set; }
 
+        // Campos calculados
+        public float NetoGravado
+        {
+            get { return (float)(Costo + Costo * (MargenDeGanacia / 100)); }
+        }
+
+        public float IVA
+        {
+            get { return NetoGravado * (PorcentajeIVA / 100); }
+        }
+
+        public double PrecioDeVenta
+        {
+            get { return NetoGravado + IVA; }
+        }
+
+
         public int IdMarca { get; set; } //ID FK Marca
         public virtual Marca? Marca { get; set; }
 
@@ -29,7 +46,6 @@ namespace LaTiendaIS.Shared
         public int IdCategoria { get; set; } //ID FK Categoria
         public virtual Categoria? Categoria { get; set; }
 
-
-
+       
     }
 }

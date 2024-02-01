@@ -47,7 +47,7 @@
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ArticuloDTO, object>(x=>x.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Costo)">Costo</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.PrecioDeVenta)">Precio De Venta</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.TipoTalle.DescripcionTipoTalle)">Tipo de Talle</MudTableSortLabel></MudTh>
          <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.DescripcionTalle)">Talle</MudTableSortLabel></MudTh> 
         <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
@@ -58,7 +58,7 @@
     <RowTemplate>
         <MudTd DataLabel="IdCodigo">@context.IdCodigo</MudTd>
         <MudTd DataLabel="Descripcion">@context.Descripcion</MudTd>
-        <MudTd DataLabel="Costo">@context.Costo</MudTd>
+        <MudTd DataLabel="PrecioVenta">@context.PrecioDeVenta</MudTd>
         <MudTd DataLabel="TipoTalle">@context.Talle.TipoTalle.DescripcionTipoTalle</MudTd>
          <MudTd DataLabel="Talle">@context.Talle.DescripcionTalle</MudTd> 
         <MudTd DataLabel="Marca">@context.Marca.DescripcionMarca</MudTd>
@@ -73,6 +73,16 @@
 <div class="d-flex" style="max-width: 200px; margin: 20px; margin-left: 80%">
     <MudTextField @bind-Value="Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" />
 </div>
+
+<div class="container d-flex justify-content-between">
+    <div class="d-flex" style="max-width: 300px; margin: 20px;">
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => CancelarVenta()">Cancelar</MudButton>
+    </div>
+    <div class="d-flex" style="max-width: 300px; margin: 20px; margin-left: 80%;">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Pagar()">Pagar</MudButton>
+    </div>
+</div>
+
 
 
 
@@ -126,7 +136,7 @@
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
                 ArticuloDTOs.Add(articulo);
 
-                Total += articulo.Costo;
+                Total += articulo.PrecioDeVenta;
 
                 StateHasChanged();
                 Snackbar.Add("Articulo agregado", Severity.Success);
@@ -148,9 +158,20 @@
         var articulo = ArticuloDTOs.FirstOrDefault(a => a.IdCodigo == idArticulo);
         ArticuloDTOs.Remove(articulo);
 
-        Total -= articulo.Costo;
+        Total -= articulo.PrecioDeVenta;
 
         StateHasChanged();
         Snackbar.Add("Articulo Eliminado", Severity.Success);
+    }
+
+    private void Pagar()
+    {
+        Snackbar.Add("Pagó", Severity.Success);
+    }
+
+    private void CancelarVenta()
+    {
+        ArticuloDTOs.Clear();
+        Total = 0;
     }
 }
