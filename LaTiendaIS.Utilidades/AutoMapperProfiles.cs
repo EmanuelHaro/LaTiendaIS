@@ -8,9 +8,9 @@ namespace LaTiendaIS.Utilidades
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<Articulo, ArticuloDTO>().ReverseMap();
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
+            CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<ColorArticulo, ColorArticuloDTO>().ReverseMap();
             CreateMap<Comprobante, ComprobanteDTO>().ReverseMap();
             CreateMap<CondicionTributaria, CondicionTributariaDTO>().ReverseMap();

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LaTiendaIS.Client\LaTiendaIS.Client.csproj" />
     <ProjectReference Include="..\LaTiendaIS.Shared\LaTiendaIS.Shared.csproj" />
     <ProjectReference Include="..\LaTiendaIS.Utilidades\LaTiendaIS.Utilidades.csproj" />
   </ItemGroup>

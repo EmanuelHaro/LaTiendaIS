@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Server", "LaTien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Shared", "LaTiendaIS.Shared\LaTiendaIS.Shared.csproj", "{6FF2251D-BBE7-414B-B37E-1FF581CE1391}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Utilidades", "LaTiendaIS.Utilidades\LaTiendaIS.Utilidades.csproj", "{5DF3751A-8666-40EE-83D4-7670D923D5DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Utilidades", "LaTiendaIS.Utilidades\LaTiendaIS.Utilidades.csproj", "{5DF3751A-8666-40EE-83D4-7670D923D5DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Client", "LaTiendaIS.Client\LaTiendaIS.Client.csproj", "{650E6214-FA68-43CC-AB07-2713302F8830}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Client", "LaTiendaIS.Client\LaTiendaIS.Client.csproj", "{650E6214-FA68-43CC-AB07-2713302F8830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

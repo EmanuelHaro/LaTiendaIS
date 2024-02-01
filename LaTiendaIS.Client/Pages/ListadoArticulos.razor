@@ -1,0 +1,125 @@
+﻿@page "/"
+@page "/listadoArticulos"
+
+@* @using LaTiendaIS.Client.Services.Contrato; *@
+@* @inject IEmpleadoService _empleadoServicio *@
+
+@using LaTiendaIS.Shared;
+@using LaTiendaIS.Client.Service.Contrato;
+@inject IArticuloServicio _articuloServicio
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+
+@using System.Net.Http.Json
+
+@using MudBlazor
+
+@inject ISnackbar Snackbar
+@inject NavigationManager _navManager
+
+@inject HttpClient httpClient
+
+<h3>Listado De Articulos</h3>
+
+<MudButton Href="/"
+           Variant="Variant.Filled"
+           EndIcon="@Icons.Material.Filled.AddCircle"
+           Color="Color.Primary" Class="mb-3">
+    Agregar Articulo
+</MudButton>
+
+<MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<ArticuloDTO,bool>(FilterFunc)"
+@bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Listado de Articulos</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Buscar" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width:50px;" />
+        <col />
+        <col />
+        <col />
+         <col /> 
+        <col />
+        <col />
+        <col />
+        <col style="width:20px;" />
+        <col style="width:20px;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ArticuloDTO, object>(x=>x.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Costo)">Costo</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.TipoTalle.DescripcionTipoTalle)">Tipo de Talle</MudTableSortLabel></MudTh>
+         <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.DescripcionTalle)">Talle</MudTableSortLabel></MudTh> 
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Color.DescripcionColor)">Color</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Categoria.DescripcionCategoria)">Categoria</MudTableSortLabel></MudTh>
+        <MudTh>Acciones</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="IdCodigo">@context.IdCodigo</MudTd>
+        <MudTd DataLabel="Descripcion">@context.Descripcion</MudTd>
+        <MudTd DataLabel="Costo">@context.Costo</MudTd>
+        <MudTd DataLabel="TipoTalle">@context.Talle.TipoTalle.DescripcionTipoTalle</MudTd>
+         <MudTd DataLabel="Talle">@context.Talle.DescripcionTalle</MudTd> 
+        <MudTd DataLabel="Marca">@context.Marca.DescripcionMarca</MudTd>
+        <MudTd DataLabel="Color">@context.Color.DescripcionColor</MudTd>
+        <MudTd DataLabel="Categoria">@context.Categoria.DescripcionCategoria</MudTd>
+        <MudTd>
+            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Class="pa-0" OnClick="() => EliminarEmpleado(context.IdCodigo)" />
+        </MudTd>
+    </RowTemplate>
+
+ 
+</MudTable>
+
+
+
+@code {
+    private List<string> editEvents = new();
+    private bool dense = false;
+    private bool hover = true;
+    private bool ronly = false;
+    private bool canCancelEdit = false;
+    private bool blockSwitch = false;
+    private string searchString = "";
+
+    private ArticuloDTO selectedItem1 = null;
+    private HashSet<ArticuloDTO> selectedItems1 = new HashSet<ArticuloDTO>();
+    private IEnumerable<ArticuloDTO> ArticuloDTOs = new List<ArticuloDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ArticuloDTOs = await _articuloServicio.ListarArticulos();
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+
+    private bool FilterFunc(ArticuloDTO articuloDTO)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (articuloDTO.Descripcion.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (articuloDTO.IdCodigo.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+
+    private void EliminarEmpleado(long legajo)
+    {
+        _navManager.NavigateTo($"/Empleado/eliminar/{legajo}");
+    }
+}

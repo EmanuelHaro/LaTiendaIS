@@ -31,6 +31,11 @@ namespace LaTiendaIS.Server.Controllers
                 var ArticuloDb = await _dbContext.Articulo.ToListAsync();
                 foreach (var Articulo in ArticuloDb)
                 {
+                    Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
+                    Articulo.Talle = _dbContext.Talle.Find(Articulo.IdTalle);
+                    Articulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(Articulo.Talle.IdTipoTalle);
+                    Articulo.Color = _dbContext.ColorArticulo.Find(Articulo.IdColor);
+                    Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
                     listaArticulosDTO.Add(_mapper.Map<ArticuloDTO>(Articulo));
                 }
 
@@ -57,6 +62,11 @@ namespace LaTiendaIS.Server.Controllers
             try
             {
                 var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
+                dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
+                dbArticulo.Talle = _dbContext.Talle.Find(dbArticulo.IdTalle);
+                dbArticulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(dbArticulo.Talle.IdTipoTalle);
+                dbArticulo.Color = _dbContext.ColorArticulo.Find(dbArticulo.IdColor);
+                dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
 
                 if (dbArticulo != null)
                 {
@@ -88,6 +98,7 @@ namespace LaTiendaIS.Server.Controllers
             try
             {
                 var dbArticulo = _mapper.Map<Articulo>(ArticuloDTO);
+                
 
                 _dbContext.Articulo.Add(dbArticulo);
                 await _dbContext.SaveChangesAsync();
@@ -112,7 +123,7 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
-        [HttpPut("{legajo}")]
+        [HttpPut("{IdCodigo}")]
         public async Task<ActionResult> ModificarArticulo(int IdCodigo, ArticuloDTO ArticuloDTO)
         {
             var responseApi = new ResponseAPI<int>();
