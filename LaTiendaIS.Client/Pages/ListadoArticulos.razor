@@ -58,7 +58,7 @@
     <RowTemplate>
         <MudTd DataLabel="IdCodigo">@context.IdCodigo</MudTd>
         <MudTd DataLabel="Descripcion">@context.Descripcion</MudTd>
-        <MudTd DataLabel="PrecioVenta">@context.PrecioDeVenta</MudTd>
+        <MudTd DataLabel="PrecioVenta">@context.PrecioDeVenta.ToString("0.00")</MudTd>
         <MudTd DataLabel="TipoTalle">@context.Talle.TipoTalle.DescripcionTipoTalle</MudTd>
          <MudTd DataLabel="Talle">@context.Talle.DescripcionTalle</MudTd> 
         <MudTd DataLabel="Marca">@context.Marca.DescripcionMarca</MudTd>
@@ -71,7 +71,7 @@
 </MudTable>
 
 <div class="d-flex" style="max-width: 200px; margin: 20px; margin-left: 80%">
-    <MudTextField @bind-Value="Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" />
+    <MudTextField @bind-Value="Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" Step="0.01" Format="N2" />
 </div>
 
 <div class="container d-flex justify-content-between">
@@ -161,7 +161,7 @@
         Total -= articulo.PrecioDeVenta;
 
         StateHasChanged();
-        Snackbar.Add("Articulo Eliminado", Severity.Success);
+        Snackbar.Add("Articulo Eliminado", Severity.Warning);
     }
 
     private void Pagar()
