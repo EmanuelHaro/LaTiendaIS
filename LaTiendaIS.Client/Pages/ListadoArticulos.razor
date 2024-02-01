@@ -125,9 +125,22 @@
     {
         if (idArticulo!=0)
         {
-            var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
-            ArticuloDTOs.Add(articulo);
-            StateHasChanged();
+            try
+            {
+                var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
+                ArticuloDTOs.Add(articulo);
+                StateHasChanged();
+                Snackbar.Add("Articulo agregado", Severity.Success);
+            }
+            catch(Exception ex)
+            {
+                Snackbar.Add("Codigo Invalido", Severity.Warning);
+            }
+
+        }
+        else
+        {
+            Snackbar.Add("Codigo Invalido", Severity.Warning);
         }
     }
 
@@ -136,5 +149,6 @@
         var articulo = ArticuloDTOs.FirstOrDefault(a => a.IdCodigo == idArticulo);
         ArticuloDTOs.Remove(articulo);
         StateHasChanged();
+        Snackbar.Add("Articulo Eliminado", Severity.Success);
     }
 }

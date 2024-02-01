@@ -62,14 +62,16 @@ namespace LaTiendaIS.Server.Controllers
             try
             {
                 var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
-                dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
-                dbArticulo.Talle = _dbContext.Talle.Find(dbArticulo.IdTalle);
-                dbArticulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(dbArticulo.Talle.IdTipoTalle);
-                dbArticulo.Color = _dbContext.ColorArticulo.Find(dbArticulo.IdColor);
-                dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
+                
 
                 if (dbArticulo != null)
                 {
+                    dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
+                    dbArticulo.Talle = _dbContext.Talle.Find(dbArticulo.IdTalle);
+                    dbArticulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(dbArticulo.Talle.IdTipoTalle);
+                    dbArticulo.Color = _dbContext.ColorArticulo.Find(dbArticulo.IdColor);
+                    dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
+
                     ArticuloDTO = _mapper.Map<ArticuloDTO>(dbArticulo);
 
                     responseApi.EsCorrecto = true;
