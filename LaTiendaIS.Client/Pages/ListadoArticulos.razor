@@ -21,14 +21,7 @@
 
 @inject HttpClient httpClient
 
-@* <MudButton Href="/"
-           Variant="Variant.Filled"
-           EndIcon="@Icons.Material.Filled.AddCircle"
-           Color="Color.Primary" Class="mb-3">
-    Agregar Articulo
-</MudButton>
- *@
-<div class="d-flex" style="max-width: 600px; margin: 20px auto;">
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
     <MudTextField @bind-Value="TextCodigo" Variant="Variant.Text" Label="Ingresar Codigo"></MudTextField>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerArticulo(TextCodigo)">Agregar</MudButton>
  </div>
@@ -75,9 +68,11 @@
             <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Class="pa-0" OnClick="() => EliminarArticulo(context.IdCodigo)" />
         </MudTd>
     </RowTemplate>
-
- 
 </MudTable>
+
+<div class="d-flex" style="max-width: 200px; margin: 20px; margin-left: 80%">
+    <MudTextField @bind-Value="Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" />
+</div>
 
 
 
@@ -90,6 +85,7 @@
     private bool blockSwitch = false;
     private string searchString = "";
     public int TextCodigo { get; set; }
+    public double? Total = 0;
 
     private ArticuloDTO selectedItem1 = null;
     private HashSet<ArticuloDTO> selectedItems1 = new HashSet<ArticuloDTO>();
@@ -129,6 +125,9 @@
             {
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
                 ArticuloDTOs.Add(articulo);
+
+                Total += articulo.Costo;
+
                 StateHasChanged();
                 Snackbar.Add("Articulo agregado", Severity.Success);
             }
@@ -148,6 +147,9 @@
     {
         var articulo = ArticuloDTOs.FirstOrDefault(a => a.IdCodigo == idArticulo);
         ArticuloDTOs.Remove(articulo);
+
+        Total -= articulo.Costo;
+
         StateHasChanged();
         Snackbar.Add("Articulo Eliminado", Severity.Success);
     }
