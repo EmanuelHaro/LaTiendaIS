@@ -21,7 +21,11 @@ namespace LaTiendaIS.Utilidades
             CreateMap<PagoConTarjeta, PagoConTarjetaDTO>().ReverseMap();
             CreateMap<PuntoDeVenta, PuntoDeVentaDTO>().ReverseMap();
             CreateMap<Stock, StockDTO>().ReverseMap();
+            CreateMap<Sucursal, SucursalDTO>().ReverseMap();
             CreateMap<Talle, TalleDTO>().ReverseMap();
+            CreateMap<TipoDeComprobante, TipoDeComprobanteDTO>().ReverseMap();
+            CreateMap<TipoTalle, TipoTalleDTO>().ReverseMap();
+            CreateMap<Venta, VentaDTO>().ReverseMap();
         }
     }
 }
