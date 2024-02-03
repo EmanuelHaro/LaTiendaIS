@@ -8,6 +8,7 @@
 @using LaTiendaIS.Client.Service.Contrato;
 @inject IArticuloServicio _articuloServicio
 @inject IVentaServicio _ventaServicio
+@inject ILineaDeVentaServicio _lineadeventaServicio
 
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
@@ -185,7 +186,18 @@
                     lineaDeVenta.IdArticulo = articulo.IdCodigo;
                     lineaDeVenta.Cantidad = 1;
                     lineaDeVenta.IdVenta = venta1.IdVenta;
-
+                    
+                    //CONEXION DE LINEA DE VENTA A BASE DE DATOS FALLA
+                    // lineaDeVenta.Articulo = articulo;
+                    // var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
+                    // if (response!= null)
+                    // {
+                    //     Snackbar.Add("Linea de venta creada", Severity.Success);
+                    // }
+                    // else
+                    // {
+                    //     Snackbar.Add("Fallo", Severity.Error);
+                    // }
 
                 }
                 else
@@ -242,10 +254,10 @@
         Snackbar.Add("Articulo Eliminado", Severity.Warning);
     }
 
-    private void Pagar()
+    private async void Pagar()
     {
 
-        var response = _ventaServicio.AgregarVenta(venta1);
+        var response = await _ventaServicio.AgregarVenta(venta1);
 
 
 
