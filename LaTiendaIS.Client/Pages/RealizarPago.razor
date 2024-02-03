@@ -1,0 +1,33 @@
+﻿@page "/realizarpago"
+
+
+@using LaTiendaIS.Shared;
+@using LaTiendaIS.Client.Service.Contrato;
+@inject IArticuloServicio _articuloServicio
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+
+@using System.Net.Http.Json
+
+@using MudBlazor
+@inject ISnackbar Snackbar
+@inject NavigationManager _navManager
+
+
+@inject HttpClient httpClient
+
+<h2>Realizar el pago</h2>
+
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudSelect T="string" Label="Elegir medio de pago"  AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@("Efectivo")" />
+        <MudSelectItem Value="@("Con Tarjeta")" />
+    </MudSelect>
+</div>
+
+
+@code {
+
+}

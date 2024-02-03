@@ -14,7 +14,8 @@ namespace LaTiendaIS.Shared
         public DateTime FechaVenta { get; set; }
         public double Total { get; set; }
 
-        // Relación de navegación
-        public virtual ICollection<LineaDeVentaDTO> LineaDeVenta { get; set; }
+
+        //// Relación de navegación
+        //public virtual ICollection<LineaDeVentaDTO> LineaDeVenta { get; set; }
     }
 }

@@ -7,6 +7,7 @@
 @using LaTiendaIS.Shared;
 @using LaTiendaIS.Client.Service.Contrato;
 @inject IArticuloServicio _articuloServicio
+@inject IVentaServicio _ventaServicio
 
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
@@ -102,7 +103,7 @@
 </MudTable>
 
 <div class="d-flex" style="max-width: 200px; margin: 20px; margin-left: 80%">
-    <MudTextField @bind-Value="Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" Step="0.01" Format="N2" />
+    <MudTextField @bind-Value="venta1.Total" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" Step="0.01" Format="N2" />
 </div>
 
 <div class="container d-flex justify-content-between">
@@ -134,18 +135,13 @@
     private HashSet<ArticuloDTO> selectedItems1 = new HashSet<ArticuloDTO>();
     private List<ArticuloDTO> ArticuloDTOs = new List<ArticuloDTO>();
     private List<ArticuloDTO> ListaArticulosCodigos = new List<ArticuloDTO>();
+    public VentaDTO venta1;
 
     protected override async Task OnInitializedAsync()
     {
-        // try
-        // {
-        //     ArticuloDTOs = await _articuloServicio.ListarArticulos();
-        // }
-        // catch (Exception ex)
-        // {
+        venta1 = new VentaDTO();
+        venta1.FechaVenta = DateTime.Now;
 
-        //     Console.WriteLine(ex.Message);
-        // }
     }
 
     private void HandleTalleChanged(string nuevoTalle)
@@ -179,12 +175,25 @@
                 int colorS = art2.IdColor;
 
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo,talleS,colorS);
-                ArticuloDTOs.Add(articulo);
+                if (!ArticuloDTOs.Contains(articulo))
+                {
+                    ArticuloDTOs.Add(articulo);
+                    venta1.Total += articulo.PrecioDeVenta;
+                    StateHasChanged();
+                    Snackbar.Add("Articulo agregado", Severity.Success);
+                    LineaDeVentaDTO lineaDeVenta = new LineaDeVentaDTO();
+                    lineaDeVenta.IdArticulo = articulo.IdCodigo;
+                    lineaDeVenta.Cantidad = 1;
+                    lineaDeVenta.IdVenta = venta1.IdVenta;
 
-                Total += articulo.PrecioDeVenta;
 
-                StateHasChanged();
-                Snackbar.Add("Articulo agregado", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
+                }
+
+
             }
             catch(Exception ex)
             {
@@ -227,7 +236,7 @@
         var articulo = ArticuloDTOs.FirstOrDefault(a => a.IdCodigo == idArticulo);
         ArticuloDTOs.Remove(articulo);
 
-        Total -= articulo.PrecioDeVenta;
+        venta1.Total -= articulo.PrecioDeVenta;
 
         StateHasChanged();
         Snackbar.Add("Articulo Eliminado", Severity.Warning);
@@ -235,14 +244,15 @@
 
     private void Pagar()
     {
+
+        var response = _ventaServicio.AgregarVenta(venta1);
+
+
+
+        _navManager.NavigateTo("/realizarpago");
         Snackbar.Add("Pagó", Severity.Success);
     }
 
-
-    private void FiltrarColor()
-    {
-        //TODO
-    }
 
     private void CancelarVenta()
     {

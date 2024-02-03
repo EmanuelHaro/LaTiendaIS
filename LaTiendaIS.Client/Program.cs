@@ -13,6 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5108") });
 
 builder.Services.AddScoped<IArticuloServicio, ArticuloServicio>();
+builder.Services.AddScoped<IVentaServicio, VentaServicio>();
 
 // Añado MudBlazor
 builder.Services.AddMudServices();
