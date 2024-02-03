@@ -21,11 +21,42 @@
 
 @inject HttpClient httpClient
 
+
+@* Ingreso de codigo*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
     <MudTextField @bind-Value="TextCodigo" Variant="Variant.Text" Label="Ingresar Codigo"></MudTextField>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerArticulo(TextCodigo)">Agregar</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerListaArticulo(TextCodigo)">Buscar</MudButton>
+    
  </div>
 
+
+
+
+@* Ingreso de talle*@
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudSelect T="string" Label="Talles" @bind-Value="talleElegido" AnchorOrigin="Origin.BottomCenter" OnValueChanged="HandleTalleChanged">
+        @foreach (var talleUnico in ListaArticulosCodigos.Select(art => art.Talle.DescripcionTalle).Distinct())
+        {
+            <MudSelectItem Value="@(talleUnico)" />
+        }
+    </MudSelect>
+</div>
+
+@* Ingreso de color*@
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudSelect T="string" Label="Color" @bind-Value="colorElegido" AnchorOrigin="Origin.BottomCenter">
+        @foreach (var color in ListaArticulosCodigos.Where(art => art.Talle.DescripcionTalle == talleElegido).Select(art => art.Color.DescripcionColor).Distinct())
+        {
+            <MudSelectItem Value="@(color)" />
+        }
+    </MudSelect>
+</div>
+
+
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerArticulo(TextCodigo,talleElegido,colorElegido)">Agregar</MudButton>
+
+</div>
 <MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<ArticuloDTO,bool>(FilterFunc)"
 @bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
     <ToolBarContent>
@@ -94,12 +125,15 @@
     private bool canCancelEdit = false;
     private bool blockSwitch = false;
     private string searchString = "";
-    public int TextCodigo { get; set; }
-    public double? Total = 0;
+    private int TextCodigo { get; set; }
+    private double? Total = 0;
+    private string talleElegido = "";
+    private string colorElegido = "";
 
     private ArticuloDTO selectedItem1 = null;
     private HashSet<ArticuloDTO> selectedItems1 = new HashSet<ArticuloDTO>();
     private List<ArticuloDTO> ArticuloDTOs = new List<ArticuloDTO>();
+    private List<ArticuloDTO> ListaArticulosCodigos = new List<ArticuloDTO>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,6 +148,12 @@
         // }
     }
 
+    private void HandleTalleChanged(string nuevoTalle)
+    {
+        // Este método se ejecutará cuando cambie el valor del primer MudSelect
+        // Puedes poner lógica adicional aquí si es necesario
+        talleElegido = nuevoTalle;
+    }
 
     private bool FilterFunc(ArticuloDTO articuloDTO)
     {
@@ -127,13 +167,18 @@
     }
 
 
-    private async void ObtenerArticulo(int idArticulo)
+    private async void ObtenerArticulo(int idArticulo,string talle,string color)
     {
         if (idArticulo!=0)
         {
             try
             {
-                var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
+                var art1 = ListaArticulosCodigos.Where(p => p.Talle.DescripcionTalle == talle).FirstOrDefault();
+                var art2 = ListaArticulosCodigos.Where(p => p.Color.DescripcionColor == color).FirstOrDefault();
+                int talleS = art1.IdTalle;
+                int colorS = art2.IdColor;
+
+                var articulo = await _articuloServicio.ObtenerArticulo(idArticulo,talleS,colorS);
                 ArticuloDTOs.Add(articulo);
 
                 Total += articulo.PrecioDeVenta;
@@ -142,6 +187,30 @@
                 Snackbar.Add("Articulo agregado", Severity.Success);
             }
             catch(Exception ex)
+            {
+                Snackbar.Add("Codigo Invalido", Severity.Warning);
+            }
+
+        }
+        else
+        {
+            Snackbar.Add("Codigo Invalido", Severity.Warning);
+        }
+    }
+
+    private async void ObtenerListaArticulo(int idArticulo)
+    {
+        if (idArticulo != 0)
+        {
+            try
+            {
+                var lista = await _articuloServicio.ListarArticulos();
+                ListaArticulosCodigos = lista.Where(p => p.CodigoTienda == idArticulo).ToList();
+
+                StateHasChanged();
+                Snackbar.Add("Codigo Valido", Severity.Success);
+            }
+            catch (Exception ex)
             {
                 Snackbar.Add("Codigo Invalido", Severity.Warning);
             }
@@ -167,6 +236,12 @@
     private void Pagar()
     {
         Snackbar.Add("Pagó", Severity.Success);
+    }
+
+
+    private void FiltrarColor()
+    {
+        //TODO
     }
 
     private void CancelarVenta()

@@ -22,15 +22,17 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(result.Mensaje);
         }
-        public async Task<ArticuloDTO> ObtenerArticulo(int idArticulo)
+
+        public async Task<ArticuloDTO> ObtenerArticulo(int idArticulo, int idTalle, int idColor)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ArticuloDTO>>($"api/Articulo/{idArticulo}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ArticuloDTO>>($"api/Articulo/{idArticulo}/{idTalle}/{idColor}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
+
         public async Task<int> AgregarArticulo(ArticuloDTO Articulo)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Articulo", Articulo);

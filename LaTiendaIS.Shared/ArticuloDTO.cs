@@ -12,6 +12,7 @@ namespace LaTiendaIS.Shared
     public class ArticuloDTO
     {
         public int IdCodigo { get; set; }
+        public int CodigoTienda { get; set; }
         public string Descripcion { get; set; }
         public double Costo { get; set; }
         public float MargenDeGanacia { get; set; }
@@ -25,7 +26,7 @@ namespace LaTiendaIS.Shared
 
         public float IVA
         {
-            get { return NetoGravado * (PorcentajeIVA / 100); }
+            get { return NetoGravado * (PorcentajeIVA); }
         }
 
         public double PrecioDeVenta

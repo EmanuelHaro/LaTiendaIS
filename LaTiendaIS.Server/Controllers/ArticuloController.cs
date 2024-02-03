@@ -53,15 +53,15 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpGet]
-        [Route("{IdCodigo}")]
-        public async Task<ActionResult> ObtenerArticulo(int IdCodigo)
+        [Route("{IdCodigo}/{idTalle}/{idColor}")]
+        public async Task<ActionResult> ObtenerArticulo(int IdCodigo, int idTalle, int idColor)
         {
             var responseApi = new ResponseAPI<ArticuloDTO>();
             var ArticuloDTO = new ArticuloDTO();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
+                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.CodigoTienda == IdCodigo && f.IdTalle == idTalle && f.IdColor == idColor);
                 
 
                 if (dbArticulo != null)
@@ -132,7 +132,7 @@ namespace LaTiendaIS.Server.Controllers
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.Where(c => c.IdCodigo == IdCodigo).FirstOrDefaultAsync();
+                var dbArticulo = await _dbContext.Articulo.Where(c => c.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
 
                 if (dbArticulo == null)
                 {

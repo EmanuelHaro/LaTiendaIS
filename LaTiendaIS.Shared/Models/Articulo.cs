@@ -13,6 +13,7 @@ namespace LaTiendaIS.Shared.Models
     {
         [Key]
         public int IdCodigo { get; set; }
+        public int CodigoTienda { get; set; }
         public string Descripcion { get; set; }
         public double Costo { get; set; }
         public float MargenDeGanacia { get; set; }

@@ -13,6 +13,8 @@ namespace LaTiendaIS.Shared
         public int IdStock { get; set; }
 
         public int Cantidad { get; set; }
+        public int IdSucursal { get; set; }
+        public virtual SucursalDTO Sucursal { get; set; }
 
 
         public int IdArticulo { get; set; }
