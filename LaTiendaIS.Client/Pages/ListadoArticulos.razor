@@ -142,6 +142,12 @@
     {
         venta1 = new VentaDTO();
         venta1.FechaVenta = DateTime.Now;
+        var response = await _ventaServicio.AgregarVenta(venta1);
+        if(response!=null)
+        {
+            var lista = await _ventaServicio.ListarVentas();
+            venta1 = lista.LastOrDefault();
+        }
 
     }
 
@@ -187,17 +193,15 @@
                     lineaDeVenta.Cantidad = 1;
                     lineaDeVenta.IdVenta = venta1.IdVenta;
                     
-                    //CONEXION DE LINEA DE VENTA A BASE DE DATOS FALLA
-                    // lineaDeVenta.Articulo = articulo;
-                    // var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-                    // if (response!= null)
-                    // {
-                    //     Snackbar.Add("Linea de venta creada", Severity.Success);
-                    // }
-                    // else
-                    // {
-                    //     Snackbar.Add("Fallo", Severity.Error);
-                    // }
+                    var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
+                    if (response!= null)
+                    {
+                        Snackbar.Add("Linea de venta creada", Severity.Success);
+                    }
+                    else
+                    {
+                        Snackbar.Add("Fallo", Severity.Error);
+                    }
 
                 }
                 else
@@ -257,7 +261,7 @@
     private async void Pagar()
     {
 
-        var response = await _ventaServicio.AgregarVenta(venta1);
+        var response = await _ventaServicio.ModificarVenta(venta1.IdVenta,venta1);
 
 
 

@@ -49,7 +49,7 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{idLineaDeVenta}")]
-        public async Task<ActionResult> ObtenerLineaDeVenta(int idLineaDeVenta, int idTalle, int idColor)
+        public async Task<ActionResult> ObtenerLineaDeVenta(int idLineaDeVenta)
         {
             var responseApi = new ResponseAPI<LineaDeVentaDTO>();
             var LineaDeVentaDTO = new LineaDeVentaDTO();
@@ -91,6 +91,8 @@ namespace LaTiendaIS.Server.Controllers
             {
                 var dbLineaDeVenta = _mapper.Map<LineaDeVenta>(LineaDeVentaDTO);
 
+                dbLineaDeVenta.Articulo = _dbContext.Articulo.FirstOrDefault(a => a.IdCodigo == LineaDeVentaDTO.IdArticulo);
+                dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVentaDTO.IdVenta);
 
                 _dbContext.LineaDeVenta.Add(dbLineaDeVenta);
                 await _dbContext.SaveChangesAsync();

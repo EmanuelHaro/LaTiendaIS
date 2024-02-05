@@ -50,12 +50,12 @@ namespace LaTiendaIS.Client.Service.Implementacion
             if (Venta.IdVenta == idVenta)
             {
                 // Si el cliente tiene un Id, se trata de una modificación
-                result = await _httpClient.PutAsJsonAsync($"api/Cliente/{idVenta}", Venta);
+                result = await _httpClient.PutAsJsonAsync($"api/Venta/{idVenta}", Venta);
             }
             else
             {
                 // Si el cliente no tiene un Id válido, se trata de una adición
-                result = await _httpClient.PostAsJsonAsync("api/Cliente", idVenta);
+                result = await _httpClient.PostAsJsonAsync("api/Venta", idVenta);
             }
 
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();

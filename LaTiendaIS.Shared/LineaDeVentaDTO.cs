@@ -17,10 +17,10 @@ namespace LaTiendaIS.Shared
 
         // Relación de navegación
         public int IdArticulo { get; set; }
-        public virtual ArticuloDTO Articulo { get; set; }
+        public virtual ArticuloDTO? Articulo { get; set; }
 
 
         public int IdVenta { get; set; }
-        public virtual VentaDTO Venta { get; set; }
+        public virtual VentaDTO? Venta { get; set; }
     }
 }
