@@ -8,6 +8,13 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
+<!--Pagar-->
+@using LaTiendaIS.Shared;
+@using LaTiendaIS.Client.Service.Contrato;
+@inject IArticuloServicio _articuloServicio
+@inject IVentaServicio _ventaServicio
+@inject ILineaDeVentaServicio _lineadeventaServicio
+
 
 @using System.Net.Http.Json
 
@@ -19,15 +26,125 @@
 @inject HttpClient httpClient
 
 <h2>Realizar el pago</h2>
-
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudSelect T="string" Label="Elegir medio de pago"  AnchorOrigin="Origin.BottomCenter">
+    <MudSelect T="string" Label="Elegir medio de pago" AnchorOrigin="Origin.BottomCenter" @bind-Value="medioDePago">
+        <MudSelectItem Value="@("")" />
         <MudSelectItem Value="@("Efectivo")" />
         <MudSelectItem Value="@("Con Tarjeta")" />
     </MudSelect>
 </div>
 
+<div class="d-flex flex-column" style="max-width: 600px; margin: 20px;" @key="medioDePago">
+    @if (string.IsNullOrWhiteSpace(medioDePago))
+    {
+        <p>Por favor, selecciona un medio de pago.</p>
+    }
+    else if (medioDePago == "Efectivo")
+    {
+        <div>
+            <p>Total a pagar: @totalAPagar</p>
+            <br />
+            <p>Monto Recibido: <input type="number" @bind="montoRecibido" /></p>
+            <br />
+            <p>Vuelto: @calcularVuelto()</p>
+        </div>
+        <div class="d-flex" style="max-width: 300px; margin: 20px;">
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Pagar()" style="margin-left: 30px;">Pagar</MudButton>
+        </div>
+    }
+    else if (medioDePago == "Con Tarjeta")
+    {
+        <div>
+                    <MudGrid Class="justify-space-between" Style="max-width: 300px;">
+                        <MudItem xs="12">
+                    <MudTextField Label="Nombre del Titular" @bind-Value="nombreTitular" Variant="@Variant.Text" MaxLength="40" />
+                        </MudItem>
+                        <MudItem xs="6">
+                    <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Numero de Tarjeta"
+                                          @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
+                         </MudItem>
+                         <MudItem xs="4">
+                             <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Vencimiento"
+                                           @bind-Value="expiration" Variant="@Variant.Text" />
+                         </MudItem>
+                        <MudItem xs="4" />
+                        <MudItem xs="4">
+                             <MudTextField Mask="@(new PatternMask("000"))" Label="CVV"
+                                   @bind-Value="cvc" Variant="@Variant.Text" />
+                        </MudItem>
+
+                         <MudItem xs="12">
+                            Nombre del Titular: <b>@nombreTitular</b><br />
+                            DNI: <b>@dniTitular</b><br />
+                            Numero de Tarjeta: <b>@creditCard</b><br />
+                            Fecha de Venc: <b>@expiration</b><br />
+                            CVC: <b>@cvc</b>                 
+                        </MudItem>
+                    </MudGrid>
+
+        </div>
+        <div class="d-flex" style="max-width: 300px; margin: 20px;">
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IrAListarArticulos" style="margin-left: 30px;">Autorizar Pago</MudButton>
+        </div>       
+    }
+</div>
+
+<!-- La original
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudSelect T="string" Label="Elegir medio de pago" AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@("Efectivo")" />
+        <MudSelectItem Value="@("Con Tarjeta")" />
+    </MudSelect>
+</div>
+-->
+
+<!-- Boton Cancelar
+<div class="d-flex" style="max-width: 300px; margin: 20px;">
+    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
+</div>
+-->
+
 
 @code {
+    // Importa el NavigationManager
+    [Inject] NavigationManager NavigationManager { get; set; }
+    //Tarjeta
+    private string nombreTitular;
+    private string dniTitular;
+    private string creditCard;
+    private string expiration;
+    private string cvc;
+    //Medios de PAgo
+    private string medioDePago = "";
+    private decimal totalAPagar = 100.00m; // Ajusta según tus necesidades
+    private decimal montoRecibido = 0.00m;
+   // private string cvc = "";
 
+    public VentaDTO venta1;
+
+    private decimal calcularVuelto()
+    {
+        return montoRecibido - totalAPagar;
+    }
+
+    // Método para manejar el clic y redirigir a la página "ListarArticulos"
+    private void IrAListarArticulos()
+    {
+        NavigationManager.NavigateTo("/listadoArticulos"); // Ajusta la ruta según la estructura de tu aplicación
+    }
+
+    private async void Pagar()
+    {
+
+        var response = await _ventaServicio.ModificarVenta(venta1.IdVenta, venta1);
+
+
+        _navManager.NavigateTo("/realizarpago");
+        Snackbar.Add("Pagó", Severity.Success);
+    }
 }
