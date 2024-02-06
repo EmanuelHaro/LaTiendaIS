@@ -83,6 +83,44 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Ultima")]
+        public async Task<ActionResult> ObtenerUltimaVenta()
+        {
+            var responseApi = new ResponseAPI<VentaDTO>();
+            var VentaDTO = new VentaDTO();
+
+            try
+            {
+                var dbVenta = await _dbContext.Venta
+                .OrderByDescending(v => v.FechaVenta) // Ordenar las ventas por fecha de venta en orden descendente
+                .FirstOrDefaultAsync(); // Tomar la primera venta (la última en la secuencia ordenada) 
+
+
+                if (dbVenta != null)
+                {
+
+                    VentaDTO = _mapper.Map<VentaDTO>(dbVenta);
+
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = VentaDTO;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Venta no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
         [HttpPost]
         public async Task<ActionResult> AgregarVenta(VentaDTO VentaDTO)
         {

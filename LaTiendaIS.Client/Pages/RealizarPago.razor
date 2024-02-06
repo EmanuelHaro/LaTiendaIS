@@ -74,7 +74,7 @@
                         <MudItem xs="4" />
                         <MudItem xs="4">
                              <MudTextField Mask="@(new PatternMask("000"))" Label="CVV"
-                                   @bind-Value="cvc" Variant="@Variant.Text" />
+                                @bind-Value="cvv" Variant="@Variant.Text" />
                         </MudItem>
 
                          <MudItem xs="12">
@@ -82,7 +82,7 @@
                             DNI: <b>@dniTitular</b><br />
                             Numero de Tarjeta: <b>@creditCard</b><br />
                             Fecha de Venc: <b>@expiration</b><br />
-                            CVC: <b>@cvc</b>                 
+                            CVV: <b>@cvv</b>                 
                         </MudItem>
                     </MudGrid>
 
@@ -94,40 +94,43 @@
     }
 </div>
 
-<!-- La original
-<div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudSelect T="string" Label="Elegir medio de pago" AnchorOrigin="Origin.BottomCenter">
-        <MudSelectItem Value="@("Efectivo")" />
-        <MudSelectItem Value="@("Con Tarjeta")" />
-    </MudSelect>
-</div>
--->
-
-<!-- Boton Cancelar
-<div class="d-flex" style="max-width: 300px; margin: 20px;">
-    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
-</div>
--->
 
 
 @code {
-    // Importa el NavigationManager
-    [Inject] NavigationManager NavigationManager { get; set; }
     //Tarjeta
     private string nombreTitular;
     private string dniTitular;
     private string creditCard;
     private string expiration;
-    private string cvc;
+    private string cvv;
+
     //Medios de PAgo
     private string medioDePago = "";
-    private decimal totalAPagar = 100.00m; // Ajusta según tus necesidades
-    private decimal montoRecibido = 0.00m;
-   // private string cvc = "";
+    private double totalAPagar; // Cargado en OnInitializedAsync
+    private double montoRecibido;
 
     public VentaDTO venta1;
 
-    private decimal calcularVuelto()
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await _ventaServicio.ObtenerUltimaVenta();
+            if (response != null)
+            {
+                venta1 = response;
+                Snackbar.Add("Ultima venta cargada", Severity.Success);
+                totalAPagar = venta1.Total;
+            }
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add("Ultima venta no cargada", Severity.Error);
+        }
+
+    }
+
+    private double calcularVuelto()
     {
         return montoRecibido - totalAPagar;
     }
@@ -135,7 +138,7 @@
     // Método para manejar el clic y redirigir a la página "ListarArticulos"
     private void IrAListarArticulos()
     {
-        NavigationManager.NavigateTo("/listadoArticulos"); // Ajusta la ruta según la estructura de tu aplicación
+        _navManager.NavigateTo("/listadoArticulos"); // Ajusta la ruta según la estructura de tu aplicación
     }
 
     private async void Pagar()

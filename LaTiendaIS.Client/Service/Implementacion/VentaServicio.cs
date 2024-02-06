@@ -32,6 +32,14 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(result.Mensaje);
         }
+        public async Task<VentaDTO> ObtenerUltimaVenta()
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<VentaDTO>>("api/Venta/Ultima");
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
 
         public async Task<int> AgregarVenta(VentaDTO Venta)
         {
@@ -79,9 +87,6 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-
-
-
 
     }
 }
