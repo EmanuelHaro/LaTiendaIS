@@ -19,6 +19,8 @@
 @using System.Net.Http.Json
 
 @using MudBlazor
+@using System.Text.Json;
+@using System.Text;
 @inject ISnackbar Snackbar
 @inject NavigationManager _navManager
 
@@ -50,7 +52,7 @@
         </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Pagar()" style="margin-left: 30px;">Pagar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Autorizar()" style="margin-left: 30px;">Pagar</MudButton>
         </div>
     }
     else if (medioDePago == "Con Tarjeta")
@@ -89,7 +91,7 @@
         </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IrAListarArticulos" style="margin-left: 30px;">Autorizar Pago</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Autorizar" style="margin-left: 30px;">Autorizar Pago</MudButton>
         </div>       
     }
 </div>
@@ -110,6 +112,8 @@
     private double montoRecibido;
 
     public VentaDTO venta1;
+
+    private readonly HttpClient _httpClient = new HttpClient();
 
     protected override async Task OnInitializedAsync()
     {
@@ -141,13 +145,125 @@
         _navManager.NavigateTo("/listadoArticulos"); // Ajusta la ruta según la estructura de tu aplicación
     }
 
-    private async void Pagar()
+
+    private async void Autorizar()
     {
+        if (medioDePago == "Con Tarjeta")
+        {
+            var token = await SolicitarTokenPago();
 
-        var response = await _ventaServicio.ModificarVenta(venta1.IdVenta, venta1);
+            if (!string.IsNullOrEmpty(token))
+            {
+                var pagoExitoso = await ConfirmarPago(token);
 
-
-        _navManager.NavigateTo("/realizarpago");
-        Snackbar.Add("Pagó", Severity.Success);
+                if (pagoExitoso)
+                {
+                    Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                    // Aquí puedes realizar cualquier acción adicional después de que el pago se haya autorizado
+                }
+                else
+                {
+                    Snackbar.Add("Error al confirmar el pago", Severity.Error);
+                }
+            }
+            else
+            {
+                Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
+            }
+        }
     }
+ 
+
+    public async Task<string> SolicitarTokenPago()
+    {
+        // Crear la solicitud con los datos necesarios
+        var request = new TokenRequest
+            {
+                card_number = creditCard,
+                card_expiration_month = expiration.Substring(0, 2),
+                card_expiration_year = expiration.Substring(3),
+                security_code = cvv,
+                card_holder_name = nombreTitular,
+                card_holder_identification = new CardHolderIdentification
+                {
+                    type = "dni",
+                    number = dniTitular
+                }
+            };
+
+        // Convertir la solicitud a JSON
+        var jsonRequest = JsonSerializer.Serialize(request);
+
+        // Configurar la solicitud HTTP
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/tokens");
+        httpRequest.Content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+        // Agregar la clave API al encabezado
+        httpRequest.Headers.Add("apikey", "b192e4cb99564b84bf5db5550112adea");
+
+        // Enviar la solicitud HTTP
+        var response = await _httpClient.SendAsync(httpRequest);
+
+        // Verificar si la solicitud fue exitosa
+        if (response.IsSuccessStatusCode)
+        {
+            // Leer y deserializar la respuesta JSON
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(jsonResponse);
+
+            // Retornar el ID del token
+            return tokenResponse.id;
+        }
+        else
+        {
+            // Manejar errores de solicitud
+            Console.WriteLine($"Error en la solicitud: {response.StatusCode}");
+            return null;
+        }
+    }
+
+
+    private async Task<bool> ConfirmarPago(string token)
+    {
+        var apiKey = "566f2c897b5e4bfaa0ec2452f5d67f13"; // Clave API proporcionada por el proveedor
+
+        // Estructura del cuerpo de la solicitud
+        var request = new
+        {
+            site_transaction_id = Guid.NewGuid().ToString(), // Genera un ID de transacción único
+            payment_method_id = 1,
+            token = token,
+            bin = creditCard.Substring(0, 6),
+            amount = totalAPagar,
+            currency = "ARS",
+            installments = 1,
+            description = "Pago de venta",
+            payment_type = "single",
+            establishment_name = "La Tienda IS"
+        };
+
+        // Configura la solicitud HTTP
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/payments");
+        httpRequest.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Agrega la clave API al encabezado
+        httpRequest.Headers.Add("apikey", apiKey);
+
+        // Enviar la solicitud HTTP
+        var response = await httpClient.SendAsync(httpRequest);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Manejar la respuesta del pago
+            return true;
+        }
+        else
+        {
+            // Manejar el error de confirmación de pago
+            return false;
+        }
+    }
+
+
+
 }
