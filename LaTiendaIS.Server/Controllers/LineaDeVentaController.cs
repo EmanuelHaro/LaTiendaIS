@@ -193,6 +193,44 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Ultima")]
+        public async Task<ActionResult> ObtenerUltimaVenta()
+        {
+            var responseApi = new ResponseAPI<LineaDeVentaDTO>();
+            var LineaDeVentaDTO = new LineaDeVentaDTO();
+
+            try
+            {
+                var ultimaLineaDeVenta = await _dbContext.LineaDeVenta
+            .OrderByDescending(l => l.IdLineaDeVenta)
+            .FirstOrDefaultAsync();
+
+
+                if (ultimaLineaDeVenta != null)
+                {
+
+                    LineaDeVentaDTO = _mapper.Map<LineaDeVentaDTO>(ultimaLineaDeVenta);
+
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = LineaDeVentaDTO;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Venta no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
     }
 }
 

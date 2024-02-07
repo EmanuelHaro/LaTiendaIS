@@ -33,6 +33,15 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
+        public async Task<LineaDeVentaDTO> ObtenerUltimaLineaDeVenta()
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVentaDTO>>("api/LineaDeVenta/Ultima");
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
+
         public async Task<int> AgregarLineaDeVenta(LineaDeVentaDTO LineaDeVenta)
         {
             var result = await _httpClient.PostAsJsonAsync("api/LineaDeVenta", LineaDeVenta);
@@ -79,9 +88,6 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-
-
-
 
     }
 }

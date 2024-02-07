@@ -6,6 +6,7 @@ namespace LaTiendaIS.Client.Service.Contrato
     {
         Task<List<LineaDeVentaDTO>> ListarLineaDeVentas();
         Task<LineaDeVentaDTO> ObtenerLineaDeVenta(int idLineaDeVenta);
+        Task<LineaDeVentaDTO> ObtenerUltimaLineaDeVenta();
         Task<int> AgregarLineaDeVenta(LineaDeVentaDTO LineaDeVenta);
         Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVentaDTO LineaDeVenta);
         Task<bool> EliminarLineaDeVenta(int idLineaDeVenta);

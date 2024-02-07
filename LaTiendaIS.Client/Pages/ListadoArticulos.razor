@@ -1,5 +1,4 @@
-﻿@page "/"
-@page "/listadoArticulos"
+﻿@page "/listadoArticulos"
 
 @* @using LaTiendaIS.Client.Services.Contrato; *@
 @* @inject IEmpleadoService _empleadoServicio *@
@@ -133,7 +132,7 @@
     private bool canCancelEdit = false;
     private bool blockSwitch = false;
     private string searchString = "";
-    private int TextCodigo { get; set; }
+    private int TextCodigo = 1000;
     private double? Total = 0;
     private string talleElegido = "";
     private string colorElegido = "";
@@ -143,6 +142,7 @@
     private List<ArticuloDTO> ArticuloDTOs = new List<ArticuloDTO>();
     private List<ArticuloDTO> ListaArticulosCodigos = new List<ArticuloDTO>();
     public VentaDTO venta1;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -198,7 +198,7 @@
                     lineaDeVenta.IdArticulo = articulo.IdCodigo;
                     lineaDeVenta.Cantidad = 1;
                     lineaDeVenta.IdVenta = venta1.IdVenta;
-                    
+
                     var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
                     if (response!= null)
                     {
@@ -260,34 +260,60 @@
 
         venta1.Total -= articulo.PrecioDeVenta;
 
+        LineaDeVentaDTO ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
+        
+
+        var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);
+        if (response != null)
+        {
+            Snackbar.Add("Línea de venta eliminada", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Línea de venta no eliminada", Severity.Error);
+        }
+        
+
         StateHasChanged();
-        Snackbar.Add("Articulo Eliminado", Severity.Warning);
+        Snackbar.Add("Artículo eliminado", Severity.Warning);
     }
 
     private async void Pagar()
     {
 
-        var response = await _ventaServicio.ModificarVenta(venta1.IdVenta,venta1);
+        if(venta1.Total!=0)
+        {
+            var response = await _ventaServicio.ModificarVenta(venta1.IdVenta, venta1);
+            _navManager.NavigateTo("/realizarpago");
+            Snackbar.Add("Pagó", Severity.Success);
+        }
+
+        else
+        {
+            Snackbar.Add("Agregue productos a la venta", Severity.Error);
+        }
 
 
 
-        _navManager.NavigateTo("/realizarpago");
-        Snackbar.Add("Pagó", Severity.Success);
     }
 
 
-    private void CancelarVenta()
+    private async void CancelarVenta()
     {
-        ArticuloDTOs.Clear();
-        Total = 0;
+        
+
+        var response = await _ventaServicio.EliminarVenta(venta1.IdVenta);
+        if (response != null)
+        {
+            ArticuloDTOs.Clear();
+            Total = 0;
+            _navManager.NavigateTo("/");
+        }
     }
-    //Para redigir a la pagina de pagos
-    // Importa el NavigationManager
-    [Inject] NavigationManager NavigationManager { get; set; }
 
     // Método para manejar el clic y redirigir a la página deseada
     private void IrAPagina()
     {
-        NavigationManager.NavigateTo("/realizarpago");
+        _navManager.NavigateTo("/realizarpago");
     }
 }

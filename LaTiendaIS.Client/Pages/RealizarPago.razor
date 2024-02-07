@@ -51,7 +51,7 @@
             <p>Vuelto: @calcularVuelto()</p>
         </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Autorizar()" style="margin-left: 30px;">Pagar</MudButton>
         </div>
     }
@@ -90,7 +90,7 @@
 
         </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="IrAListarArticulos">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Autorizar" style="margin-left: 30px;">Autorizar Pago</MudButton>
         </div>       
     }
@@ -123,7 +123,6 @@
             if (response != null)
             {
                 venta1 = response;
-                Snackbar.Add("Ultima venta cargada", Severity.Success);
                 totalAPagar = venta1.Total;
             }
         }
@@ -139,10 +138,29 @@
         return montoRecibido - totalAPagar;
     }
 
-    // Método para manejar el clic y redirigir a la página "ListarArticulos"
-    private void IrAListarArticulos()
+
+    private async void Cancelar()
     {
-        _navManager.NavigateTo("/listadoArticulos"); // Ajusta la ruta según la estructura de tu aplicación
+        var listaLDV = await _lineadeventaServicio.ListarLineaDeVentas();
+        foreach (LineaDeVentaDTO ldv in listaLDV)
+        {
+            if (ldv.IdVenta == venta1.IdVenta)
+            {
+                await _lineadeventaServicio.EliminarLineaDeVenta(ldv.IdLineaDeVenta);
+            }
+        }
+
+        var response = await _ventaServicio.EliminarVenta(venta1.IdVenta);
+        if (response != null)
+        {
+            _navManager.NavigateTo("/"); 
+        }
+        else
+        {
+            Snackbar.Add("Error al eliminar", Severity.Error);
+        }
+
+        
     }
 
 
@@ -227,20 +245,23 @@
     {
         var apiKey = "566f2c897b5e4bfaa0ec2452f5d67f13"; // Clave API proporcionada por el proveedor
 
-        // Estructura del cuerpo de la solicitud
-        var request = new
-        {
-            site_transaction_id = Guid.NewGuid().ToString(), // Genera un ID de transacción único
-            payment_method_id = 1,
-            token = token,
-            bin = creditCard.Substring(0, 6),
-            amount = totalAPagar,
-            currency = "ARS",
-            installments = 1,
-            description = "Pago de venta",
-            payment_type = "single",
-            establishment_name = "La Tienda IS"
-        };
+        string creditCardWithoutSpaces = creditCard.Replace(" ", "");
+        string bin = creditCardWithoutSpaces.Substring(0, 6);
+
+        var request = new PaymentRequest
+            {
+                SiteTransactionId = "IDNUESTRO", // Genera un ID de transacción único
+                PaymentMethodId = 1,
+                Token = token,
+                Bin = bin,
+                Amount = 1000,
+                Currency = "ARS",
+                Installments = 1,
+                Description = "Pago de venta",
+                PaymentType = "single",
+                EstablishmentName = "La Tienda IS",
+            };
+
 
         // Configura la solicitud HTTP
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/payments");
