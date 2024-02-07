@@ -240,7 +240,7 @@
         }
     }
 
-
+    //4509 9535 6623 3704
     private async Task<bool> ConfirmarPago(string token)
     {
         var apiKey = "566f2c897b5e4bfaa0ec2452f5d67f13"; // Clave API proporcionada por el proveedor
@@ -248,9 +248,10 @@
         string creditCardWithoutSpaces = creditCard.Replace(" ", "");
         string bin = creditCardWithoutSpaces.Substring(0, 6);
 
-        var request = new PaymentRequest
+        // Construir el cuerpo de la solicitud en formato JSON
+        var requestBody = JsonSerializer.Serialize(new PaymentRequest
             {
-                SiteTransactionId = "IDNUESTRO", // Genera un ID de transacción único
+                SiteTransactionId = Guid.NewGuid().ToString(), // Genera un ID de transacción único
                 PaymentMethodId = 1,
                 Token = token,
                 Bin = bin,
@@ -260,14 +261,13 @@
                 Description = "Pago de venta",
                 PaymentType = "single",
                 EstablishmentName = "La Tienda IS",
-            };
+            });
 
-
-        // Configura la solicitud HTTP
+        // Configurar la solicitud HTTP
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/payments");
-        httpRequest.Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+        httpRequest.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
 
-        // Agrega la clave API al encabezado
+        // Agregar la clave API al encabezado
         httpRequest.Headers.Add("apikey", apiKey);
 
         // Enviar la solicitud HTTP
@@ -284,6 +284,7 @@
             return false;
         }
     }
+
 
 
 
