@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Utilidades", "La
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Client", "LaTiendaIS.Client\LaTiendaIS.Client.csproj", "{650E6214-FA68-43CC-AB07-2713302F8830}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Tests", "LaTiendaIS.Tests\LaTiendaIS.Tests.csproj", "{0C61A369-3169-4DB0-816D-352C7B846EFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Tests", "LaTiendaIS.Tests\LaTiendaIS.Tests.csproj", "{0C61A369-3169-4DB0-816D-352C7B846EFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIs.SpecFlow", "LaTiendaIs.SpecFlow\LaTiendaIs.SpecFlow.csproj", "{17F6244C-82E8-41AE-B491-0DF1044E3F62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{0C61A369-3169-4DB0-816D-352C7B846EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C61A369-3169-4DB0-816D-352C7B846EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C61A369-3169-4DB0-816D-352C7B846EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
