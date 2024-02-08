@@ -197,15 +197,15 @@
         // Crear la solicitud con los datos necesarios
         var request = new TokenRequest
             {
-                card_number = creditCard,
-                card_expiration_month = expiration.Substring(0, 2),
-                card_expiration_year = expiration.Substring(3),
-                security_code = cvv,
-                card_holder_name = nombreTitular,
+                card_number = "4507990000004905",
+                card_expiration_month = "08",
+                card_expiration_year = "24",
+                security_code = "123",
+                card_holder_name = "John Doe",
                 card_holder_identification = new CardHolderIdentification
                 {
                     type = "dni",
-                    number = dniTitular
+                    number = "25123456"
                 }
             };
 
@@ -245,26 +245,35 @@
     {
         var apiKey = "566f2c897b5e4bfaa0ec2452f5d67f13"; // Clave API proporcionada por el proveedor
 
-        string creditCardWithoutSpaces = creditCard.Replace(" ", "");
-        string bin = creditCardWithoutSpaces.Substring(0, 6);
+        // string creditCardWithoutSpaces = creditCard.Replace(" ", "");
+        // string bin = creditCardWithoutSpaces.Substring(0, 6);
 
         // Construir el cuerpo de la solicitud en formato JSON
         var requestBody = JsonSerializer.Serialize(new PaymentRequest
             {
-                SiteTransactionId = Guid.NewGuid().ToString(), // Genera un ID de transacción único
-                PaymentMethodId = 1,
-                Token = token,
-                Bin = bin,
-                Amount = 1000,
-                Currency = "ARS",
-                Installments = 1,
-                Description = "Pago de venta",
-                PaymentType = "single",
-                EstablishmentName = "La Tienda IS",
+                site_transaction_id = "06", // Genera un ID de transacción único
+                payment_method_id = 1,
+                token = token,
+                bin = "450799",
+                amount = 1000,
+                currency = "ARS",
+                installments = 1,
+                description = "",
+                payment_type = "single",
+                establishment_name = "single",
+                sub_payments = new List<SubPayment> // Usando una lista en lugar de un solo objeto SubPayment
+                {
+                    new SubPayment
+                    {
+                        site_id = "",
+                        amount = 1000,
+                        installments = null
+                    }
+                }
             });
 
         // Configurar la solicitud HTTP
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/payments");
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developers.decidir.com/api/v2/payments?");
         httpRequest.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
 
         // Agregar la clave API al encabezado
