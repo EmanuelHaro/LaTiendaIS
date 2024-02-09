@@ -1,0 +1,105 @@
+﻿@page "/comprobante"
+
+@using LaTiendaIS.Shared;
+@using LaTiendaIS.Client.Service.Contrato;
+@inject IArticuloServicio _articuloServicio
+@inject IVentaServicio _ventaServicio
+@inject ILineaDeVentaServicio _lineaDeVentaServicio
+
+@using MudBlazor
+@inject ISnackbar Snackbar
+@inject NavigationManager _navManager
+
+<h3>Emisión de Comprobante</h3>
+
+<MudContainer>
+    <MudPaper Elevation="3" Class="p-3">
+        <h4>Detalles de la Venta</h4>
+
+        <MudTable Items="@lineasDeVentaDTO" Dense="true">
+            <HeaderContent>
+                <MudTh>Descripción</MudTh>
+                <MudTh>Precio de Venta</MudTh>
+                <MudTh>Cantidad</MudTh>
+                <MudTh>Total</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @{
+                    var linea = context as LineaDeVentaDTO;
+                }
+                @if (linea != null)
+                {
+                    <MudTd>@linea.Articulo.Descripcion</MudTd>
+                    <MudTd>@linea.Articulo.PrecioDeVenta</MudTd>
+                    <MudTd>@linea.Cantidad</MudTd>
+                    <MudTd>@(linea.Cantidad * linea.Articulo.PrecioDeVenta)</MudTd>
+                }
+                
+            </RowTemplate>
+        </MudTable>
+
+        <MudDivider />
+        @if (totalAPagar!=null)
+        {
+            <div class="d-flex" style="max-width: 200px; margin: 20px; margin-left: 80%">
+                <MudTextField @bind-Value="totalAPagar" Label="Total" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="true" Style="width: 100%" Step="0.01" Format="N2" />
+            </div>
+        }
+        
+    </MudPaper>
+</MudContainer>
+
+<div class="d-flex" style="max-width: 300px; margin: 20px;">
+    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => VolverAInicio()">Finalizar</MudButton>
+</div>
+
+    @code {
+    private List<LineaDeVentaDTO> lineasDeVentaDTO = new List<LineaDeVentaDTO>();
+
+    private VentaDTO venta1;
+    private double totalAPagar; // Cargado en OnInitializedAsync
+
+    private readonly HttpClient _httpClient = new HttpClient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await _ventaServicio.ObtenerUltimaVenta();
+            if (response != null)
+            {
+                venta1 = response;
+                totalAPagar = venta1.Total;
+            }
+
+            var lineasdeventas = await _lineaDeVentaServicio.ListarLineaDeVentas();
+            if (lineasdeventas!=null)
+            {
+                foreach (var ldv in lineasdeventas)
+            {
+                if (ldv.IdVenta == venta1.IdVenta)
+                {
+                   // ldv.Venta = venta1;
+                    lineasDeVentaDTO.Add(ldv);
+                }
+            }
+            }
+            
+        }
+        catch (NullReferenceException ex)
+        {
+            // Maneja la excepción de referencia nula aquí
+            Snackbar.Add("Error: Se ha encontrado una referencia nula.", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            // Maneja cualquier otra excepción aquí
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void VolverAInicio()
+    {
+        _navManager.NavigateTo("/");
+    }
+}

@@ -43,16 +43,28 @@
     }
     else if (medioDePago == "Efectivo")
     {
+        
         <div>
             <p>Total a pagar: @totalAPagar</p>
             <br />
             <p>Monto Recibido: <input type="number" @bind="montoRecibido" /></p>
             <br />
-            <p>Vuelto: @calcularVuelto()</p>
+            <p>
+                @if (montoRecibido >= totalAPagar)
+                {
+                    Vuelto = calcularVuelto();
+                
+                }
+                else
+                {
+                    Vuelto = "Cantidad insuficiente";
+                }
+                Vuelto: @Vuelto
+            </p>
         </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Autorizar()" style="margin-left: 30px;">Pagar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Pagar()" style="margin-left: 30px;">Pagar</MudButton>
         </div>
     }
     else if (medioDePago == "Con Tarjeta")
@@ -106,10 +118,12 @@
     private string expiration;
     private string cvv;
 
-    //Medios de PAgo
+    //Medios de Pago
     private string medioDePago = "";
     private double totalAPagar; // Cargado en OnInitializedAsync
     private double montoRecibido;
+
+    private string Vuelto;
 
     public VentaDTO venta1;
 
@@ -133,11 +147,10 @@
 
     }
 
-    private double calcularVuelto()
+    private string calcularVuelto()
     {
-        return montoRecibido - totalAPagar;
+        return (montoRecibido - totalAPagar).ToString();
     }
-
 
     private async void Cancelar()
     {
@@ -160,37 +173,35 @@
             Snackbar.Add("Error al eliminar", Severity.Error);
         }
 
-        
-    }
 
+    }
 
     private async void Autorizar()
     {
-        if (medioDePago == "Con Tarjeta")
+
+        var token = await SolicitarTokenPago();
+
+        if (!string.IsNullOrEmpty(token))
         {
-            var token = await SolicitarTokenPago();
+            var pagoExitoso = await ConfirmarPago(token);
 
-            if (!string.IsNullOrEmpty(token))
+            if (pagoExitoso)
             {
-                var pagoExitoso = await ConfirmarPago(token);
-
-                if (pagoExitoso)
-                {
-                    Snackbar.Add("Pago autorizado correctamente", Severity.Success);
-                    // Aquí puedes realizar cualquier acción adicional después de que el pago se haya autorizado
-                }
-                else
-                {
-                    Snackbar.Add("Error al confirmar el pago", Severity.Error);
-                }
+                Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                _navManager.NavigateTo("/comprobante");
+                // Aquí puedes realizar cualquier acción adicional después de que el pago se haya autorizado
             }
             else
             {
-                Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
+                Snackbar.Add("Error al confirmar el pago", Severity.Error);
             }
         }
+        else
+        {
+            Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
+        }
+        
     }
- 
 
     public async Task<string> SolicitarTokenPago()
     {
@@ -240,7 +251,6 @@
         }
     }
 
-    //4509 9535 6623 3704
     private async Task<bool> ConfirmarPago(string token)
     {
         var apiKey = "566f2c897b5e4bfaa0ec2452f5d67f13"; // Clave API proporcionada por el proveedor
@@ -294,7 +304,19 @@
         }
     }
 
+    private async void Pagar()
+    {
+        if (Vuelto!="Cantidad insuficiente")
+        {
+            _navManager.NavigateTo("/comprobante");
+            Snackbar.Add("Pagó", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Monto recibido insufiente", Severity.Error);
+        }
 
+    }
 
 
 }
