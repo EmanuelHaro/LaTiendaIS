@@ -13,10 +13,10 @@ namespace LaTiendaIS.Shared
         public int IdCliente { get; set; }
         public string CUIT { get; set; }
         public string Nombre { get; set; }
-        public string Domicilio { get; set; }
+        public string? Domicilio { get; set; }
 
 
         public int IdCondicionTributaria { get; set; }
-        public virtual CondicionTributariaDTO CondicionTributaria { get; set; }
+        public virtual CondicionTributariaDTO? CondicionTributaria { get; set; }
     }
 }

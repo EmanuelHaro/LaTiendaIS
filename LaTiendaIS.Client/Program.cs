@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://
 builder.Services.AddScoped<IArticuloServicio, ArticuloServicio>();
 builder.Services.AddScoped<IVentaServicio, VentaServicio>();
 builder.Services.AddScoped<ILineaDeVentaServicio, LineaDeVentaServicio>();
+builder.Services.AddScoped<IClienteServicio, ClienteServicio>();
 
 // Añado MudBlazor
 builder.Services.AddMudServices();

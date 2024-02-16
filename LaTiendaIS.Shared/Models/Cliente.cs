@@ -14,11 +14,11 @@ namespace LaTiendaIS.Shared.Models
         public int IdCliente { get; set; }
         public string CUIT { get; set; }
         public string Nombre { get; set; }
-        public string Domicilio { get; set; }
+        public string? Domicilio { get; set; }
 
 
         public int IdCondicionTributaria { get; set; }
         [ForeignKey("IdCondicionTributaria")]
-        public virtual CondicionTributaria CondicionTributaria { get; set; }
+        public virtual CondicionTributaria? CondicionTributaria { get; set; }
     }
 }

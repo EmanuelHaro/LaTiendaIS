@@ -13,6 +13,7 @@
 @using LaTiendaIS.Client.Service.Contrato;
 @inject IArticuloServicio _articuloServicio
 @inject IVentaServicio _ventaServicio
+@inject IClienteServicio _clienteServicio
 @inject ILineaDeVentaServicio _lineadeventaServicio
 
 
@@ -43,7 +44,6 @@
     }
     else if (medioDePago == "Efectivo")
     {
-        
         <div>
             <p>Total a pagar: @totalAPagar</p>
             <br />
@@ -62,9 +62,38 @@
                 Vuelto: @Vuelto
             </p>
         </div>
+        <div>
+            @if (totalAPagar >= 10000)
+            {
+                <MudGrid Class="justify-space-between" Style="max-width: 300px;">
+                    <MudItem xs="12">
+                        <MudTextField Label="Nombre del Titular" @bind-Value="nombreTitular" Variant="@Variant.Text" MaxLength="40" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
+                        <span>-@dniTitular-</span>
+                        <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <!-- Autocompletar o seleccionar la Condición Tributaria -->
+                        <MudAutocomplete T="string" Label="Seleccione Condicion Tributaria" @bind-Value="condTributaria" SearchFunc="@Search1" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        Nombre del Titular: <b>@nombreTitular</b><br />
+                        DNI: <b>@dniTitular</b><br />
+                        CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
+                        Condicion Tributaria: <b>@condTributaria</b><br />
+                    </MudItem>
+                </MudGrid>
+
+            }
+        </div>
         <div class="d-flex" style="max-width: 300px; margin: 20px;">
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Pagar()" style="margin-left: 30px;">Pagar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => PagarConEfectivo()" style="margin-left: 30px;">Pagar</MudButton>
         </div>
     }
     else if (medioDePago == "Con Tarjeta")
@@ -77,6 +106,11 @@
                         <MudItem xs="6">
                     <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
                         </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
+                    <span>-@dniTitular-</span>
+                    <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
+                </MudItem>
                         <MudItem xs="12">
                             <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Numero de Tarjeta"
                                           @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
@@ -91,9 +125,12 @@
                                 @bind-Value="cvv" Variant="@Variant.Text" />
                         </MudItem>
 
+                 
+
                          <MudItem xs="12">
                             Nombre del Titular: <b>@nombreTitular</b><br />
                             DNI: <b>@dniTitular</b><br />
+                     CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
                             Numero de Tarjeta: <b>@creditCard</b><br />
                             Fecha de Venc: <b>@expiration</b><br />
                             CVV: <b>@cvv</b>                 
@@ -118,10 +155,18 @@
     private string expiration;
     private string cvv;
 
+
+    string cuitPrefix = "23"; // Valor inicial de los dos primeros dígitos del CUIT
+    string cuitLastDigit = "9"; // Valor inicial del último dígito del CUIT
+
     //Medios de Pago
     private string medioDePago = "";
     private double totalAPagar; // Cargado en OnInitializedAsync
     private double montoRecibido;
+
+    private string condTributaria;
+    private string[] states =
+    {"Responsable Inscripto","Monotributista","Exento","No Responsable","Consumidor Final" };
 
     private string Vuelto;
 
@@ -137,7 +182,7 @@
             if (response != null)
             {
                 venta1 = response;
-                totalAPagar = venta1.Total;
+                totalAPagar = 11000;
             }
         }
         catch(Exception ex)
@@ -200,7 +245,7 @@
         {
             Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
         }
-        
+
     }
 
     public async Task<string> SolicitarTokenPago()
@@ -308,14 +353,78 @@
     {
         if (Vuelto!="Cantidad insuficiente")
         {
-            _navManager.NavigateTo("/comprobante");
-            Snackbar.Add("Pagó", Severity.Success);
+            //pido datos del cliente y realizo factura dependiendo de condicion tributaria
+            ClienteDTO cliente = new ClienteDTO();
+            cliente.Nombre = nombreTitular;
+            cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
+            cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
+
+            //servicio cliente -> agregar cliente
+            var response = _clienteServicio.AgregarCliente(cliente);
+
+            if (response!=null)
+            {
+                _navManager.NavigateTo("/comprobante");
+                Snackbar.Add("Pagó", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+            }
         }
         else
         {
             Snackbar.Add("Monto recibido insufiente", Severity.Error);
         }
 
+    }
+
+
+    private async void PagarConEfectivo()
+    {
+
+        if (Vuelto != "Cantidad insuficiente")
+        {
+            if (totalAPagar>10000)
+            {
+                //pido datos del cliente y realizo factura dependiendo de condicion tributaria
+                ClienteDTO cliente = new ClienteDTO();
+                cliente.Nombre = nombreTitular;
+                cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
+                cliente.IdCondicionTributaria = 1; //TODO:tenemos que buscar el id 
+
+
+                var response = _clienteServicio.AgregarCliente(cliente);
+
+                if (response != null)
+                {
+                    _navManager.NavigateTo("/comprobante");
+                    Snackbar.Add("Pagó", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                }
+
+            }
+        }
+        else
+        {
+            Snackbar.Add("Monto recibido insufiente", Severity.Error);
+        }
+
+    }
+
+
+    private async Task<IEnumerable<string>> Search1(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return states;
+        return states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
 
