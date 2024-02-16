@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LaTiendaIS.Shared.Migrations
 {
     [DbContext(typeof(DBLaTiendaContext))]
-    [Migration("20240129211445_ModificoPago")]
-    partial class ModificoPago
+    [Migration("20240216184106_InitDB")]
+    partial class InitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace LaTiendaIS.Shared.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCodigo"));
+
+                    b.Property<int>("CodigoTienda")
+                        .HasColumnType("int");
 
                     b.Property<double>("Costo")
                         .HasColumnType("float");
@@ -258,6 +261,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<int>("IdSucursal")
                         .HasColumnType("int");
 
+                    b.Property<int>("NumeroPtoVenta")
+                        .HasColumnType("int");
+
                     b.HasKey("IdPuntoDeVenta");
 
                     b.HasIndex("IdSucursal");
@@ -279,9 +285,14 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<int>("IdArticulo")
                         .HasColumnType("int");
 
+                    b.Property<int>("IdSucursal")
+                        .HasColumnType("int");
+
                     b.HasKey("IdStock");
 
                     b.HasIndex("IdArticulo");
+
+                    b.HasIndex("IdSucursal");
 
                     b.ToTable("Stock");
                 });
@@ -294,10 +305,15 @@ namespace LaTiendaIS.Shared.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSucursal"));
 
+                    b.Property<int>("IdTienda")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdSucursal");
+
+                    b.HasIndex("IdTienda");
 
                     b.ToTable("Sucursal");
                 });
@@ -322,6 +338,34 @@ namespace LaTiendaIS.Shared.Migrations
                     b.HasIndex("IdTipoTalle");
 
                     b.ToTable("Talle");
+                });
+
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.Tienda", b =>
+                {
+                    b.Property<int>("IdTienda")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTienda"));
+
+                    b.Property<string>("CUIT")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Telefono")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("IdTienda");
+
+                    b.ToTable("Tienda");
                 });
 
             modelBuilder.Entity("LaTiendaIS.Shared.Models.TipoDeComprobante", b =>
@@ -481,7 +525,7 @@ namespace LaTiendaIS.Shared.Migrations
                         .IsRequired();
 
                     b.HasOne("LaTiendaIS.Shared.Models.Venta", "Venta")
-                        .WithMany("LineaDeVenta")
+                        .WithMany()
                         .HasForeignKey("IdVenta")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -521,7 +565,26 @@ namespace LaTiendaIS.Shared.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LaTiendaIS.Shared.Models.Sucursal", "Sucursal")
+                        .WithMany()
+                        .HasForeignKey("IdSucursal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Articulo");
+
+                    b.Navigation("Sucursal");
+                });
+
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.Sucursal", b =>
+                {
+                    b.HasOne("LaTiendaIS.Shared.Models.Tienda", "Tienda")
+                        .WithMany()
+                        .HasForeignKey("IdTienda")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tienda");
                 });
 
             modelBuilder.Entity("LaTiendaIS.Shared.Models.Talle", b =>
@@ -533,11 +596,6 @@ namespace LaTiendaIS.Shared.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoTalle");
-                });
-
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Venta", b =>
-                {
-                    b.Navigation("LineaDeVenta");
                 });
 #pragma warning restore 612, 618
         }

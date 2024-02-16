@@ -13,6 +13,8 @@ namespace LaTiendaIS.Shared.Models
         [Key]
         public int IdPuntoDeVenta { get; set; }
 
+        public int NumeroPtoVenta { get; set; }
+
         public int IdSucursal { get; set; } 
         [ForeignKey("IdSucursal")] 
         public virtual Sucursal Sucursal { get; set; }
