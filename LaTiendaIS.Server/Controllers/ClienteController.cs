@@ -91,6 +91,45 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Ultima")]
+        public async Task<ActionResult> ObtenerUltimaCliente()
+        {
+            var responseApi = new ResponseAPI<ClienteDTO>();
+            var ClienteDTO = new ClienteDTO();
+
+            try
+            {
+                var dbCliente = await _dbContext.Cliente
+                .OrderByDescending(c => c.IdCliente)
+                .FirstOrDefaultAsync();
+
+                if (dbCliente != null)
+                {
+
+                    dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
+
+                    ClienteDTO = _mapper.Map<ClienteDTO>(dbCliente);
+
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = ClienteDTO;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Cliente no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
         //[HttpGet]
         //[Route("Lista")]
         //public async Task<IActionResult> ListarClientes()

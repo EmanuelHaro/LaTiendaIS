@@ -34,9 +34,15 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-        
 
-
+        public async Task<ClienteDTO> ObtenerUltimaCliente()
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ClienteDTO>>("api/Cliente/Ultima");
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
 
     }
 }

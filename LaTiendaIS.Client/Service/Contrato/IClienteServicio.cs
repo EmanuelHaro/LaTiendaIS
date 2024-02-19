@@ -6,5 +6,6 @@ namespace LaTiendaIS.Client.Service.Contrato
     {
         Task<ClienteDTO> ObtenerCliente(int idCliente);
         Task<int> AgregarCliente(ClienteDTO Cliente);
+        Task<ClienteDTO> ObtenerUltimaCliente();
     }
 }

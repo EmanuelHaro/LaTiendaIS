@@ -5,6 +5,7 @@
 @inject IArticuloServicio _articuloServicio
 @inject IVentaServicio _ventaServicio
 @inject ILineaDeVentaServicio _lineaDeVentaServicio
+@inject IClienteServicio _clienteServicio
 
 @using MudBlazor
 @inject ISnackbar Snackbar
@@ -15,6 +16,8 @@
 <MudContainer>
     <MudPaper Elevation="3" Class="p-3">
         <h4>Detalles de la Venta</h4>
+        <h4>Sucursal: Barrio Sur</h4>
+        <h4>Punto de Venta: 10</h4>
 
         <MudTable Items="@lineasDeVentaDTO" Dense="true">
             <HeaderContent>
@@ -49,15 +52,53 @@
     </MudPaper>
 </MudContainer>
 
+@if(cliente!=null)
+{
+    <MudGrid Class="justify-space-between" Style="max-width: 300px;">
+        <MudItem xs="12">
+            Nombre del Titular: <b>@cliente.Nombre</b><br />
+            CUIT: <b>@cliente.CUIT</b><br />
+            Condicion Tributaria: <b>@cliente.CondicionTributaria.Descripcion</b><br />
+        </MudItem>
+    </MudGrid>
+}
+
+@* @if(cliente.CondicionTributaria.Descripcion != null)
+{ *@
+@switch (condicionTributariaDescripcion)
+    {
+        case "Responsable Inscripto":
+            <p>Comprobante: Factura A</p>
+            break;
+
+        case "Monotributista":
+            <p>Comprobante: Factura A</p>
+            break;
+
+        default:
+            <p>Comprobante: Factura B</p>
+            break;
+    }
+@* } *@
+
+
+
+
 <div class="d-flex" style="max-width: 300px; margin: 20px;">
     <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => VolverAInicio()">Finalizar</MudButton>
 </div>
 
-    @code {
+@code {
     private List<LineaDeVentaDTO> lineasDeVentaDTO = new List<LineaDeVentaDTO>();
 
     private VentaDTO venta1;
+    private ClienteDTO cliente;
     private double totalAPagar; // Cargado en OnInitializedAsync
+
+    private TipoDeComprobanteDTO tipoDeComprobante;
+
+    private string condicionTributariaDescripcion = " ";
+
 
     private readonly HttpClient _httpClient = new HttpClient();
 
@@ -71,6 +112,20 @@
                 venta1 = response;
                 totalAPagar = venta1.Total;
             }
+
+            if(totalAPagar>=10000)
+            {
+                var responseClient = await _clienteServicio.ObtenerUltimaCliente();
+                if (responseClient!=null)
+                {                   
+                    cliente = responseClient;
+                    //tipoDeComprobante.Descripcion = cliente.CondicionTributaria.Descripcion;
+                    condicionTributariaDescripcion = cliente.CondicionTributaria?.Descripcion ?? " ";
+                }
+            }
+
+
+
 
             var lineasdeventas = await _lineaDeVentaServicio.ListarLineaDeVentas();
             if (lineasdeventas!=null)

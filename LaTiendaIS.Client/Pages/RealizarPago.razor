@@ -106,11 +106,11 @@
                         <MudItem xs="6">
                     <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
                         </MudItem>
-                <MudItem xs="12">
-                    <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
-                    <span>-@dniTitular-</span>
-                    <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
-                </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
+                        <span>-@dniTitular-</span>
+                        <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
+                    </MudItem>
                         <MudItem xs="12">
                             <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Numero de Tarjeta"
                                           @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
@@ -130,7 +130,7 @@
                          <MudItem xs="12">
                             Nombre del Titular: <b>@nombreTitular</b><br />
                             DNI: <b>@dniTitular</b><br />
-                     CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
+                            CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
                             Numero de Tarjeta: <b>@creditCard</b><br />
                             Fecha de Venc: <b>@expiration</b><br />
                             CVV: <b>@cvv</b>                 
@@ -166,7 +166,7 @@
 
     private string condTributaria;
     private string[] states =
-    {"Responsable Inscripto","Monotributista","Exento","No Responsable","Consumidor Final" };
+    {"Responsable Inscripto","Monotributo","Exento","No Responsable","Consumidor Final" };
 
     private string Vuelto;
 
@@ -182,7 +182,7 @@
             if (response != null)
             {
                 venta1 = response;
-                totalAPagar = 11000;
+                totalAPagar = venta1.Total;
             }
         }
         catch(Exception ex)
@@ -232,8 +232,27 @@
 
             if (pagoExitoso)
             {
-                Snackbar.Add("Pago autorizado correctamente", Severity.Success);
-                _navManager.NavigateTo("/comprobante");
+
+
+
+                //pido datos del cliente y realizo factura dependiendo de condicion tributaria
+                ClienteDTO cliente = new ClienteDTO();
+                cliente.Nombre = nombreTitular;
+                cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
+                cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
+
+                //servicio cliente -> agregar cliente
+                var response = _clienteServicio.AgregarCliente(cliente);
+
+                if(response!=null)
+                {
+                    Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                    _navManager.NavigateTo("/comprobante");
+                }
+                else
+                {
+                    Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                }
                 // Aquí puedes realizar cualquier acción adicional después de que el pago se haya autorizado
             }
             else
@@ -406,6 +425,10 @@
                     Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
                 }
 
+            }
+            else
+            {
+                Snackbar.Add("Cliente debe pagar mas de 10000 para recibir factura nominal", Severity.Error);
             }
         }
         else
