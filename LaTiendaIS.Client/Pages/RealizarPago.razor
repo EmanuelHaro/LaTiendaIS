@@ -124,7 +124,10 @@
                              <MudTextField Mask="@(new PatternMask("000"))" Label="CVV"
                                 @bind-Value="cvv" Variant="@Variant.Text" />
                         </MudItem>
-
+                 <MudItem xs="12">
+                     <!-- Autocompletar o seleccionar la Condición Tributaria -->
+                     <MudAutocomplete T="string" Label="Seleccione Condicion Tributaria" @bind-Value="condTributaria" SearchFunc="@Search1" />
+                 </MudItem>
                  
 
                          <MudItem xs="12">
@@ -133,7 +136,8 @@
                             CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
                             Numero de Tarjeta: <b>@creditCard</b><br />
                             Fecha de Venc: <b>@expiration</b><br />
-                            CVV: <b>@cvv</b>                 
+                            CVV: <b>@cvv</b>
+                            Condicion Tributaria: <b>@condTributaria</b><br />
                         </MudItem>
                     </MudGrid>
 
@@ -239,7 +243,7 @@
                 ClienteDTO cliente = new ClienteDTO();
                 cliente.Nombre = nombreTitular;
                 cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-                cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
+                //cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
 
                 //servicio cliente -> agregar cliente
                 var response = _clienteServicio.AgregarCliente(cliente);
@@ -376,7 +380,7 @@
             ClienteDTO cliente = new ClienteDTO();
             cliente.Nombre = nombreTitular;
             cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-            cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
+            cliente.IdCondicionTributaria = 2; //TDO: hay que buscar ID
 
             //servicio cliente -> agregar cliente
             var response = _clienteServicio.AgregarCliente(cliente);

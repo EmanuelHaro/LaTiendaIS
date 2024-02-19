@@ -6,18 +6,19 @@
 @inject IVentaServicio _ventaServicio
 @inject ILineaDeVentaServicio _lineaDeVentaServicio
 @inject IClienteServicio _clienteServicio
+@inject IComprobanteServicio _comprobanteServicio
 
 @using MudBlazor
 @inject ISnackbar Snackbar
 @inject NavigationManager _navManager
 
-<h3>Emisión de Comprobante</h3>
+<h3 >Emisión de Comprobante</h3>
+<h4>Sucursal: Barrio Sur</h4>
+<h4>Punto de Venta: 10</h4>
 
 <MudContainer>
     <MudPaper Elevation="3" Class="p-3">
-        <h4>Detalles de la Venta</h4>
-        <h4>Sucursal: Barrio Sur</h4>
-        <h4>Punto de Venta: 10</h4>
+        
 
         <MudTable Items="@lineasDeVentaDTO" Dense="true">
             <HeaderContent>
@@ -68,15 +69,18 @@
 @switch (condicionTributariaDescripcion)
     {
         case "Responsable Inscripto":
-            <p>Comprobante: Factura A</p>
+        <p>Comprobante: Factura A</p>
+        tipoComprobante = 1;
             break;
 
-        case "Monotributista":
+        case "Monotributo":
             <p>Comprobante: Factura A</p>
+        tipoComprobante = 1;
             break;
 
         default:
             <p>Comprobante: Factura B</p>
+        tipoComprobante = 2;
             break;
     }
 @* } *@
@@ -95,10 +99,11 @@
     private ClienteDTO cliente;
     private double totalAPagar; // Cargado en OnInitializedAsync
 
-    private TipoDeComprobanteDTO tipoDeComprobante;
+    private TipoDeComprobanteDTO tipoDeComprobanteDTO; //factura A o B
+    private CondicionTributariaDTO condicionTributariaDTO; //monotributista, ...
 
     private string condicionTributariaDescripcion = " ";
-
+    private int tipoComprobante = 0;
 
     private readonly HttpClient _httpClient = new HttpClient();
 
@@ -119,8 +124,8 @@
                 if (responseClient!=null)
                 {                   
                     cliente = responseClient;
-                    //tipoDeComprobante.Descripcion = cliente.CondicionTributaria.Descripcion;
                     condicionTributariaDescripcion = cliente.CondicionTributaria?.Descripcion ?? " ";
+
                 }
             }
 
@@ -131,15 +136,15 @@
             if (lineasdeventas!=null)
             {
                 foreach (var ldv in lineasdeventas)
-            {
-                if (ldv.IdVenta == venta1.IdVenta)
                 {
-                   // ldv.Venta = venta1;
-                    lineasDeVentaDTO.Add(ldv);
+                    if (ldv.IdVenta == venta1.IdVenta)
+                    {
+                        // ldv.Venta = venta1;
+                        lineasDeVentaDTO.Add(ldv);
+                    }
                 }
             }
-            }
-            
+
         }
         catch (NullReferenceException ex)
         {
@@ -153,8 +158,31 @@
         }
     }
 
-    private void VolverAInicio()
+    private async void VolverAInicio()
     {
-        _navManager.NavigateTo("/");
+        
+        try
+        {
+            ComprobanteDTO comprobante = new ComprobanteDTO();
+            comprobante.IdVenta = venta1.IdVenta;
+            comprobante.IdTipoDeComprobante = tipoComprobante;
+
+            var response = await _comprobanteServicio.AgregarComprobante(comprobante);
+            if (response != null)
+            {
+                Snackbar.Add("Se genero el comprobante con exito", Severity.Success);
+                _navManager.NavigateTo("/");
+            }
+            else
+            {
+                Snackbar.Add("Error en el comprobante", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        
+
     }
 }

@@ -12,13 +12,10 @@ namespace LaTiendaIS.Shared
     {
         public int IdComprobante { get; set; }
 
-
-
-
         public int IdVenta { get; set; }
-        public virtual VentaDTO Venta { get; set; }
+        public virtual VentaDTO? Venta { get; set; }
 
         public int IdTipoDeComprobante { get; set; }
-        public virtual TipoDeComprobanteDTO TipoDeComprobante { get; set; }
+        public virtual TipoDeComprobanteDTO? TipoDeComprobante { get; set; }
     }
 }
