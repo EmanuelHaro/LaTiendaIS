@@ -12,11 +12,13 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager _navManager
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-    <h3 style="margin-left: 30px; margin-top: 10px; font-weight: bold;">Emisión de Comprobante</h3>
+<div>
+    <h3 class="text-center" style=" margin-top: 10px; font-weight: bold;">Emisión de Comprobante</h3>
 </div>
-<h4 style="margin-left: 30px; margin-top: 10px;">Sucursal: Barrio Sur</h4>
-<h4 style="margin-left: 30px; margin-top: 10px;">Punto de Venta: 10</h4>
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <h4 style="margin-left: 65px; margin-top: 10px;">Sucursal: Barrio Sur</h4>
+    <h4 style="margin-right: 65px; margin-top: 10px;">Punto de Venta: 10</h4>
+</div>
 
 <MudContainer>
     <MudPaper Elevation="3" Class="p-3">
@@ -24,10 +26,10 @@
 
         <MudTable Items="@lineasDeVentaDTO" Dense="true">
             <HeaderContent>
-                <MudTh style="margin-right: 10px;">Descripción</MudTh>
-                <MudTh style="margin-right: 10px;">Precio de Venta</MudTh>
-                <MudTh style="margin-right: 10px;">Cantidad</MudTh>
-                <MudTh>Total</MudTh>
+                <MudTh class="text-bold" style="text-align: center;">Descripción</MudTh>
+                <MudTh class="text-bold" style="text-align: center;">Precio de Venta</MudTh>
+                <MudTh class="text-bold" style="text-align: center;">Cantidad</MudTh>
+                <MudTh class="text-bold">Total</MudTh>
             </HeaderContent>
             <RowTemplate>
                 @{
@@ -35,9 +37,9 @@
                 }
                 @if (linea != null)
                 {
-                    <MudTd style="margin-right: 10px;">@linea.Articulo.Descripcion</MudTd>
-                    <MudTd style="margin-right: 10px;">@linea.Articulo.PrecioDeVenta</MudTd>
-                    <MudTd style="margin-right: 10px;">@linea.Cantidad</MudTd>
+                    <MudTd style="text-align: center;">@linea.Articulo.Descripcion</MudTd>
+                    <MudTd style="text-align: center;">@linea.Articulo.PrecioDeVenta</MudTd>
+                    <MudTd style="text-align: center;">@linea.Cantidad</MudTd>
                     <MudTd>@(linea.Cantidad * linea.Articulo.PrecioDeVenta)</MudTd>
                 }
                 
@@ -57,8 +59,8 @@
 
 @if(cliente!=null)
 {
-    <MudGrid Class="justify-content-center" Style="max-width: 300px;">
-        <MudItem xs="12">
+    <MudGrid Style="max-width: 300px; margin-right: 10px; margin-top: 20px">
+        <MudItem xs="12" Style="margin-left: 65px">
             Nombre del Titular: <b>@cliente.Nombre</b><br />
             CUIT: <b>@cliente.CUIT</b><br />
             Condicion Tributaria: <b>@cliente.CondicionTributaria.Descripcion</b><br />
@@ -69,30 +71,28 @@
 @* @if(cliente.CondicionTributaria.Descripcion != null)
 { *@
 @switch (condicionTributariaDescripcion)
-    {
-        case "Responsable Inscripto":
-        <p>Comprobante: Factura A</p>
+{
+    case "Responsable Inscripto":
+        <p Style="margin-left: 65px">Comprobante: Factura A</p>
         tipoComprobante = 1;
-            break;
+        break;
 
-        case "Monotributo":
-            <p>Comprobante: Factura A</p>
+    case "Monotributo":
+        <p Style="margin-left: 65px">Comprobante: Factura A</p>
         tipoComprobante = 1;
-            break;
+        break;
 
-        default:
-            <p>Comprobante: Factura B</p>
+    default:
+        <p Style="margin-left: 65px">Comprobante: Factura B</p>
         tipoComprobante = 2;
-            break;
-    }
-@* } *@
+        break;
+}
+@* } *@
 
-
-
-
-<div class="d-flex" style="max-width: 300px; margin: 20px;">
+<div class="d-flex" style="max-width: 300px; margin: 30px;">
     <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => VolverAInicio()">Finalizar</MudButton>
 </div>
+
 
 @code {
     private List<LineaDeVentaDTO> lineasDeVentaDTO = new List<LineaDeVentaDTO>();
