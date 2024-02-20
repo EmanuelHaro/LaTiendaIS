@@ -12,9 +12,11 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager _navManager
 
-<h3 >Emisión de Comprobante</h3>
-<h4>Sucursal: Barrio Sur</h4>
-<h4>Punto de Venta: 10</h4>
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <h3 style="margin-left: 30px; margin-top: 10px; font-weight: bold;">Emisión de Comprobante</h3>
+</div>
+<h4 style="margin-left: 30px; margin-top: 10px;">Sucursal: Barrio Sur</h4>
+<h4 style="margin-left: 30px; margin-top: 10px;">Punto de Venta: 10</h4>
 
 <MudContainer>
     <MudPaper Elevation="3" Class="p-3">
@@ -22,9 +24,9 @@
 
         <MudTable Items="@lineasDeVentaDTO" Dense="true">
             <HeaderContent>
-                <MudTh>Descripción</MudTh>
-                <MudTh>Precio de Venta</MudTh>
-                <MudTh>Cantidad</MudTh>
+                <MudTh style="margin-right: 10px;">Descripción</MudTh>
+                <MudTh style="margin-right: 10px;">Precio de Venta</MudTh>
+                <MudTh style="margin-right: 10px;">Cantidad</MudTh>
                 <MudTh>Total</MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -33,9 +35,9 @@
                 }
                 @if (linea != null)
                 {
-                    <MudTd>@linea.Articulo.Descripcion</MudTd>
-                    <MudTd>@linea.Articulo.PrecioDeVenta</MudTd>
-                    <MudTd>@linea.Cantidad</MudTd>
+                    <MudTd style="margin-right: 10px;">@linea.Articulo.Descripcion</MudTd>
+                    <MudTd style="margin-right: 10px;">@linea.Articulo.PrecioDeVenta</MudTd>
+                    <MudTd style="margin-right: 10px;">@linea.Cantidad</MudTd>
                     <MudTd>@(linea.Cantidad * linea.Articulo.PrecioDeVenta)</MudTd>
                 }
                 
@@ -55,7 +57,7 @@
 
 @if(cliente!=null)
 {
-    <MudGrid Class="justify-space-between" Style="max-width: 300px;">
+    <MudGrid Class="justify-content-center" Style="max-width: 300px;">
         <MudItem xs="12">
             Nombre del Titular: <b>@cliente.Nombre</b><br />
             CUIT: <b>@cliente.CUIT</b><br />
