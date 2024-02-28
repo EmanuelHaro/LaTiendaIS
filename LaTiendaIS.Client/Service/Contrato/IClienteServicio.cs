@@ -4,8 +4,8 @@ namespace LaTiendaIS.Client.Service.Contrato
 {
     public interface IClienteServicio
     {
-        Task<ClienteDTO> ObtenerCliente(int idCliente);
-        Task<int> AgregarCliente(ClienteDTO Cliente);
-        Task<ClienteDTO> ObtenerUltimaCliente();
+        Task<Cliente> ObtenerCliente(int idCliente);
+        Task<int> AgregarCliente(Cliente Cliente);
+        Task<Cliente> ObtenerUltimaCliente();
     }
 }

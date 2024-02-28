@@ -24,8 +24,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Lista")]
         public async Task<IActionResult> ListarLineaDeVentas()
         {
-            var responseApi = new ResponseAPI<List<LineaDeVentaDTO>>();
-            var listaLineaDeVentasDTO = new List<LineaDeVentaDTO>();
+            var responseApi = new ResponseAPI<List<LineaDeVenta>>();
+            var listaLineaDeVentasDTO = new List<LineaDeVenta>();
             try
             {
                 var LineaDeVentaDb = await _dbContext.LineaDeVenta.ToListAsync();
@@ -37,7 +37,7 @@ namespace LaTiendaIS.Server.Controllers
                     //Articulo.Color = _dbContext.ColorArticulo.Find(Articulo.IdColor);
                     //Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
                     LineaDeVenta.Articulo = _dbContext.Articulo.Find(LineaDeVenta.IdArticulo);
-                    listaLineaDeVentasDTO.Add(_mapper.Map<LineaDeVentaDTO>(LineaDeVenta));
+                    listaLineaDeVentasDTO.Add(_mapper.Map<LineaDeVenta>(LineaDeVenta));
                 }
 
                 responseApi.EsCorrecto = true;
@@ -57,8 +57,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{idLineaDeVenta}")]
         public async Task<ActionResult> ObtenerLineaDeVenta(int idLineaDeVenta)
         {
-            var responseApi = new ResponseAPI<LineaDeVentaDTO>();
-            var LineaDeVentaDTO = new LineaDeVentaDTO();
+            var responseApi = new ResponseAPI<LineaDeVenta>();
+            var LineaDeVentaDTO = new LineaDeVenta();
 
             try
             {
@@ -68,7 +68,7 @@ namespace LaTiendaIS.Server.Controllers
                 if (dbLineaDeVenta != null)
                 {
 
-                    LineaDeVentaDTO = _mapper.Map<LineaDeVentaDTO>(dbLineaDeVenta);
+                    LineaDeVentaDTO = _mapper.Map<LineaDeVenta>(dbLineaDeVenta);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = LineaDeVentaDTO;
@@ -90,12 +90,12 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVentaDTO LineaDeVentaDTO)
+        public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVenta LineaDeVentaDTO)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbLineaDeVenta = _mapper.Map<LineaDeVenta>(LineaDeVentaDTO);
+                var dbLineaDeVenta = _mapper.Map<LineaDeVentaDTO>(LineaDeVentaDTO);
 
                 dbLineaDeVenta.Articulo = _dbContext.Articulo.FirstOrDefault(a => a.IdCodigo == LineaDeVentaDTO.IdArticulo);
                 dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVentaDTO.IdVenta);
@@ -124,7 +124,7 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPut("{IdLineaDeVenta}")]
-        public async Task<ActionResult> ModificarLineaDeVenta(int IdLineaDeVenta, LineaDeVentaDTO LineaDeVentaDTO)
+        public async Task<ActionResult> ModificarLineaDeVenta(int IdLineaDeVenta, LineaDeVenta LineaDeVentaDTO)
         {
             var responseApi = new ResponseAPI<int>();
 
@@ -203,8 +203,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Ultima")]
         public async Task<ActionResult> ObtenerUltimaVenta()
         {
-            var responseApi = new ResponseAPI<LineaDeVentaDTO>();
-            var LineaDeVentaDTO = new LineaDeVentaDTO();
+            var responseApi = new ResponseAPI<LineaDeVenta>();
+            var LineaDeVentaDTO = new LineaDeVenta();
 
             try
             {
@@ -216,7 +216,7 @@ namespace LaTiendaIS.Server.Controllers
                 if (ultimaLineaDeVenta != null)
                 {
 
-                    LineaDeVentaDTO = _mapper.Map<LineaDeVentaDTO>(ultimaLineaDeVenta);
+                    LineaDeVentaDTO = _mapper.Map<LineaDeVenta>(ultimaLineaDeVenta);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = LineaDeVentaDTO;

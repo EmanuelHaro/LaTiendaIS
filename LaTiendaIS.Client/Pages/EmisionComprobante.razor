@@ -76,7 +76,7 @@
             </HeaderContent>
             <RowTemplate>
                 @{
-                    var linea = context as LineaDeVentaDTO;
+                    var linea = context as LineaDeVenta;
                 }
                 @if (linea != null)
                 {
@@ -107,14 +107,14 @@
 
 
 @code {
-    private List<LineaDeVentaDTO> lineasDeVentaDTO = new List<LineaDeVentaDTO>();
+    private List<LineaDeVenta> lineasDeVentaDTO = new List<LineaDeVenta>();
 
-    private VentaDTO venta1;
-    private ClienteDTO cliente;
+    private Venta venta1;
+    private Cliente cliente;
     private double totalAPagar; // Cargado en OnInitializedAsync
 
-    private TipoDeComprobanteDTO tipoDeComprobanteDTO; //factura A o B
-    private CondicionTributariaDTO condicionTributariaDTO; //monotributista, ...
+    private TipoDeComprobante tipoDeComprobanteDTO; //factura A o B
+    private CondicionTributaria condicionTributariaDTO; //monotributista, ...
 
     private string condicionTributariaDescripcion = " ";
     private int tipoComprobante = 0;
@@ -177,7 +177,7 @@
         
         try
         {
-            ComprobanteDTO comprobante = new ComprobanteDTO();
+            Comprobante comprobante = new Comprobante();
             comprobante.IdVenta = venta1.IdVenta;
             comprobante.IdTipoDeComprobante = tipoComprobante;
 

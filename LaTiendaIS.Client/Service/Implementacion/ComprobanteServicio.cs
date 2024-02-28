@@ -14,9 +14,9 @@ namespace LaTiendaIS.Client.Service.Implementacion
             _httpClient = httpClient;
         }
 
-        public async Task<ComprobanteDTO> ObtenerComprobante(int idComprobante)
+        public async Task<Comprobante> ObtenerComprobante(int idComprobante)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ComprobanteDTO>>($"api/Comprobante/{idComprobante}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Comprobante>>($"api/Comprobante/{idComprobante}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
@@ -24,7 +24,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarComprobante(ComprobanteDTO Comprobante)
+        public async Task<int> AgregarComprobante(Comprobante Comprobante)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Comprobante", Comprobante);
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();

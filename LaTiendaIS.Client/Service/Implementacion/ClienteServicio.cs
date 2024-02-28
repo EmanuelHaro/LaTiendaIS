@@ -14,9 +14,9 @@ namespace LaTiendaIS.Client.Service.Implementacion
             _httpClient = httpClient;
         }
 
-        public async Task<ClienteDTO> ObtenerCliente(int idCliente)
+        public async Task<Cliente> ObtenerCliente(int idCliente)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ClienteDTO>>($"api/Cliente/{idCliente}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Cliente>>($"api/Cliente/{idCliente}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
@@ -24,7 +24,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarCliente(ClienteDTO Cliente)
+        public async Task<int> AgregarCliente(Cliente Cliente)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Cliente", Cliente);
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
@@ -35,9 +35,9 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(response.Mensaje);
         }
 
-        public async Task<ClienteDTO> ObtenerUltimaCliente()
+        public async Task<Cliente> ObtenerUltimaCliente()
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<ClienteDTO>>("api/Cliente/Ultima");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Cliente>>("api/Cliente/Ultima");
             if (result!.EsCorrecto)
                 return result.Valor!;
             else

@@ -14,18 +14,18 @@ namespace LaTiendaIS.Client.Service.Implementacion
             _httpClient = httpClient;
         }
 
-        public async Task<List<LineaDeVentaDTO>> ListarLineaDeVentas()
+        public async Task<List<LineaDeVenta>> ListarLineaDeVentas()
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<LineaDeVentaDTO>>>("api/LineaDeVenta/Lista");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<LineaDeVenta>>>("api/LineaDeVenta/Lista");
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<LineaDeVentaDTO> ObtenerLineaDeVenta(int idLineaDeVenta)
+        public async Task<LineaDeVenta> ObtenerLineaDeVenta(int idLineaDeVenta)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVentaDTO>>($"api/LineaDeVenta/{idLineaDeVenta}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVenta>>($"api/LineaDeVenta/{idLineaDeVenta}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
@@ -33,16 +33,16 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<LineaDeVentaDTO> ObtenerUltimaLineaDeVenta()
+        public async Task<LineaDeVenta> ObtenerUltimaLineaDeVenta()
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVentaDTO>>("api/LineaDeVenta/Ultima");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVenta>>("api/LineaDeVenta/Ultima");
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarLineaDeVenta(LineaDeVentaDTO LineaDeVenta)
+        public async Task<int> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
         {
             var result = await _httpClient.PostAsJsonAsync("api/LineaDeVenta", LineaDeVenta);
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
@@ -52,7 +52,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-        public async Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVentaDTO LineaDeVenta)
+        public async Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVenta LineaDeVenta)
         {
             HttpResponseMessage result;
 

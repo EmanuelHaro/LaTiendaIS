@@ -36,29 +36,29 @@
 @* Ingreso de talle*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
     <MudSelect T="string" Label="Talles" @bind-Value="talleElegido" AnchorOrigin="Origin.BottomCenter" OnValueChanged="HandleTalleChanged">
-        @foreach (var talleUnico in ListaArticulosCodigos.Select(art => art.Talle.DescripcionTalle).Distinct())
+@*         @foreach (var talleUnico in ListaArticulosCodigos.Select(art => art.Talle.DescripcionTalle).Distinct())
         {
             <MudSelectItem Value="@(talleUnico)" />
-        }
+        } *@
     </MudSelect>
 </div>
 
 @* Ingreso de color*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
     <MudSelect T="string" Label="Color" @bind-Value="colorElegido" AnchorOrigin="Origin.BottomCenter">
-        @foreach (var color in ListaArticulosCodigos.Where(art => art.Talle.DescripcionTalle == talleElegido).Select(art => art.Color.DescripcionColor).Distinct())
+@*         @foreach (var color in ListaArticulosCodigos.Where(art => art.Talle.DescripcionTalle == talleElegido).Select(art => art.Color.DescripcionColor).Distinct())
         {
             <MudSelectItem Value="@(color)" />
-        }
+        } *@
     </MudSelect>
 </div>
 
 
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerArticulo(TextCodigo,talleElegido,colorElegido)">Agregar</MudButton>
+   @*  <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerArticulo(TextCodigo,talleElegido,colorElegido)">Agregar</MudButton> *@
 
 </div>
-<MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<ArticuloDTO,bool>(FilterFunc)"
+<MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<Articulo,bool>(FilterFunc)"
 @bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
     <ToolBarContent>
         <MudText Typo="Typo.h4">Listado de Articulos</MudText>
@@ -77,24 +77,24 @@
         <col style="width:20px;" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ArticuloDTO, object>(x=>x.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.PrecioDeVenta)">Precio De Venta</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.TipoTalle.DescripcionTipoTalle)">Tipo de Talle</MudTableSortLabel></MudTh>
-         <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Talle.DescripcionTalle)">Talle</MudTableSortLabel></MudTh> 
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Color.DescripcionColor)">Color</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloDTO, object>(x=>x.Categoria.DescripcionCategoria)">Categoria</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Articulo, object>(x=>x.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.PrecioDeVenta)">Precio De Venta</MudTableSortLabel></MudTh>
+        @* <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Talle.TipoTalle.DescripcionTipoTalle)">Tipo de Talle</MudTableSortLabel></MudTh>
+         <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Talle.DescripcionTalle)">Talle</MudTableSortLabel></MudTh>  *@
+        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
+       @*  <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Color.DescripcionColor)">Color</MudTableSortLabel></MudTh> *@
+        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Categoria.DescripcionCategoria)">Categoria</MudTableSortLabel></MudTh>
         <MudTh>Acciones</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="IdCodigo">@context.IdCodigo</MudTd>
         <MudTd DataLabel="Descripcion">@context.Descripcion</MudTd>
         <MudTd DataLabel="PrecioVenta">@context.PrecioDeVenta.ToString("0.00")</MudTd>
-        <MudTd DataLabel="TipoTalle">@context.Talle.TipoTalle.DescripcionTipoTalle</MudTd>
-         <MudTd DataLabel="Talle">@context.Talle.DescripcionTalle</MudTd> 
+        @* <MudTd DataLabel="TipoTalle">@context.Talle.TipoTalle.DescripcionTipoTalle</MudTd>
+         <MudTd DataLabel="Talle">@context.Talle.DescripcionTalle</MudTd>  *@
         <MudTd DataLabel="Marca">@context.Marca.DescripcionMarca</MudTd>
-        <MudTd DataLabel="Color">@context.Color.DescripcionColor</MudTd>
+       @*  <MudTd DataLabel="Color">@context.Color.DescripcionColor</MudTd> *@
         <MudTd DataLabel="Categoria">@context.Categoria.DescripcionCategoria</MudTd>
         <MudTd>
             <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Class="pa-0" OnClick="() => EliminarArticulo(context.IdCodigo)" />
@@ -137,16 +137,16 @@
     private string talleElegido = "";
     private string colorElegido = "";
 
-    private ArticuloDTO selectedItem1 = null;
-    private HashSet<ArticuloDTO> selectedItems1 = new HashSet<ArticuloDTO>();
-    private List<ArticuloDTO> ArticuloDTOs = new List<ArticuloDTO>();
-    private List<ArticuloDTO> ListaArticulosCodigos = new List<ArticuloDTO>();
-    public VentaDTO venta1;
+    private Articulo selectedItem1 = null;
+    private HashSet<Articulo> selectedItems1 = new HashSet<Articulo>();
+    private List<Articulo> ArticuloDTOs = new List<Articulo>();
+    private List<Articulo> ListaArticulosCodigos = new List<Articulo>();
+    public Venta venta1;
 
 
     protected override async Task OnInitializedAsync()
     {
-        venta1 = new VentaDTO();
+        venta1 = new Venta();
         venta1.FechaVenta = DateTime.Now;
         var response = await _ventaServicio.AgregarVenta(venta1);
         if(response!=null)
@@ -164,7 +164,7 @@
         talleElegido = nuevoTalle;
     }
 
-    private bool FilterFunc(ArticuloDTO articuloDTO)
+    private bool FilterFunc(Articulo articuloDTO)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
@@ -176,58 +176,58 @@
     }
 
 
-    private async void ObtenerArticulo(int idArticulo,string talle,string color)
-    {
-        if (idArticulo!=0)
-        {
-            try
-            {
-                var art1 = ListaArticulosCodigos.Where(p => p.Talle.DescripcionTalle == talle).FirstOrDefault();
-                var art2 = ListaArticulosCodigos.Where(p => p.Color.DescripcionColor == color).FirstOrDefault();
-                int talleS = art1.IdTalle;
-                int colorS = art2.IdColor;
+    // private async void ObtenerArticulo(int idArticulo,string talle,string color)
+    // {
+    //     if (idArticulo!=0)
+    //     {
+    //         try
+    //         {
+    //             var art1 = ListaArticulosCodigos.Where(p => p.Talle.DescripcionTalle == talle).FirstOrDefault();
+    //             var art2 = ListaArticulosCodigos.Where(p => p.Color.DescripcionColor == color).FirstOrDefault();
+    //             int talleS = art1.IdTalle;
+    //             int colorS = art2.IdColor;
 
-                var articulo = await _articuloServicio.ObtenerArticulo(idArticulo,talleS,colorS);
-                if (!ArticuloDTOs.Contains(articulo))
-                {
-                    ArticuloDTOs.Add(articulo);
-                    venta1.Total += articulo.PrecioDeVenta;
-                    StateHasChanged();
-                    Snackbar.Add("Articulo agregado", Severity.Success);
-                    LineaDeVentaDTO lineaDeVenta = new LineaDeVentaDTO();
-                    lineaDeVenta.IdArticulo = articulo.IdCodigo;
-                    lineaDeVenta.Cantidad = 1;
-                    lineaDeVenta.IdVenta = venta1.IdVenta;
+    //             var articulo = await _articuloServicio.ObtenerArticulo(idArticulo,talleS,colorS);
+    //             if (!ArticuloDTOs.Contains(articulo))
+    //             {
+    //                 ArticuloDTOs.Add(articulo);
+    //                 venta1.Total += articulo.PrecioDeVenta;
+    //                 StateHasChanged();
+    //                 Snackbar.Add("Articulo agregado", Severity.Success);
+    //                 LineaDeVenta lineaDeVenta = new LineaDeVenta();
+    //                 lineaDeVenta.IdArticulo = articulo.IdCodigo;
+    //                 lineaDeVenta.Cantidad = 1;
+    //                 lineaDeVenta.IdVenta = venta1.IdVenta;
 
-                    var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-                    if (response!= null)
-                    {
-                        Snackbar.Add("Linea de venta creada", Severity.Success);
-                    }
-                    else
-                    {
-                        Snackbar.Add("Fallo", Severity.Error);
-                    }
+    //                 var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
+    //                 if (response!= null)
+    //                 {
+    //                     Snackbar.Add("Linea de venta creada", Severity.Success);
+    //                 }
+    //                 else
+    //                 {
+    //                     Snackbar.Add("Fallo", Severity.Error);
+    //                 }
 
-                }
-                else
-                {
-                    Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
-                }
+    //             }
+    //             else
+    //             {
+    //                 Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
+    //             }
 
 
-            }
-            catch(Exception ex)
-            {
-                Snackbar.Add("Codigo Invalido", Severity.Warning);
-            }
+    //         }
+    //         catch(Exception ex)
+    //         {
+    //             Snackbar.Add("Codigo Invalido", Severity.Warning);
+    //         }
 
-        }
-        else
-        {
-            Snackbar.Add("Codigo Invalido", Severity.Warning);
-        }
-    }
+    //     }
+    //     else
+    //     {
+    //         Snackbar.Add("Codigo Invalido", Severity.Warning);
+    //     }
+    // }
 
     private async void ObtenerListaArticulo(int idArticulo)
     {
@@ -260,7 +260,7 @@
 
         venta1.Total -= articulo.PrecioDeVenta;
 
-        LineaDeVentaDTO ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
+        LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
         
 
         var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);

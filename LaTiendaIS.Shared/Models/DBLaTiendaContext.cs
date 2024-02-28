@@ -9,24 +9,24 @@ namespace LaTiendaIS.Shared.Models
 
         }
 
-        public DbSet<Articulo> Articulo { get; set; }
-        public DbSet<Categoria> Categoria { get; set; }
-        public DbSet<Cliente> Cliente { get; set; }
-        public DbSet<ColorArticulo> ColorArticulo { get; set; }
-        public DbSet<Comprobante> Comprobante { get; set; }
-        public DbSet<CondicionTributaria> CondicionTributaria { get; set; }
-        public DbSet<LineaDeVenta> LineaDeVenta { get; set; }
-        public DbSet<Marca> Marca{ get; set; }
-        public DbSet<Pago> Pago { get; set; }
-        public DbSet<PagoConTarjeta> PagoConTarjeta { get; set; }
-        public DbSet<PagoEfectivo> PagoEfectivo { get; set; }
-        public DbSet<PuntoDeVenta> PuntoDeVenta { get; set; }
-        public DbSet<Stock> Stock { get; set; }
-        public DbSet<Sucursal> Sucursal { get; set; }
-        public DbSet<Talle> Talle { get; set; }
-        public DbSet<TipoDeComprobante> TipoDeComprobante { get; set; }
-        public DbSet<TipoTalle> TipoTalle { get; set; }
-        public DbSet<Venta> Venta { get; set; }
+        public DbSet<ArticuloDTO> Articulo { get; set; }
+        public DbSet<CategoriaDTO> Categoria { get; set; }
+        public DbSet<ClienteDTO> Cliente { get; set; }
+        public DbSet<ColorArticuloDTO> ColorArticulo { get; set; }
+        public DbSet<ComprobanteDTO> Comprobante { get; set; }
+        public DbSet<CondicionTributariaDTO> CondicionTributaria { get; set; }
+        public DbSet<LineaDeVentaDTO> LineaDeVenta { get; set; }
+        public DbSet<MarcaDTO> Marca{ get; set; }
+        public DbSet<PagoDTO> Pago { get; set; }
+        public DbSet<PagoConTarjetaDTO> PagoConTarjeta { get; set; }
+        public DbSet<PagoEfectivoDTO> PagoEfectivo { get; set; }
+        public DbSet<PuntoDeVentaDTO> PuntoDeVenta { get; set; }
+        public DbSet<StockDTO> Stock { get; set; }
+        public DbSet<SucursalDTO> Sucursal { get; set; }
+        public DbSet<TalleDTO> Talle { get; set; }
+        public DbSet<TipoDeComprobanteDTO> TipoDeComprobante { get; set; }
+        public DbSet<TipoTalleDTO> TipoTalle { get; set; }
+        public DbSet<VentaDTO> Venta { get; set; }
         
 
 

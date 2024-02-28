@@ -4,11 +4,11 @@ namespace LaTiendaIS.Client.Service.Contrato
 {
     public interface ILineaDeVentaServicio
     {
-        Task<List<LineaDeVentaDTO>> ListarLineaDeVentas();
-        Task<LineaDeVentaDTO> ObtenerLineaDeVenta(int idLineaDeVenta);
-        Task<LineaDeVentaDTO> ObtenerUltimaLineaDeVenta();
-        Task<int> AgregarLineaDeVenta(LineaDeVentaDTO LineaDeVenta);
-        Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVentaDTO LineaDeVenta);
+        Task<List<LineaDeVenta>> ListarLineaDeVentas();
+        Task<LineaDeVenta> ObtenerLineaDeVenta(int idLineaDeVenta);
+        Task<LineaDeVenta> ObtenerUltimaLineaDeVenta();
+        Task<int> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta);
+        Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVenta LineaDeVenta);
         Task<bool> EliminarLineaDeVenta(int idLineaDeVenta);
     }
 }

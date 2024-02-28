@@ -174,7 +174,7 @@
 
     private string Vuelto;
 
-    public VentaDTO venta1;
+    public Venta venta1;
 
     private readonly HttpClient _httpClient = new HttpClient();
 
@@ -204,7 +204,7 @@
     private async void Cancelar()
     {
         var listaLDV = await _lineadeventaServicio.ListarLineaDeVentas();
-        foreach (LineaDeVentaDTO ldv in listaLDV)
+        foreach (LineaDeVenta ldv in listaLDV)
         {
             if (ldv.IdVenta == venta1.IdVenta)
             {
@@ -240,7 +240,7 @@
 
 
                 //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-                ClienteDTO cliente = new ClienteDTO();
+                Cliente cliente = new Cliente();
                 cliente.Nombre = nombreTitular;
                 cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
                 //cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
@@ -377,7 +377,7 @@
         if (Vuelto!="Cantidad insuficiente")
         {
             //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-            ClienteDTO cliente = new ClienteDTO();
+            Cliente cliente = new Cliente();
             cliente.Nombre = nombreTitular;
             cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
             cliente.IdCondicionTributaria = 2; //TDO: hay que buscar ID
@@ -411,7 +411,7 @@
             if (totalAPagar>10000)
             {
                 //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-                ClienteDTO cliente = new ClienteDTO();
+                Cliente cliente = new Cliente();
                 cliente.Nombre = nombreTitular;
                 cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
                 cliente.IdCondicionTributaria = 1; //TODO:tenemos que buscar el id 

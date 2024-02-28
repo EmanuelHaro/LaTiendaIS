@@ -8,24 +8,24 @@ namespace LaTiendaIS.Utilidades
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Articulo, ArticuloDTO>().ReverseMap();
-            CreateMap<Categoria, CategoriaDTO>().ReverseMap();
-            CreateMap<Cliente, ClienteDTO>().ReverseMap();
-            CreateMap<ColorArticulo, ColorArticuloDTO>().ReverseMap();
-            CreateMap<Comprobante, ComprobanteDTO>().ReverseMap();
-            CreateMap<CondicionTributaria, CondicionTributariaDTO>().ReverseMap();
-            CreateMap<LineaDeVenta, LineaDeVentaDTO>().ReverseMap();
-            CreateMap<Marca, MarcaDTO>().ReverseMap();
-            CreateMap<Pago, PagoDTO>().ReverseMap();
-            CreateMap<PagoEfectivo, PagoEfectivoDTO>().ReverseMap();
-            CreateMap<PagoConTarjeta, PagoConTarjetaDTO>().ReverseMap();
-            CreateMap<PuntoDeVenta, PuntoDeVentaDTO>().ReverseMap();
-            CreateMap<Stock, StockDTO>().ReverseMap();
-            CreateMap<Sucursal, SucursalDTO>().ReverseMap();
-            CreateMap<Talle, TalleDTO>().ReverseMap();
-            CreateMap<TipoDeComprobante, TipoDeComprobanteDTO>().ReverseMap();
-            CreateMap<TipoTalle, TipoTalleDTO>().ReverseMap();
-            CreateMap<Venta, VentaDTO>().ReverseMap();
+            CreateMap<ArticuloDTO, Articulo>().ReverseMap();
+            CreateMap<CategoriaDTO, Categoria>().ReverseMap();
+            CreateMap<ClienteDTO, Cliente>().ReverseMap();
+            CreateMap<ColorArticuloDTO, ColorArticulo>().ReverseMap();
+            CreateMap<ComprobanteDTO, Comprobante>().ReverseMap();
+            CreateMap<CondicionTributariaDTO, CondicionTributaria>().ReverseMap();
+            CreateMap<LineaDeVentaDTO, LineaDeVenta>().ReverseMap();
+            CreateMap<MarcaDTO, Marca>().ReverseMap();
+            CreateMap<PagoDTO, Pago>().ReverseMap();
+            CreateMap<PagoEfectivoDTO, PagoEfectivo>().ReverseMap();
+            CreateMap<PagoConTarjetaDTO, PagoConTarjeta>().ReverseMap();
+            CreateMap<PuntoDeVentaDTO, PuntoDeVenta>().ReverseMap();
+            CreateMap<StockDTO, Stock>().ReverseMap();
+            CreateMap<SucursalDTO, Sucursal>().ReverseMap();
+            CreateMap<TalleDTO, Talle>().ReverseMap();
+            CreateMap<TipoDeComprobanteDTO, TipoDeComprobante>().ReverseMap();
+            CreateMap<TipoTalleDTO, TipoTalle>().ReverseMap();
+            CreateMap<VentaDTO, Venta>().ReverseMap();
         }
     }
 }

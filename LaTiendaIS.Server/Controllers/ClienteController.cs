@@ -26,8 +26,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdCliente}")]
         public async Task<ActionResult> ObtenerCliente(int IdCliente)
         {
-            var responseApi = new ResponseAPI<ClienteDTO>();
-            var ClienteDTO = new ClienteDTO();
+            var responseApi = new ResponseAPI<Cliente>();
+            var ClienteDTO = new Cliente();
 
             try
             {
@@ -38,7 +38,7 @@ namespace LaTiendaIS.Server.Controllers
                 {
                     dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
 
-                    ClienteDTO = _mapper.Map<ClienteDTO>(dbCliente);
+                    ClienteDTO = _mapper.Map<Cliente>(dbCliente);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = ClienteDTO;
@@ -60,12 +60,12 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarCliente(ClienteDTO ClienteDTO)
+        public async Task<ActionResult> AgregarCliente(Cliente ClienteDTO)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbCliente = _mapper.Map<Cliente>(ClienteDTO);
+                var dbCliente = _mapper.Map<ClienteDTO>(ClienteDTO);
 
 
                 _dbContext.Cliente.Add(dbCliente);
@@ -95,8 +95,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Ultima")]
         public async Task<ActionResult> ObtenerUltimaCliente()
         {
-            var responseApi = new ResponseAPI<ClienteDTO>();
-            var ClienteDTO = new ClienteDTO();
+            var responseApi = new ResponseAPI<Cliente>();
+            var ClienteDTO = new Cliente();
 
             try
             {
@@ -109,7 +109,7 @@ namespace LaTiendaIS.Server.Controllers
 
                     dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
 
-                    ClienteDTO = _mapper.Map<ClienteDTO>(dbCliente);
+                    ClienteDTO = _mapper.Map<Cliente>(dbCliente);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = ClienteDTO;

@@ -26,8 +26,8 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdComprobante}")]
         public async Task<ActionResult> ObtenerComprobante(int IdComprobante)
         {
-            var responseApi = new ResponseAPI<ComprobanteDTO>();
-            var ComprobanteDTO = new ComprobanteDTO();
+            var responseApi = new ResponseAPI<Comprobante>();
+            var ComprobanteDTO = new Comprobante();
 
             try
             {
@@ -38,7 +38,7 @@ namespace LaTiendaIS.Server.Controllers
                 {
 
 
-                    ComprobanteDTO = _mapper.Map<ComprobanteDTO>(dbComprobante);
+                    ComprobanteDTO = _mapper.Map<Comprobante>(dbComprobante);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = ComprobanteDTO;
@@ -60,12 +60,12 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarComprobante(ComprobanteDTO ComprobanteDTO)
+        public async Task<ActionResult> AgregarComprobante(Comprobante ComprobanteDTO)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbComprobante = _mapper.Map<Comprobante>(ComprobanteDTO);
+                var dbComprobante = _mapper.Map<ComprobanteDTO>(ComprobanteDTO);
 
 
                 _dbContext.Comprobante.Add(dbComprobante);

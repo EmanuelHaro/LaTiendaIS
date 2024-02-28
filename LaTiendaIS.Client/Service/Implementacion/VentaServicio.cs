@@ -14,34 +14,34 @@ namespace LaTiendaIS.Client.Service.Implementacion
             _httpClient = httpClient;
         }
 
-        public async Task<List<VentaDTO>> ListarVentas()
+        public async Task<List<Venta>> ListarVentas()
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<VentaDTO>>>("api/Venta/Lista");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<Venta>>>("api/Venta/Lista");
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<VentaDTO> ObtenerVenta(int idVenta)
+        public async Task<Venta> ObtenerVenta(int idVenta)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<VentaDTO>>($"api/Venta/{idVenta}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Venta>>($"api/Venta/{idVenta}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
-        public async Task<VentaDTO> ObtenerUltimaVenta()
+        public async Task<Venta> ObtenerUltimaVenta()
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<VentaDTO>>("api/Venta/Ultima");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Venta>>("api/Venta/Ultima");
             if (result!.EsCorrecto)
                 return result.Valor!;
             else
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarVenta(VentaDTO Venta)
+        public async Task<int> AgregarVenta(Venta Venta)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Venta", Venta);
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
@@ -51,7 +51,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-        public async Task<int> ModificarVenta(int idVenta, VentaDTO Venta)
+        public async Task<int> ModificarVenta(int idVenta, Venta Venta)
         {
             HttpResponseMessage result;
 

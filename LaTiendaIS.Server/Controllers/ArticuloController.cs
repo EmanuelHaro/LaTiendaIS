@@ -24,19 +24,16 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Lista")]
         public async Task<IActionResult> ListarArticulos()
         {
-            var responseApi = new ResponseAPI<List<ArticuloDTO>>();
-            var listaArticulosDTO = new List<ArticuloDTO>();
+            var responseApi = new ResponseAPI<List<Articulo>>();
+            var listaArticulosDTO = new List<Articulo>();
             try
             {
                 var ArticuloDb = await _dbContext.Articulo.ToListAsync();
                 foreach (var Articulo in ArticuloDb)
                 {
                     Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
-                    Articulo.Talle = _dbContext.Talle.Find(Articulo.IdTalle);
-                    Articulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(Articulo.Talle.IdTipoTalle);
-                    Articulo.Color = _dbContext.ColorArticulo.Find(Articulo.IdColor);
                     Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
-                    listaArticulosDTO.Add(_mapper.Map<ArticuloDTO>(Articulo));
+                    listaArticulosDTO.Add(_mapper.Map<Articulo>(Articulo));
                 }
 
                 responseApi.EsCorrecto = true;
@@ -56,23 +53,20 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdCodigo}/{idTalle}/{idColor}")]
         public async Task<ActionResult> ObtenerArticulo(int IdCodigo, int idTalle, int idColor)
         {
-            var responseApi = new ResponseAPI<ArticuloDTO>();
-            var ArticuloDTO = new ArticuloDTO();
+            var responseApi = new ResponseAPI<Articulo>();
+            var ArticuloDTO = new Articulo();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.CodigoTienda == IdCodigo && f.IdTalle == idTalle && f.IdColor == idColor);
+                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.CodigoTienda == IdCodigo);
                 
 
                 if (dbArticulo != null)
                 {
                     dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
-                    dbArticulo.Talle = _dbContext.Talle.Find(dbArticulo.IdTalle);
-                    dbArticulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(dbArticulo.Talle.IdTipoTalle);
-                    dbArticulo.Color = _dbContext.ColorArticulo.Find(dbArticulo.IdColor);
                     dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
 
-                    ArticuloDTO = _mapper.Map<ArticuloDTO>(dbArticulo);
+                    ArticuloDTO = _mapper.Map<Articulo>(dbArticulo);
 
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = ArticuloDTO;
@@ -94,12 +88,12 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarArticulo(ArticuloDTO ArticuloDTO)
+        public async Task<ActionResult> AgregarArticulo(Articulo ArticuloDTO)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbArticulo = _mapper.Map<Articulo>(ArticuloDTO);
+                var dbArticulo = _mapper.Map<ArticuloDTO>(ArticuloDTO);
                 
 
                 _dbContext.Articulo.Add(dbArticulo);
@@ -126,7 +120,7 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPut("{IdCodigo}")]
-        public async Task<ActionResult> ModificarArticulo(int IdCodigo, ArticuloDTO ArticuloDTO)
+        public async Task<ActionResult> ModificarArticulo(int IdCodigo, Articulo ArticuloDTO)
         {
             var responseApi = new ResponseAPI<int>();
 
