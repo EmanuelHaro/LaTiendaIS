@@ -5,7 +5,8 @@ namespace LaTiendaIS.Client.Service.Contrato
     public interface IArticuloServicio
     {
         Task<List<Articulo>> ListarArticulos();
-        Task<Articulo> ObtenerArticulo(int idArticulo, int idTalle, int idColor);
+        Task<Articulo> ObtenerArticulo(int idArticulo);
+        Task<List<Stock>> ObtenerStock(int idArticulo);
         Task<int> AgregarArticulo(Articulo Articulo);
         Task<int> ModificarArticulo(int idArticulo, Articulo Articulo);
         Task<bool> EliminarArticulo(int idArticulo);

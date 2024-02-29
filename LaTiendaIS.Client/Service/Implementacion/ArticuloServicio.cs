@@ -23,9 +23,18 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<Articulo> ObtenerArticulo(int idArticulo, int idTalle, int idColor)
+        public async Task<Articulo> ObtenerArticulo(int idArticulo)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Articulo>>($"api/Articulo/{idArticulo}/{idTalle}/{idColor}");
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Articulo>>($"api/Articulo/{idArticulo}");
+
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
+        public async Task<List<Stock>> ObtenerStock(int idArticulo)
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<Stock>>>($"api/Articulo/Stock/{idArticulo}");
 
             if (result!.EsCorrecto)
                 return result.Valor!;
@@ -79,9 +88,6 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(response.Mensaje);
         }
-
-
-
 
     }
 }

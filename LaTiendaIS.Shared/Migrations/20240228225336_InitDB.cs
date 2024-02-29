@@ -64,7 +64,7 @@ namespace LaTiendaIS.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tienda",
+                name: "TiendaDTO",
                 columns: table => new
                 {
                     IdTienda = table.Column<int>(type: "int", nullable: false)
@@ -76,7 +76,7 @@ namespace LaTiendaIS.Shared.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tienda", x => x.IdTienda);
+                    table.PrimaryKey("PK_TiendaDTO", x => x.IdTienda);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +127,7 @@ namespace LaTiendaIS.Shared.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CUIT = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Domicilio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdCondicionTributaria = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -138,6 +138,37 @@ namespace LaTiendaIS.Shared.Migrations
                         column: x => x.IdCondicionTributaria,
                         principalTable: "CondicionTributaria",
                         principalColumn: "IdCondicionTributaria",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Articulo",
+                columns: table => new
+                {
+                    IdCodigo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CodigoTienda = table.Column<int>(type: "int", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Costo = table.Column<double>(type: "float", nullable: false),
+                    MargenDeGanacia = table.Column<float>(type: "real", nullable: false),
+                    PorcentajeIVA = table.Column<float>(type: "real", nullable: false),
+                    IdMarca = table.Column<int>(type: "int", nullable: false),
+                    IdCategoria = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Articulo", x => x.IdCodigo);
+                    table.ForeignKey(
+                        name: "FK_Articulo_Categoria_IdCategoria",
+                        column: x => x.IdCategoria,
+                        principalTable: "Categoria",
+                        principalColumn: "IdCategoria",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Articulo_Marca_IdMarca",
+                        column: x => x.IdMarca,
+                        principalTable: "Marca",
+                        principalColumn: "IdMarca",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -154,9 +185,9 @@ namespace LaTiendaIS.Shared.Migrations
                 {
                     table.PrimaryKey("PK_Sucursal", x => x.IdSucursal);
                     table.ForeignKey(
-                        name: "FK_Sucursal_Tienda_IdTienda",
+                        name: "FK_Sucursal_TiendaDTO_IdTienda",
                         column: x => x.IdTienda,
-                        principalTable: "Tienda",
+                        principalTable: "TiendaDTO",
                         principalColumn: "IdTienda",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -234,71 +265,6 @@ namespace LaTiendaIS.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PuntoDeVenta",
-                columns: table => new
-                {
-                    IdPuntoDeVenta = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NumeroPtoVenta = table.Column<int>(type: "int", nullable: false),
-                    IdSucursal = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PuntoDeVenta", x => x.IdPuntoDeVenta);
-                    table.ForeignKey(
-                        name: "FK_PuntoDeVenta_Sucursal_IdSucursal",
-                        column: x => x.IdSucursal,
-                        principalTable: "Sucursal",
-                        principalColumn: "IdSucursal",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Articulo",
-                columns: table => new
-                {
-                    IdCodigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CodigoTienda = table.Column<int>(type: "int", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Costo = table.Column<double>(type: "float", nullable: false),
-                    MargenDeGanacia = table.Column<float>(type: "real", nullable: false),
-                    PorcentajeIVA = table.Column<float>(type: "real", nullable: false),
-                    IdMarca = table.Column<int>(type: "int", nullable: false),
-                    IdTalle = table.Column<int>(type: "int", nullable: false),
-                    IdColor = table.Column<int>(type: "int", nullable: false),
-                    IdCategoria = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Articulo", x => x.IdCodigo);
-                    table.ForeignKey(
-                        name: "FK_Articulo_Categoria_IdCategoria",
-                        column: x => x.IdCategoria,
-                        principalTable: "Categoria",
-                        principalColumn: "IdCategoria",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Articulo_ColorArticulo_IdColor",
-                        column: x => x.IdColor,
-                        principalTable: "ColorArticulo",
-                        principalColumn: "IdColor",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Articulo_Marca_IdMarca",
-                        column: x => x.IdMarca,
-                        principalTable: "Marca",
-                        principalColumn: "IdMarca",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Articulo_Talle_IdTalle",
-                        column: x => x.IdTalle,
-                        principalTable: "Talle",
-                        principalColumn: "IdTalle",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LineaDeVenta",
                 columns: table => new
                 {
@@ -326,6 +292,26 @@ namespace LaTiendaIS.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PuntoDeVenta",
+                columns: table => new
+                {
+                    IdPuntoDeVenta = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NumeroPtoVenta = table.Column<int>(type: "int", nullable: false),
+                    IdSucursal = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PuntoDeVenta", x => x.IdPuntoDeVenta);
+                    table.ForeignKey(
+                        name: "FK_PuntoDeVenta_Sucursal_IdSucursal",
+                        column: x => x.IdSucursal,
+                        principalTable: "Sucursal",
+                        principalColumn: "IdSucursal",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stock",
                 columns: table => new
                 {
@@ -333,7 +319,9 @@ namespace LaTiendaIS.Shared.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Cantidad = table.Column<int>(type: "int", nullable: false),
                     IdSucursal = table.Column<int>(type: "int", nullable: false),
-                    IdArticulo = table.Column<int>(type: "int", nullable: false)
+                    IdArticulo = table.Column<int>(type: "int", nullable: false),
+                    IdTalle = table.Column<int>(type: "int", nullable: false),
+                    IdColor = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -345,10 +333,22 @@ namespace LaTiendaIS.Shared.Migrations
                         principalColumn: "IdCodigo",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Stock_ColorArticulo_IdColor",
+                        column: x => x.IdColor,
+                        principalTable: "ColorArticulo",
+                        principalColumn: "IdColor",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Stock_Sucursal_IdSucursal",
                         column: x => x.IdSucursal,
                         principalTable: "Sucursal",
                         principalColumn: "IdSucursal",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Stock_Talle_IdTalle",
+                        column: x => x.IdTalle,
+                        principalTable: "Talle",
+                        principalColumn: "IdTalle",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -358,19 +358,9 @@ namespace LaTiendaIS.Shared.Migrations
                 column: "IdCategoria");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Articulo_IdColor",
-                table: "Articulo",
-                column: "IdColor");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Articulo_IdMarca",
                 table: "Articulo",
                 column: "IdMarca");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Articulo_IdTalle",
-                table: "Articulo",
-                column: "IdTalle");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cliente_IdCondicionTributaria",
@@ -413,9 +403,19 @@ namespace LaTiendaIS.Shared.Migrations
                 column: "IdArticulo");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stock_IdColor",
+                table: "Stock",
+                column: "IdColor");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stock_IdSucursal",
                 table: "Stock",
                 column: "IdSucursal");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stock_IdTalle",
+                table: "Stock",
+                column: "IdTalle");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sucursal_IdTienda",
@@ -462,22 +462,22 @@ namespace LaTiendaIS.Shared.Migrations
                 name: "Articulo");
 
             migrationBuilder.DropTable(
-                name: "Sucursal");
-
-            migrationBuilder.DropTable(
-                name: "Categoria");
-
-            migrationBuilder.DropTable(
                 name: "ColorArticulo");
 
             migrationBuilder.DropTable(
-                name: "Marca");
+                name: "Sucursal");
 
             migrationBuilder.DropTable(
                 name: "Talle");
 
             migrationBuilder.DropTable(
-                name: "Tienda");
+                name: "Categoria");
+
+            migrationBuilder.DropTable(
+                name: "Marca");
+
+            migrationBuilder.DropTable(
+                name: "TiendaDTO");
 
             migrationBuilder.DropTable(
                 name: "TipoTalle");

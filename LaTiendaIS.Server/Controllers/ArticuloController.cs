@@ -50,8 +50,8 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpGet]
-        [Route("{IdCodigo}/{idTalle}/{idColor}")]
-        public async Task<ActionResult> ObtenerArticulo(int IdCodigo, int idTalle, int idColor)
+        [Route("{IdCodigo}")]
+        public async Task<ActionResult> ObtenerArticulo(int IdCodigo) //antes pasaba talle y color como parametro
         {
             var responseApi = new ResponseAPI<Articulo>();
             var ArticuloDTO = new Articulo();
@@ -63,6 +63,7 @@ namespace LaTiendaIS.Server.Controllers
 
                 if (dbArticulo != null)
                 {
+                    
                     dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
                     dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
 
@@ -86,6 +87,51 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
+
+        [HttpGet]
+        [Route("Stock/{IdCodigo}")]
+        public async Task<ActionResult> ObtenerListaDeTalleYColorDelStock(int IdCodigo)
+        {
+            var responseApi = new ResponseAPI<List<Stock>>();
+            var ArticuloDTO = new Articulo();
+            var Stock = new List<Stock>();
+
+            try
+            {
+                var dbStock = await _dbContext.Stock.Where(a=>a.IdArticulo == IdCodigo).ToListAsync();
+               
+
+                if (dbStock != null)
+                {
+                    foreach(var stockItem in dbStock)
+                    {
+                        stockItem.Talle = _dbContext.Talle.Find(stockItem.IdTalle);
+                        stockItem.Color = _dbContext.ColorArticulo.Find(stockItem.IdColor);
+                    }
+                    Stock = _mapper.Map<List<Stock>>(dbStock);
+
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = Stock;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Stock no coincide";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+
+
+
 
         [HttpPost]
         public async Task<ActionResult> AgregarArticulo(Articulo ArticuloDTO)

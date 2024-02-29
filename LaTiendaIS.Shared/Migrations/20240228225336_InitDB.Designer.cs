@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LaTiendaIS.Shared.Migrations
 {
     [DbContext(typeof(DBLaTiendaContext))]
-    [Migration("20240216200856_NulleoPropiedadesDeCliente")]
-    partial class NulleoPropiedadesDeCliente
+    [Migration("20240228225336_InitDB")]
+    partial class InitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace LaTiendaIS.Shared.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Articulo", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ArticuloDTO", b =>
                 {
                     b.Property<int>("IdCodigo")
                         .ValueGeneratedOnAdd()
@@ -46,13 +46,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<int>("IdCategoria")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdColor")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdMarca")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdTalle")
                         .HasColumnType("int");
 
                     b.Property<float>("MargenDeGanacia")
@@ -65,16 +59,12 @@ namespace LaTiendaIS.Shared.Migrations
 
                     b.HasIndex("IdCategoria");
 
-                    b.HasIndex("IdColor");
-
                     b.HasIndex("IdMarca");
-
-                    b.HasIndex("IdTalle");
 
                     b.ToTable("Articulo");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Categoria", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.CategoriaDTO", b =>
                 {
                     b.Property<int>("IdCategoria")
                         .ValueGeneratedOnAdd()
@@ -91,7 +81,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Categoria");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Cliente", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ClienteDTO", b =>
                 {
                     b.Property<int>("IdCliente")
                         .ValueGeneratedOnAdd()
@@ -120,7 +110,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Cliente");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.ColorArticulo", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ColorArticuloDTO", b =>
                 {
                     b.Property<int>("IdColor")
                         .ValueGeneratedOnAdd()
@@ -137,7 +127,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("ColorArticulo");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Comprobante", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ComprobanteDTO", b =>
                 {
                     b.Property<int>("IdComprobante")
                         .ValueGeneratedOnAdd()
@@ -160,7 +150,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Comprobante");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.CondicionTributaria", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.CondicionTributariaDTO", b =>
                 {
                     b.Property<int>("IdCondicionTributaria")
                         .ValueGeneratedOnAdd()
@@ -177,7 +167,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("CondicionTributaria");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.LineaDeVenta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.LineaDeVentaDTO", b =>
                 {
                     b.Property<int>("IdLineaDeVenta")
                         .ValueGeneratedOnAdd()
@@ -203,7 +193,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("LineaDeVenta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Marca", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.MarcaDTO", b =>
                 {
                     b.Property<int>("IdMarca")
                         .ValueGeneratedOnAdd()
@@ -220,7 +210,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Marca");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Pago", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoDTO", b =>
                 {
                     b.Property<int>("IdPago")
                         .ValueGeneratedOnAdd()
@@ -244,12 +234,12 @@ namespace LaTiendaIS.Shared.Migrations
 
                     b.ToTable("Pago");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Pago");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("PagoDTO");
 
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.PuntoDeVenta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PuntoDeVentaDTO", b =>
                 {
                     b.Property<int>("IdPuntoDeVenta")
                         .ValueGeneratedOnAdd()
@@ -270,7 +260,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("PuntoDeVenta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Stock", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.StockDTO", b =>
                 {
                     b.Property<int>("IdStock")
                         .ValueGeneratedOnAdd()
@@ -284,19 +274,29 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<int>("IdArticulo")
                         .HasColumnType("int");
 
+                    b.Property<int>("IdColor")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdSucursal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdTalle")
                         .HasColumnType("int");
 
                     b.HasKey("IdStock");
 
                     b.HasIndex("IdArticulo");
 
+                    b.HasIndex("IdColor");
+
                     b.HasIndex("IdSucursal");
+
+                    b.HasIndex("IdTalle");
 
                     b.ToTable("Stock");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Sucursal", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.SucursalDTO", b =>
                 {
                     b.Property<int>("IdSucursal")
                         .ValueGeneratedOnAdd()
@@ -317,7 +317,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Sucursal");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Talle", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.TalleDTO", b =>
                 {
                     b.Property<int>("IdTalle")
                         .ValueGeneratedOnAdd()
@@ -339,7 +339,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Talle");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Tienda", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.TiendaDTO", b =>
                 {
                     b.Property<int>("IdTienda")
                         .ValueGeneratedOnAdd()
@@ -364,10 +364,10 @@ namespace LaTiendaIS.Shared.Migrations
 
                     b.HasKey("IdTienda");
 
-                    b.ToTable("Tienda");
+                    b.ToTable("TiendaDTO");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.TipoDeComprobante", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.TipoDeComprobanteDTO", b =>
                 {
                     b.Property<int>("IdTipoDeComprobante")
                         .ValueGeneratedOnAdd()
@@ -384,7 +384,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("TipoDeComprobante");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.TipoTalle", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.TipoTalleDTO", b =>
                 {
                     b.Property<int>("IdTipoTalle")
                         .ValueGeneratedOnAdd()
@@ -401,7 +401,7 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("TipoTalle");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Venta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.VentaDTO", b =>
                 {
                     b.Property<int>("IdVenta")
                         .ValueGeneratedOnAdd()
@@ -420,9 +420,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.ToTable("Venta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoConTarjeta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoConTarjetaDTO", b =>
                 {
-                    b.HasBaseType("LaTiendaIS.Shared.Models.Pago");
+                    b.HasBaseType("LaTiendaIS.Shared.Models.PagoDTO");
 
                     b.Property<int>("CVV")
                         .HasColumnType("int");
@@ -437,57 +437,41 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<long>("NumeroDeTarjeta")
                         .HasColumnType("bigint");
 
-                    b.HasDiscriminator().HasValue("PagoConTarjeta");
+                    b.HasDiscriminator().HasValue("PagoConTarjetaDTO");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoEfectivo", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoEfectivoDTO", b =>
                 {
-                    b.HasBaseType("LaTiendaIS.Shared.Models.Pago");
+                    b.HasBaseType("LaTiendaIS.Shared.Models.PagoDTO");
 
                     b.Property<double>("Monto")
                         .HasColumnType("float");
 
-                    b.HasDiscriminator().HasValue("PagoEfectivo");
+                    b.HasDiscriminator().HasValue("PagoEfectivoDTO");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Articulo", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ArticuloDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Categoria", "Categoria")
+                    b.HasOne("LaTiendaIS.Shared.Models.CategoriaDTO", "Categoria")
                         .WithMany()
                         .HasForeignKey("IdCategoria")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LaTiendaIS.Shared.Models.ColorArticulo", "Color")
-                        .WithMany()
-                        .HasForeignKey("IdColor")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LaTiendaIS.Shared.Models.Marca", "Marca")
+                    b.HasOne("LaTiendaIS.Shared.Models.MarcaDTO", "Marca")
                         .WithMany()
                         .HasForeignKey("IdMarca")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LaTiendaIS.Shared.Models.Talle", "Talle")
-                        .WithMany()
-                        .HasForeignKey("IdTalle")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Categoria");
 
-                    b.Navigation("Color");
-
                     b.Navigation("Marca");
-
-                    b.Navigation("Talle");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Cliente", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ClienteDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.CondicionTributaria", "CondicionTributaria")
+                    b.HasOne("LaTiendaIS.Shared.Models.CondicionTributariaDTO", "CondicionTributaria")
                         .WithMany()
                         .HasForeignKey("IdCondicionTributaria")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -496,15 +480,15 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("CondicionTributaria");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Comprobante", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.ComprobanteDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.TipoDeComprobante", "TipoDeComprobante")
+                    b.HasOne("LaTiendaIS.Shared.Models.TipoDeComprobanteDTO", "TipoDeComprobante")
                         .WithMany()
                         .HasForeignKey("IdTipoDeComprobante")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LaTiendaIS.Shared.Models.Venta", "Venta")
+                    b.HasOne("LaTiendaIS.Shared.Models.VentaDTO", "Venta")
                         .WithMany()
                         .HasForeignKey("IdVenta")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -515,15 +499,15 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("Venta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.LineaDeVenta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.LineaDeVentaDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Articulo", "Articulo")
+                    b.HasOne("LaTiendaIS.Shared.Models.ArticuloDTO", "Articulo")
                         .WithMany()
                         .HasForeignKey("IdArticulo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LaTiendaIS.Shared.Models.Venta", "Venta")
+                    b.HasOne("LaTiendaIS.Shared.Models.VentaDTO", "Venta")
                         .WithMany()
                         .HasForeignKey("IdVenta")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -534,9 +518,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("Venta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Pago", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Venta", "Venta")
+                    b.HasOne("LaTiendaIS.Shared.Models.VentaDTO", "Venta")
                         .WithMany()
                         .HasForeignKey("IdVenta")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -545,9 +529,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("Venta");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.PuntoDeVenta", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.PuntoDeVentaDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Sucursal", "Sucursal")
+                    b.HasOne("LaTiendaIS.Shared.Models.SucursalDTO", "Sucursal")
                         .WithMany()
                         .HasForeignKey("IdSucursal")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -556,28 +540,44 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("Sucursal");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Stock", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.StockDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Articulo", "Articulo")
+                    b.HasOne("LaTiendaIS.Shared.Models.ArticuloDTO", "Articulo")
                         .WithMany()
                         .HasForeignKey("IdArticulo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LaTiendaIS.Shared.Models.Sucursal", "Sucursal")
+                    b.HasOne("LaTiendaIS.Shared.Models.ColorArticuloDTO", "Color")
+                        .WithMany()
+                        .HasForeignKey("IdColor")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LaTiendaIS.Shared.Models.SucursalDTO", "Sucursal")
                         .WithMany()
                         .HasForeignKey("IdSucursal")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LaTiendaIS.Shared.Models.TalleDTO", "Talle")
+                        .WithMany()
+                        .HasForeignKey("IdTalle")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Articulo");
 
+                    b.Navigation("Color");
+
                     b.Navigation("Sucursal");
+
+                    b.Navigation("Talle");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Sucursal", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.SucursalDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.Tienda", "Tienda")
+                    b.HasOne("LaTiendaIS.Shared.Models.TiendaDTO", "Tienda")
                         .WithMany()
                         .HasForeignKey("IdTienda")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -586,9 +586,9 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Navigation("Tienda");
                 });
 
-            modelBuilder.Entity("LaTiendaIS.Shared.Models.Talle", b =>
+            modelBuilder.Entity("LaTiendaIS.Shared.Models.TalleDTO", b =>
                 {
-                    b.HasOne("LaTiendaIS.Shared.Models.TipoTalle", "TipoTalle")
+                    b.HasOne("LaTiendaIS.Shared.Models.TipoTalleDTO", "TipoTalle")
                         .WithMany()
                         .HasForeignKey("IdTipoTalle")
                         .OnDelete(DeleteBehavior.Cascade)
