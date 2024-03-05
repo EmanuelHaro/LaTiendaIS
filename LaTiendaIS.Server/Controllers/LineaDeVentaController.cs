@@ -90,15 +90,15 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVenta LineaDeVentaDTO)
+        public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbLineaDeVenta = _mapper.Map<LineaDeVentaDTO>(LineaDeVentaDTO);
+                var dbLineaDeVenta = _mapper.Map<LineaDeVentaDTO>(LineaDeVenta);
 
-                dbLineaDeVenta.Articulo = _dbContext.Articulo.FirstOrDefault(a => a.IdCodigo == LineaDeVentaDTO.IdArticulo);
-                dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVentaDTO.IdVenta);
+                dbLineaDeVenta.Articulo = _dbContext.Articulo.FirstOrDefault(a => a.IdCodigo == LineaDeVenta.IdArticulo);
+                dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVenta.IdVenta);
 
                 _dbContext.LineaDeVenta.Add(dbLineaDeVenta);
                 await _dbContext.SaveChangesAsync();

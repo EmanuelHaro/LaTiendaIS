@@ -36,10 +36,10 @@ namespace LaTiendaIS.Shared
 
 
         public int IdMarca { get; set; } //ID FK Marca
-        public virtual MarcaDTO? Marca { get; set; }
+        public virtual Marca? Marca { get; set; }
 
         public int IdCategoria { get; set; } //ID FK Categoria
-        public virtual CategoriaDTO? Categoria { get; set; }
+        public virtual Categoria? Categoria { get; set; }
 
        
     }

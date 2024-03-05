@@ -20,11 +20,11 @@ namespace LaTiendaIS.Shared
         public int IdArticulo { get; set; }
         public virtual Articulo Articulo { get; set; }
 
-        public int IdTalle { get; set; } //ID FK Talle
-        public virtual TalleDTO? Talle { get; set; }
+        public int IdTalle { get; set; } 
+        public virtual Talle? Talle { get; set; }
 
-        public int IdColor { get; set; } //ID FK Color
-        public virtual ColorArticuloDTO? Color { get; set; }
+        public int IdColor { get; set; } 
+        public virtual ColorArticulo? Color { get; set; }
 
     }
 }
