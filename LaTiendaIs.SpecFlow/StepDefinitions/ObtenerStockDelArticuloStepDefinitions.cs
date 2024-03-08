@@ -1,19 +1,36 @@
+using LaTiendaIs.SpecFlow.Server;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using TechTalk.SpecFlow;
+using static System.Net.WebRequestMethods;
 
 namespace LaTiendaIs.SpecFlow.StepDefinitions
 {
     [Binding]
     public class ObtenerStockDelArticuloStepDefinitions
     {
-        private List<Articulo> _listaArticulos;
+        private List<Articulo> _listaArticulos ;
         private List<Stock> _stock;
         private List<Stock> _stockResultado;
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
+
+
+        [BeforeTestRun]
+        public static void Init()
+        {
+            //arrancar el servidor
+        }
+
+        public ObtenerStockDelArticuloStepDefinitions()
+        {
+            _listaArticulos = new List<Articulo>();
+            _stock = new List<Stock>();
+            _stockResultado= new List<Stock>();
+            _httpClient = ServidorHelper.ArrancarServidor();
+        }
 
         [Given(@"Existe el siguiente articulo:")]
         public void GivenExisteElSiguienteArticulo(Table table)
@@ -61,13 +78,13 @@ namespace LaTiendaIs.SpecFlow.StepDefinitions
         }
 
         [When(@"se introduce el codigo (.*)")]
-        public void WhenSeIntroduceElCodigo(int idArticulo)
+        public async Task WhenSeIntroduceElCodigo(int idArticulo)
         {
-            var result = _httpClient.GetFromJsonAsync<List<Stock>>($"api/Articulo/Stock/{idArticulo}");
-            if (result!.IsCompleted)
-                _stock =  result.Result!;
+            var result = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Articulo/Stock/{idArticulo}");
+            if (result!= null)
+                _stock =  result;
             else
-                throw new Exception(result.Status.ToString());
+                throw new Exception("El resultado de la llamada a la Api es nulo");
 
         }
 
