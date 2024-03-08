@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LaTiendaIS.Server\LaTiendaIS.Server.csproj" />
     <ProjectReference Include="..\LaTiendaIS.Shared\LaTiendaIS.Shared.csproj" />
+    <ProjectReference Include="..\LaTiendaIS.Utilidades\LaTiendaIS.Utilidades.csproj" />
   </ItemGroup>
 
 </Project>

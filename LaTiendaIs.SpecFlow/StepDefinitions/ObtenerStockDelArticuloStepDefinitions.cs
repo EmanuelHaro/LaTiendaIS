@@ -33,20 +33,26 @@ namespace LaTiendaIs.SpecFlow.StepDefinitions
         }
 
         [Given(@"Existe el siguiente articulo:")]
-        public void GivenExisteElSiguienteArticulo(Table table)
+        public async Task GivenExisteElSiguienteArticulo(Table table)
         {
-            
-            foreach (var row in table.Rows)
-            {
-                _listaArticulos.Add(new Articulo
-                {
-                    CodigoTienda = Convert.ToInt32(row["CodigoTienda"]),
-                    Descripcion = row["Descripcion"].ToString(),
-                    Costo = Convert.ToDouble(row["Costo"]),
-                    MargenDeGanacia = Convert.ToSingle(row["MargenDeGanacia"]),
-                    PorcentajeIVA = Convert.ToSingle(row["PorcentajeIVA"])
-                });
-            }
+
+            var result = await _httpClient.GetFromJsonAsync<List<Articulo>>($"api/Articulo/");
+            if (result != null)
+                _listaArticulos = result;
+            else
+                throw new Exception("El resultado de la llamada a la Api es nulo");
+
+            //foreach (var row in table.Rows)
+            //{
+            //    _listaArticulos.Add(new Articulo
+            //    {
+            //        CodigoTienda = Convert.ToInt32(row["CodigoTienda"]),
+            //        Descripcion = row["Descripcion"].ToString(),
+            //        Costo = Convert.ToDouble(row["Costo"]),
+            //        MargenDeGanacia = Convert.ToSingle(row["MargenDeGanacia"]),
+            //        PorcentajeIVA = Convert.ToSingle(row["PorcentajeIVA"])
+            //    });
+            //}
         }
 
         [Given(@"el Stock:")]
@@ -82,7 +88,7 @@ namespace LaTiendaIs.SpecFlow.StepDefinitions
         {
             var result = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Articulo/Stock/{idArticulo}");
             if (result!= null)
-                _stock =  result;
+                _stockResultado =  result;
             else
                 throw new Exception("El resultado de la llamada a la Api es nulo");
 

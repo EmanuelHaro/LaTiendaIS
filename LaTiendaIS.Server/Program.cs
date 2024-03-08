@@ -6,8 +6,8 @@ using AutoMapper;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,11 +30,11 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
-{
-    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
-    //dataContext.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
+//{
+//    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
+//    //dataContext.Database.Migrate();
+//}
 
 
 // Configure the HTTP request pipeline.

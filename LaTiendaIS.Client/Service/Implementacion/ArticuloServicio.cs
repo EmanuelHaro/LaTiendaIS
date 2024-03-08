@@ -32,15 +32,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
             else
                 throw new Exception(result.Mensaje);
         }
-        public async Task<List<Stock>> ObtenerStock(int idArticulo)
-        {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<Stock>>>($"api/Articulo/Stock/{idArticulo}");
-
-            if (result!.EsCorrecto)
-                return result.Valor!;
-            else
-                throw new Exception(result.Mensaje);
-        }
+        
 
         public async Task<int> AgregarArticulo(Articulo Articulo)
         {
@@ -58,13 +50,11 @@ namespace LaTiendaIS.Client.Service.Implementacion
 
             if (Articulo.IdCodigo == idArticulo)
             {
-                // Si el cliente tiene un Id, se trata de una modificación
-                result = await _httpClient.PutAsJsonAsync($"api/Cliente/{idArticulo}", Articulo);
+                result = await _httpClient.PutAsJsonAsync($"api/Articulo/{idArticulo}", Articulo);
             }
             else
             {
-                // Si el cliente no tiene un Id válido, se trata de una adición
-                result = await _httpClient.PostAsJsonAsync("api/Cliente", idArticulo);
+                result = await _httpClient.PostAsJsonAsync("api/Articulo", idArticulo);
             }
 
             var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();

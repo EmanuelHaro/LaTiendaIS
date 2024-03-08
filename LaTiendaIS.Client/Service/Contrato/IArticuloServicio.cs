@@ -6,7 +6,6 @@ namespace LaTiendaIS.Client.Service.Contrato
     {
         Task<List<Articulo>> ListarArticulos();
         Task<Articulo> ObtenerArticulo(int idArticulo);
-        Task<List<Stock>> ObtenerStock(int idArticulo);
         Task<int> AgregarArticulo(Articulo Articulo);
         Task<int> ModificarArticulo(int idArticulo, Articulo Articulo);
         Task<bool> EliminarArticulo(int idArticulo);

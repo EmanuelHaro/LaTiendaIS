@@ -19,62 +19,10 @@ namespace LaTiendaIS.Server.Controllers
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        [HttpGet]
-        [Route("Stock/{IdCodigo}")]
-        public async Task<ActionResult> ObtenerListaDeTalleYColorDelStock(int IdCodigo)
-        {
-            var responseApi = new ResponseAPI<List<Stock>>();
-            var ArticuloDTO = new Articulo();
-            var Stock = new List<Stock>();
-
-            try
-            {
-                var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
-                if(dbArticulo!=null)
-                {
-                    var dbStock = await _dbContext.Stock.Where(a => a.IdArticulo == dbArticulo.IdCodigo).ToListAsync();
-
-
-                    if (dbStock != null)
-                    {
-                        foreach (var stockItem in dbStock)
-                        {
-                            stockItem.Talle = _dbContext.Talle.Find(stockItem.IdTalle);
-                            stockItem.Color = _dbContext.ColorArticulo.Find(stockItem.IdColor);
-                        }
-                        Stock = _mapper.Map<List<Stock>>(dbStock);
-
-                        responseApi.EsCorrecto = true;
-                        responseApi.Valor = Stock;
-                    }
-                    else
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "Stock no coincide";
-                    }
-
-                }
-                else
-                {
-                    responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Codigo de Articulo no coincide";
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                responseApi.EsCorrecto = false;
-                responseApi.Mensaje = ex.Message;
-            }
-
-            return Ok(responseApi);
-        }
 
 
 
         [HttpGet]
-        [Route("Lista")]
         public async Task<IActionResult> ListarArticulos()
         {
             var responseApi = new ResponseAPI<List<Articulo>>();
@@ -140,8 +88,6 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
-
-
 
 
         [HttpPost]
@@ -219,7 +165,6 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
-
 
         [HttpDelete]
         [Route("{IdCodigo}")]

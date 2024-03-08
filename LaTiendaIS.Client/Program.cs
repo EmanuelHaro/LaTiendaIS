@@ -17,6 +17,7 @@ builder.Services.AddScoped<IVentaServicio, VentaServicio>();
 builder.Services.AddScoped<ILineaDeVentaServicio, LineaDeVentaServicio>();
 builder.Services.AddScoped<IClienteServicio, ClienteServicio>();
 builder.Services.AddScoped<IComprobanteServicio, ComprobanteServicio>();
+builder.Services.AddScoped<IStockServicio, StockServicio>();
 
 // Añado MudBlazor
 builder.Services.AddMudServices();

@@ -69,7 +69,7 @@ namespace LaTiendaIS.Server.Controllers
 
 
                 _dbContext.Comprobante.Add(dbComprobante);
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(); //Error que da excepcion
 
                 if (dbComprobante.IdComprobante != 0)
                 {

@@ -4,9 +4,10 @@
 @* @inject IEmpleadoService _empleadoServicio *@
 
 @using LaTiendaIS.Shared;
-@using LaTiendaIS.Client.Service.Contrato;
+@using LaTiendaIS.Client.Service.Contrato
 @inject IArticuloServicio _articuloServicio
 @inject IVentaServicio _ventaServicio
+@inject IStockServicio _stockServicio
 @inject ILineaDeVentaServicio _lineadeventaServicio
 
 @using System.Text.RegularExpressions
@@ -45,7 +46,7 @@
 
 @* Ingreso de color*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudSelect T="string" Label="Color" @bind-Value="colorElegido" AnchorOrigin="Origin.BottomCenter">
+    <MudSelect T="string" Label="Color" @bind-Value="colorElegido" AnchorOrigin="Origin.BottomCenter" TextChanged="ObtenerCantidad" >
         @foreach (var color in ListaStock.Where(art => art.Talle.DescripcionTalle == talleElegido).Select(art => art.Color.DescripcionColor).Distinct())
         {
             <MudSelectItem Value="@(color)" />
@@ -53,11 +54,20 @@
     </MudSelect>
 </div>
 
+@* Ingreso de cantidad*@
+
+<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+    <MudNumericField @bind-Value="cantidadElegida" Label="Cantidad" Variant="Variant.Text" Min="0" Max="cantidadMaxima" />
+</div>
+
+
+    
 
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(TextCodigo)">Agregar</MudButton>
 
 </div>
+
 <MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<Articulo,bool>(FilterFunc)"
 @bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
     <ToolBarContent>
@@ -114,7 +124,7 @@
 
 
 
-@code {
+    @code {
     private List<string> editEvents = new();
     private bool dense = false;
     private bool hover = true;
@@ -126,6 +136,8 @@
     private double? Total = 0;
     private string talleElegido = "";
     private string colorElegido = "";
+    private int cantidadElegida = 0;
+    private int cantidadMaxima = 0;
 
     private Articulo selectedItem1 = null;
     private HashSet<Articulo> selectedItems1 = new HashSet<Articulo>();
@@ -168,33 +180,60 @@
 
     private async void AgregarArticulo(int idArticulo)
     {
-        if (idArticulo!=0)
+        if (idArticulo!=0 && cantidadElegida!=0)
         {
             try
             {
 
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
+
+
                 if (!ArticuloDTOs.Contains(articulo))
                 {
-                    ArticuloDTOs.Add(articulo);
-                    venta1.Total += articulo.PrecioDeVenta;
-                    StateHasChanged();
-                    Snackbar.Add("Articulo agregado", Severity.Success);
-                    LineaDeVenta lineaDeVenta = new LineaDeVenta();
-                    lineaDeVenta.IdArticulo = articulo.IdCodigo;
-                    lineaDeVenta.Cantidad = 1;
-                    lineaDeVenta.IdVenta = venta1.IdVenta;
+                    Stock stock1 = new Stock();
+                    stock1.Cantidad = cantidadElegida;
+                    var result = _stockServicio.ModificarCantidadStock(TextCodigo, talleElegido, colorElegido, stock1);
+                    int cant = await _stockServicio.ObtenerCantidad(idArticulo, talleElegido, colorElegido);
 
-                    var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-                    if (response!= null)
+                    if (result != null && cant>0)
                     {
-                        Snackbar.Add("Linea de venta creada", Severity.Success);
+                        Snackbar.Add("Stock modificado", Severity.Success);
+                        Snackbar.Add("Articulo agregado", Severity.Success);
+
+
+                        LineaDeVenta lineaDeVenta = new LineaDeVenta();
+                        lineaDeVenta.IdArticulo = articulo.IdCodigo;
+                        lineaDeVenta.Cantidad = cantidadElegida;
+                        lineaDeVenta.IdVenta = venta1.IdVenta;
+                        var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
+                        if (response != null)
+                        {
+                            ArticuloDTOs.Add(articulo);
+                            venta1.Total += articulo.PrecioDeVenta;
+                            Snackbar.Add("Linea de venta creada", Severity.Success);
+
+
+
+                            // Clear the fields
+                            talleElegido = "";
+                            colorElegido = "";
+                            cantidadElegida = 0;
+                            cantidadMaxima = 0; // Reset the maximum quantity as well
+
+                            StateHasChanged(); // Trigger a re-render to reflect changes
+
+
+                        }
+                        else
+                        {
+                            Snackbar.Add("Fallo", Severity.Error);
+                        }
+
                     }
                     else
                     {
-                        Snackbar.Add("Fallo", Severity.Error);
+                        Snackbar.Add("Cantidad de producto solicitada mayor a existente!", Severity.Error);
                     }
-
                 }
                 else
                 {
@@ -211,24 +250,21 @@
         }
         else
         {
-            Snackbar.Add("Codigo Invalido", Severity.Warning);
+            Snackbar.Add("Codigo Invalido/Cantidad elegida = 0 ", Severity.Warning);
         }
     }
 
-    private async void ObtenerStock(int idArticulo)
+    private async void ObtenerStock(int codigoTienda)
     {
-        if (idArticulo != 0)
+        if (codigoTienda != 0)
         {
             try
             {
-                var art = await _articuloServicio.ObtenerArticulo(idArticulo);
-                if(art!=null)
-                {
-                    ListaStock = await _articuloServicio.ObtenerStock(art.IdCodigo);
-                    StateHasChanged();
-                    Snackbar.Add("Codigo Valido", Severity.Success);
-                }
-                
+                ListaStock = await _stockServicio.ObtenerStock(codigoTienda);
+                StateHasChanged();
+                Snackbar.Add("Codigo Valido", Severity.Success);
+
+
             }
             catch (Exception ex)
             {
@@ -250,22 +286,46 @@
         venta1.Total -= articulo.PrecioDeVenta;
 
         LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
-        
+
 
         var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);
         if (response != null)
         {
             Snackbar.Add("Línea de venta eliminada", Severity.Success);
+            Stock stock1 = new Stock();
+            stock1.Cantidad = cantidadElegida;
+            var result = _stockServicio.AgregarCantidadStock(TextCodigo, talleElegido, colorElegido, stock1);
+            if (result != null)
+            {
+                Snackbar.Add("Stock modificado", Severity.Success);
+                StateHasChanged();
+            }
         }
         else
         {
             Snackbar.Add("Línea de venta no eliminada", Severity.Error);
         }
-        
+
 
         StateHasChanged();
         Snackbar.Add("Artículo eliminado", Severity.Warning);
     }
+
+    private async void ObtenerCantidad()
+    {
+        if (talleElegido != "" && colorElegido != "")
+        {
+            var result = await _stockServicio.ObtenerCantidad(TextCodigo, talleElegido, colorElegido);
+            if (result != null)
+            {
+                cantidadMaxima = result; // Or any default value you want
+                StateHasChanged();
+            }
+        }
+        
+    }
+
+
 
     private async void Pagar()
     {
@@ -309,81 +369,4 @@
 
 
 
-
-    // private async void ObtenerArticulo(int idArticulo, string talle, string color)
-    // {
-    //     if (idArticulo != 0)
-    //     {
-    //         try
-    //         {
-    //             var art1 = ListaArticulosCodigos.Where(p => p.Talle.DescripcionTalle == talle).FirstOrDefault();
-    //             var art2 = ListaArticulosCodigos.Where(p => p.Color.DescripcionColor == color).FirstOrDefault();
-    //             int talleS = art1.IdTalle;
-    //             int colorS = art2.IdColor;
-
-    //             var articulo = await _articuloServicio.ObtenerArticulo(idArticulo, talleS, colorS);
-    //             if (!ArticuloDTOs.Contains(articulo))
-    //             {
-    //                 ArticuloDTOs.Add(articulo);
-    //                 venta1.Total += articulo.PrecioDeVenta;
-    //                 StateHasChanged();
-    //                 Snackbar.Add("Articulo agregado", Severity.Success);
-    //                 LineaDeVenta lineaDeVenta = new LineaDeVenta();
-    //                 lineaDeVenta.IdArticulo = articulo.IdCodigo;
-    //                 lineaDeVenta.Cantidad = 1;
-    //                 lineaDeVenta.IdVenta = venta1.IdVenta;
-
-    //                 var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-    //                 if (response != null)
-    //                 {
-    //                     Snackbar.Add("Linea de venta creada", Severity.Success);
-    //                 }
-    //                 else
-    //                 {
-    //                     Snackbar.Add("Fallo", Severity.Error);
-    //                 }
-
-    //             }
-    //             else
-    //             {
-    //                 Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
-    //             }
-
-
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             Snackbar.Add("Codigo Invalido", Severity.Warning);
-    //         }
-
-    //     }
-    //     else
-    //     {
-    //         Snackbar.Add("Codigo Invalido", Severity.Warning);
-    //     }
-    // }
-
-    // private async void ObtenerListaArticulo(int idArticulo)
-    // {
-    //     if (idArticulo != 0)
-    //     {
-    //         try
-    //         {
-    //             var lista = await _articuloServicio.ListarArticulos();
-    //             ListaArticulosCodigos = lista.Where(p => p.CodigoTienda == idArticulo).ToList();
-
-    //             StateHasChanged();
-    //             Snackbar.Add("Codigo Valido", Severity.Success);
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             Snackbar.Add("Codigo Invalido", Severity.Warning);
-    //         }
-
-    //     }
-    //     else
-    //     {
-    //         Snackbar.Add("Codigo Invalido", Severity.Warning);
-    //     }
-    // }
 }

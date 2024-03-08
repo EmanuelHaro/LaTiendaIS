@@ -20,9 +20,14 @@ namespace LaTiendaIS.Tests
         {
 
             // Arrange
-            var art1 = new Articulo { IdCodigo = 1, Costo = 1000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f };
-            var art2 = new Articulo { IdCodigo = 2, Costo = 2000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f };
+            var art1 = new Articulo { IdCodigo = 1, Costo = 1000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f , CodigoTienda = 1000};
+            var art2 = new Articulo { IdCodigo = 2, Costo = 2000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f , CodigoTienda = 1001 };
 
+            var listaArticulos = new List<ArticuloDTO>
+            {
+                 new ArticuloDTO { IdCodigo = 1, Costo = 1000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f , CodigoTienda = 1000},
+             new ArticuloDTO { IdCodigo = 2, Costo = 2000, MargenDeGanacia = 15, PorcentajeIVA = 0.21f, CodigoTienda = 1001 },
+            }.AsQueryable();
 
             var datosStock = new List<StockDTO>
         {
@@ -54,25 +59,32 @@ namespace LaTiendaIS.Tests
                 .Setup(m => m.GetEnumerator())
                 .Returns(datosStock.GetEnumerator());
 
+            var mockSetArticulo = new Mock<DbSet<ArticuloDTO>>();
+
+            mockSetArticulo.As<IQueryable<ArticuloDTO>>()
+                         .Setup(m => m.GetEnumerator())
+                         .Returns(listaArticulos.GetEnumerator());
+
             var mapperMock = new Mock<IMapper>();
             mapperMock.Setup(m => m.Map<string, string>(It.IsAny<string>())).Returns((string input) => input.ToUpper()); // Mocking the mapping behavior
 
             var mockContext = new Mock<DBLaTiendaContext>(new DbContextOptions<DBLaTiendaContext>());
             mockContext.Setup(x => x.Set<StockDTO>()).Returns(mockStockSet.Object);
+            mockContext.Setup(x => x.Set<ArticuloDTO>()).Returns(mockSetArticulo.Object);
 
             var controller = new ArticuloController(mockContext.Object, mapperMock.Object);
 
             // Act
-            var result = await controller.ObtenerListaDeTalleYColorDelStock(art1.IdCodigo);
+            //var result = await controller.ObtenerListaDeTalleYColorDelStock(art1.CodigoTienda);
 
             // Assert
-            Assert.IsNotNull(result);
-            var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var responseApi = okResult.Value as ResponseAPI<List<Stock>>;
-            Assert.IsNotNull(responseApi);
-            Assert.IsTrue(responseApi.EsCorrecto);
-            Assert.IsNotNull(responseApi.Valor);
+            Assert.IsNotNull(null);
+            //var okResult = result as OkObjectResult;
+            //Assert.IsNotNull(okResult);
+            //var responseApi = okResult.Value as ResponseAPI<List<Stock>>;
+            //Assert.IsNotNull(responseApi);
+            //Assert.IsTrue(responseApi.EsCorrecto);
+            //Assert.IsNotNull(responseApi.Valor);
 
 
         }

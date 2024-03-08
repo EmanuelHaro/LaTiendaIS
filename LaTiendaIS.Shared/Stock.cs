@@ -14,11 +14,11 @@ namespace LaTiendaIS.Shared
 
         public int Cantidad { get; set; }
         public int IdSucursal { get; set; }
-        public virtual Sucursal Sucursal { get; set; }
+        public virtual Sucursal? Sucursal { get; set; }
 
 
         public int IdArticulo { get; set; }
-        public virtual Articulo Articulo { get; set; }
+        public virtual Articulo? Articulo { get; set; }
 
         public int IdTalle { get; set; } 
         public virtual Talle? Talle { get; set; }
