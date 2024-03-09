@@ -10,6 +10,19 @@ namespace LaTiendaIS.Shared
 {
     public class Stock
     {
+        public Stock(int cantidad, ColorArticulo color, Talle talle, Articulo articulo)
+        {
+            Cantidad = cantidad;
+            Color = color;
+            Talle = talle;
+            Articulo = articulo;
+        }
+
+        public Stock()
+        {
+            
+        }
+
         public int IdStock { get; set; }
 
         public int Cantidad { get; set; }

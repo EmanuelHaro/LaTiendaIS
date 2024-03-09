@@ -122,7 +122,6 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ModificarCantidad(int codigoTienda, string talle, string color, Stock stock)
         {
             var responseApi = new ResponseAPI<int>();
-
             try
             {
                 var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
@@ -148,6 +147,9 @@ namespace LaTiendaIS.Server.Controllers
                         stock.IdTalle = dbStock.IdTalle;
                         stock.IdColor = dbStock.IdColor;
                         stock.IdStock = dbStock.IdStock;
+                        stock.Articulo = null;
+                        stock.Color = null;
+                        stock.Talle = null;
 
                         // Update properties of dbArticulo with values from ArticuloDTO
                         _mapper.Map(stock, dbStock);
@@ -212,13 +214,15 @@ namespace LaTiendaIS.Server.Controllers
                         return NotFound(responseApi);
                     }
                     //Cambiar propiedades de stock
-                    stock.Cantidad = dbStock.Cantidad - stock.Cantidad;
+                    stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
                     stock.IdSucursal = dbStock.IdSucursal;
                     stock.IdArticulo = dbStock.IdArticulo;
                     stock.IdTalle = dbStock.IdTalle;
                     stock.IdColor = dbStock.IdColor;
                     stock.IdStock = dbStock.IdStock;
-
+                    stock.Articulo = null;
+                    stock.Color = null;
+                    stock.Talle = null;
 
                     // Update properties of dbArticulo with values from ArticuloDTO
                     _mapper.Map(stock, dbStock);

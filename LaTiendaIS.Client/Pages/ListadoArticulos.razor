@@ -1,7 +1,5 @@
 ﻿@page "/listadoArticulos"
 
-@* @using LaTiendaIS.Client.Services.Contrato; *@
-@* @inject IEmpleadoService _empleadoServicio *@
 
 @using LaTiendaIS.Shared;
 @using LaTiendaIS.Client.Service.Contrato
@@ -30,9 +28,6 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerStock(codigoTienda)">Buscar</MudButton>
     
  </div>
-
-
-
 
 @* Ingreso de talle*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
@@ -122,9 +117,6 @@
 </div>
 
 
-
-
-
 @code {
     private List<string> editEvents = new();
     private bool dense = false;
@@ -144,10 +136,9 @@
     private ArticuloStockViewModel selectedItem1 = null;
     private HashSet<Articulo> selectedItems1 = new HashSet<Articulo>();
     private List<ArticuloStockViewModel> listaArticulosModel = new List<ArticuloStockViewModel>();
-    private List<Articulo> listaArticuloss = new List<Articulo>();
+    private List<Articulo> listaArticulos = new List<Articulo>();
     private List<Stock> ListaStock = new List<Stock>(); // se carga cuando presionamos el boton Buscar
     private List<Stock> stockTabla = new List<Stock>();
-    private List<LineaDeVenta> listaLDV = new List<LineaDeVenta>();
     public Venta venta1;
 
 
@@ -205,14 +196,8 @@
                 if (!stockTabla.Any(stock => stock.IdArticulo == articulo.IdCodigo && stock.Talle.DescripcionTalle == talleElegido && stock.Color.DescripcionColor == colorElegido))
                 {
 
-                    Stock stock1 = new Stock()
-                        {
-                            Cantidad = cantidadElegida,
-                            Color = new ColorArticulo() { DescripcionColor = colorElegido },
-                            Talle = new Talle() { DescripcionTalle = talleElegido },
-                            IdArticulo = articulo.IdCodigo,
-                            Articulo = new Articulo() { CodigoTienda = idArticulo },
-                        };
+                    Stock stock1 = new Stock(cantidadElegida, new ColorArticulo() { DescripcionColor = colorElegido }, new Talle() { DescripcionTalle = talleElegido }, articulo);
+
 
                     var articuloStockViewModel = new ArticuloStockViewModel
                         {
@@ -236,13 +221,12 @@
                             lineaDeVenta.Cantidad = cantidadElegida;
                             lineaDeVenta.IdVenta = venta1.IdVenta;
                             var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-                            listaLDV.Add(lineaDeVenta);
 
                             if (response != null)
                             {
                                 // listaArticulos.Add(articulo);
                                 listaArticulosModel.Add(articuloStockViewModel);
-                                listaArticuloss.Add(articulo);
+                                listaArticulos.Add(articulo);
                                 venta1.Total += (decimal)(articulo.PrecioDeVenta * cantidadElegida);
                                 Snackbar.Add("Articulo agregado", Severity.Success);
 
@@ -251,7 +235,7 @@
                                 cantidadElegida = 0;
                                 cantidadMaxima = 0;
 
-                                
+
 
                                 StateHasChanged();
                             }
@@ -317,43 +301,49 @@
 
     private async void EliminarArticulo(int idArticulo)
     {
-        var articulo = listaArticuloss.FirstOrDefault(a => a.IdCodigo == idArticulo);
-
-
-
-         var stockElegido = ListaStock.FirstOrDefault(s => s.IdArticulo == idArticulo && s.Talle.DescripcionTalle == talleElegido && s.Color.DescripcionColor == colorElegido);
-
-        int cant = await _stockServicio.ObtenerCantidad(articulo.CodigoTienda, stockElegido.Talle.DescripcionTalle, stockElegido.Color.DescripcionColor);
-
-        venta1.Total -= (decimal)articulo.PrecioDeVenta * cant;
-
-        LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
-
-
-        var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);
-        if (response != null)
+        try
         {
-            Snackbar.Add("Línea de venta eliminada", Severity.Success);
-            Stock stock1 = new Stock();
-            stock1.Cantidad = cantidadElegida;
+            var articulo = listaArticulos.FirstOrDefault(a => a.IdCodigo == idArticulo);
 
-            //A revisar
-            var result = _stockServicio.AgregarCantidadStock(articulo.CodigoTienda, talleElegido, colorElegido, stock1);
-            if (result != null)
+            var stockbuscado = listaArticulosModel.Find(a => a.Articulo.IdCodigo == idArticulo);
+
+            int cant = stockbuscado.Cantidad;
+
+            LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
+
+
+            var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);
+            if (response != null)
             {
-                Snackbar.Add("Stock modificado", Severity.Success);
-                StateHasChanged();
-                listaArticuloss.Remove(articulo);
+
+                Stock stock1 = new Stock();
+                stock1.Cantidad = cant;
+
+                //A revisar
+                var result = _stockServicio.AgregarCantidadStock(articulo.CodigoTienda, stockbuscado.Stock.Talle.DescripcionTalle, stockbuscado.Stock.Color.DescripcionColor, stock1);
+                if (result != null)
+                {
+                    listaArticulos.Remove(articulo);
+                    listaArticulosModel.Remove(stockbuscado);
+                    venta1.Total -= (decimal)articulo.PrecioDeVenta * cant;
+                    Snackbar.Add("Línea de venta eliminada", Severity.Success);
+                    Snackbar.Add("Stock modificado", Severity.Success);
+                    StateHasChanged();
+                }
             }
+            else
+            {
+                Snackbar.Add("Línea de venta no eliminada", Severity.Error);
+            }
+
+
+            StateHasChanged();
+            Snackbar.Add("Artículo eliminado", Severity.Warning);
         }
-        else
+        catch(Exception ex)
         {
-            Snackbar.Add("Línea de venta no eliminada", Severity.Error);
+            Snackbar.Add("Error", Severity.Error);
         }
-
-
-        StateHasChanged();
-        Snackbar.Add("Artículo eliminado", Severity.Warning);
     }
 
     private async void ObtenerCantidad()
@@ -396,7 +386,7 @@
         var response = await _ventaServicio.EliminarVenta(venta1.IdVenta);
         if (response != null)
         {
-            listaArticuloss.Clear();
+            listaArticulos.Clear();
             Total = 0;
             _navManager.NavigateTo("/");
         }
