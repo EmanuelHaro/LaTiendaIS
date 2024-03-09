@@ -60,12 +60,15 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarCliente(Cliente ClienteDTO)
+        public async Task<ActionResult> AgregarCliente(Cliente cliente)
         {
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbCliente = _mapper.Map<ClienteDTO>(ClienteDTO);
+                var dbCondTributaria = await _dbContext.CondicionTributaria.FirstOrDefaultAsync(cond => cond.Descripcion == cliente.CondicionTributaria.Descripcion);
+                cliente.IdCondicionTributaria = dbCondTributaria.IdCondicionTributaria;
+
+                var dbCliente = _mapper.Map<ClienteDTO>(cliente);
 
 
                 _dbContext.Cliente.Add(dbCliente);

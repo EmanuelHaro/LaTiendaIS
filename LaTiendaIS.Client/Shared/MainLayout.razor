@@ -8,13 +8,13 @@
 <PageTitle>La Tienda</PageTitle>
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        La Tienda - Ingenieria de Software
+    <MudAppBar Color="Color.Primary" Fixed="false">
+        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" aria-label="latienda"></MudIconButton>
+        <MudText>La Tienda de IS</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.People" aria-label="usuario"></MudIconButton>
+        <MudText>Usuario: Ian</MudText>
     </MudAppBar>
-    <MudDrawer @bind-Open="@_drawerOpen">
-        <NavMenu />
-    </MudDrawer>
     <MudMainContent>
         @Body
     </MudMainContent>

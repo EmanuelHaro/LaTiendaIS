@@ -237,13 +237,13 @@
             if (pagoExitoso)
             {
 
-
-
                 //pido datos del cliente y realizo factura dependiendo de condicion tributaria
                 Cliente cliente = new Cliente();
+                CondicionTributaria cond = new CondicionTributaria();
+                cond.Descripcion = condTributaria;
+                cliente.CondicionTributaria= cond;
                 cliente.Nombre = nombreTitular;
                 cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-                //cliente.CondicionTributaria.Descripcion = condTributaria; //TODO:tenemos que buscar el id
 
                 //servicio cliente -> agregar cliente
                 var response = _clienteServicio.AgregarCliente(cliente);
@@ -372,35 +372,38 @@
         }
     }
 
-    private async void Pagar()
-    {
-        if (Vuelto!="Cantidad insuficiente")
-        {
-            //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-            Cliente cliente = new Cliente();
-            cliente.Nombre = nombreTitular;
-            cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-            cliente.IdCondicionTributaria = 2; //TDO: hay que buscar ID
+    // private async void Pagar()
+    // {
+    //     if (Vuelto!="Cantidad insuficiente")
+    //     {
+    //         //pido datos del cliente y realizo factura dependiendo de condicion tributaria
+    //         Cliente cliente = new Cliente();
+    //         cliente.Nombre = nombreTitular;
+    //         cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
 
-            //servicio cliente -> agregar cliente
-            var response = _clienteServicio.AgregarCliente(cliente);
+            
 
-            if (response!=null)
-            {
-                _navManager.NavigateTo("/comprobante");
-                Snackbar.Add("Pagó", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
-            }
-        }
-        else
-        {
-            Snackbar.Add("Monto recibido insufiente", Severity.Error);
-        }
+    //         cliente.IdCondicionTributaria = 2; //TDO: hay que buscar ID
 
-    }
+    //         //servicio cliente -> agregar cliente
+    //         var response = _clienteServicio.AgregarCliente(cliente);
+
+    //         if (response!=null)
+    //         {
+    //             _navManager.NavigateTo("/comprobante");
+    //             Snackbar.Add("Pagó", Severity.Success);
+    //         }
+    //         else
+    //         {
+    //             Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Snackbar.Add("Monto recibido insufiente", Severity.Error);
+    //     }
+
+    // }
 
 
     private async void PagarConEfectivo()
@@ -414,7 +417,9 @@
                 Cliente cliente = new Cliente();
                 cliente.Nombre = nombreTitular;
                 cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-                cliente.IdCondicionTributaria = 1; //TODO:tenemos que buscar el id 
+                CondicionTributaria cond = new CondicionTributaria();
+                cond.Descripcion = condTributaria;
+                cliente.CondicionTributaria = cond;
 
 
                 var response = _clienteServicio.AgregarCliente(cliente);
