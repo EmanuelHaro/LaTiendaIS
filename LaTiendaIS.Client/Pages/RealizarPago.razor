@@ -45,7 +45,7 @@
     else if (medioDePago == "Efectivo")
     {
         <div>
-            <p>Total a pagar: @totalAPagar</p>
+            <p>Total a pagar: @totalAPagar.ToString("0.00")</p>
             <br />
             <p>Monto Recibido: <input type="number" @bind="montoRecibido" /></p>
             <br />
@@ -165,8 +165,8 @@
 
     //Medios de Pago
     private string medioDePago = "";
-    private double totalAPagar; // Cargado en OnInitializedAsync
-    private double montoRecibido;
+    private decimal totalAPagar; // Cargado en OnInitializedAsync
+    private decimal montoRecibido;
 
     private string condTributaria;
     private string[] states =
@@ -198,7 +198,7 @@
 
     private string calcularVuelto()
     {
-        return (montoRecibido - totalAPagar).ToString();
+        return (montoRecibido - totalAPagar).ToString("0.00");
     }
 
     private async void Cancelar()

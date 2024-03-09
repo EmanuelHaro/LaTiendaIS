@@ -33,7 +33,7 @@ var app = builder.Build();
 //using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
 //{
 //    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
-//    //dataContext.Database.Migrate();
+//    dataContext.Database.Migrate();
 //}
 
 

@@ -29,9 +29,14 @@ namespace LaTiendaIS.Shared
             get { return NetoGravado * (PorcentajeIVA); }
         }
 
+        private double _precioDeVenta;
         public double PrecioDeVenta
         {
-            get { return NetoGravado + IVA; }
+            get
+            {
+                _precioDeVenta = Math.Round(NetoGravado + IVA, 2);
+                return _precioDeVenta;
+            }
         }
 
 

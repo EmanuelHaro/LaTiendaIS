@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LaTiendaIS.Shared.Migrations
 {
     [DbContext(typeof(DBLaTiendaContext))]
-    [Migration("20240228225336_InitDB")]
+    [Migration("20240309175747_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -412,8 +412,8 @@ namespace LaTiendaIS.Shared.Migrations
                     b.Property<DateTime>("FechaVenta")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdVenta");
 

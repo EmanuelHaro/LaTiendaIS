@@ -212,7 +212,7 @@ namespace LaTiendaIS.Server.Controllers
                         return NotFound(responseApi);
                     }
                     //Cambiar propiedades de stock
-                    stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
+                    stock.Cantidad = dbStock.Cantidad - stock.Cantidad;
                     stock.IdSucursal = dbStock.IdSucursal;
                     stock.IdArticulo = dbStock.IdArticulo;
                     stock.IdTalle = dbStock.IdTalle;

@@ -26,8 +26,8 @@
 
 @* Ingreso de codigo*@
 <div class="d-flex" style="max-width: 600px; margin: 20px ; margin-top: 10px">
-    <MudTextField @bind-Value="TextCodigo" Variant="Variant.Text" Label="Ingresar Codigo"></MudTextField>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerStock(TextCodigo)">Buscar</MudButton>
+    <MudTextField @bind-Value="codigoTienda" Variant="Variant.Text" Label="Ingresar Codigo"></MudTextField>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerStock(codigoTienda)">Buscar</MudButton>
     
  </div>
 
@@ -61,14 +61,11 @@
 </div>
 
 
-    
-
 <div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(TextCodigo)">Agregar</MudButton>
-
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(codigoTienda)">Agregar</MudButton>
 </div>
 
-<MudTable Items="@ArticuloDTOs" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<Articulo,bool>(FilterFunc)"
+<MudTable Items="@listaArticulosModel" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<ArticuloStockViewModel,bool>(FilterFunc)"
 @bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
     <ToolBarContent>
         <MudText Typo="Typo.h4">Listado de Articulos</MudText>
@@ -80,30 +77,34 @@
         <col />
         <col />
         <col />
+        <col />
+        <col />
         <col style="width:20px;" />
         <col style="width:20px;" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Articulo, object>(x=>x.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.PrecioDeVenta)">Precio De Venta</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Articulo, object>(x=>x.Categoria.DescripcionCategoria)">Categoria</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ArticuloStockViewModel, object>(x=>x.Articulo.IdCodigo)">Codigo</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloStockViewModel, object>(x=>x.Articulo.Descripcion)">Descripcion</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloStockViewModel, object>(x=>x.Articulo.PrecioDeVenta)">Precio De Venta</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloStockViewModel, object>(x=>x.Articulo.Marca.DescripcionMarca)">Marca</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ArticuloStockViewModel, object>(x=>x.Articulo.Categoria.DescripcionCategoria)">Categoria</MudTableSortLabel></MudTh>
         <MudTh>Talle</MudTh>
         <MudTh>Color</MudTh>
+        <MudTh>Cantidad</MudTh>
         <MudTh>Acciones</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="IdCodigo">@context.CodigoTienda</MudTd>
-        <MudTd DataLabel="Descripcion">@context.Descripcion</MudTd>
-        <MudTd DataLabel="PrecioVenta">@context.PrecioDeVenta.ToString("0.00")</MudTd>
-        <MudTd DataLabel="Marca">@context.Marca.DescripcionMarca</MudTd>
-        <MudTd DataLabel="Categoria">@context.Categoria.DescripcionCategoria</MudTd>
-        <MudTd>@(ListaStock.FirstOrDefault(stock => stock.IdArticulo == context.IdCodigo)?.Talle?.DescripcionTalle)</MudTd>
-        <MudTd>@(ListaStock.FirstOrDefault(stock => stock.IdArticulo == context.IdCodigo)?.Color?.DescripcionColor)</MudTd>
-        <MudTd>
-            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Class="pa-0" OnClick="() => EliminarArticulo(context.IdCodigo)" />
-        </MudTd>
+        <MudTd DataLabel="IdCodigo">@context.Articulo.CodigoTienda</MudTd>
+    <MudTd DataLabel="Descripcion">@context.Articulo.Descripcion</MudTd>
+    <MudTd DataLabel="PrecioVenta">@context.Articulo.PrecioDeVenta.ToString("0.00")</MudTd>
+    <MudTd DataLabel="Marca">@context.Articulo.Marca.DescripcionMarca</MudTd>
+    <MudTd DataLabel="Categoria">@context.Articulo.Categoria.DescripcionCategoria</MudTd>
+    <MudTd>@context.Stock?.Talle?.DescripcionTalle</MudTd> 
+    <MudTd>@context.Stock?.Color?.DescripcionColor </MudTd>
+        <MudTd>@context.Stock?.Cantidad </MudTd>
+    <MudTd>
+        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Class="pa-0" OnClick="() => EliminarArticulo(context.Articulo.IdCodigo)" />
+    </MudTd>
     </RowTemplate>
 </MudTable>
 
@@ -124,7 +125,7 @@
 
 
 
-    @code {
+@code {
     private List<string> editEvents = new();
     private bool dense = false;
     private bool hover = true;
@@ -132,17 +133,21 @@
     private bool canCancelEdit = false;
     private bool blockSwitch = false;
     private string searchString = "";
-    private int TextCodigo = 1000;
+    private int codigoTienda = 1000;
     private double? Total = 0;
     private string talleElegido = "";
     private string colorElegido = "";
     private int cantidadElegida = 0;
     private int cantidadMaxima = 0;
+    private int cantidadtabla = 0;
 
-    private Articulo selectedItem1 = null;
+    private ArticuloStockViewModel selectedItem1 = null;
     private HashSet<Articulo> selectedItems1 = new HashSet<Articulo>();
-    private List<Articulo> ArticuloDTOs = new List<Articulo>();
-    private List<Stock> ListaStock = new List<Stock>();
+    private List<ArticuloStockViewModel> listaArticulosModel = new List<ArticuloStockViewModel>();
+    private List<Articulo> listaArticuloss = new List<Articulo>();
+    private List<Stock> ListaStock = new List<Stock>(); // se carga cuando presionamos el boton Buscar
+    private List<Stock> stockTabla = new List<Stock>();
+    private List<LineaDeVenta> listaLDV = new List<LineaDeVenta>();
     public Venta venta1;
 
 
@@ -164,88 +169,116 @@
         // Este método se ejecutará cuando cambie el valor del primer MudSelect
         // Puedes poner lógica adicional aquí si es necesario
         talleElegido = nuevoTalle;
+
     }
 
-    private bool FilterFunc(Articulo articuloDTO)
+    private void HandleColorChanged(string nuevoColor)
+    {
+        colorElegido = nuevoColor;
+        ObtenerCantidad(); // Call ObtenerCantidad after updating colorElegido
+    }
+
+    private bool FilterFunc(ArticuloStockViewModel art)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (articuloDTO.Descripcion.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (art.Articulo.Descripcion.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (articuloDTO.IdCodigo.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (art.Articulo.IdCodigo.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+        // if (articuloDTO.Descripcion.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
+        // if (articuloDTO.IdCodigo.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        //     return true;
         return false;
     }
 
-
     private async void AgregarArticulo(int idArticulo)
     {
-        if (idArticulo!=0 && cantidadElegida!=0)
+        if (idArticulo != 0 && cantidadElegida != 0)
         {
+
             try
             {
-
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
 
-
-                if (!ArticuloDTOs.Contains(articulo))
+                if (!stockTabla.Any(stock => stock.IdArticulo == articulo.IdCodigo && stock.Talle.DescripcionTalle == talleElegido && stock.Color.DescripcionColor == colorElegido))
                 {
-                    Stock stock1 = new Stock();
-                    stock1.Cantidad = cantidadElegida;
-                    var result = _stockServicio.ModificarCantidadStock(TextCodigo, talleElegido, colorElegido, stock1);
+
+                    Stock stock1 = new Stock()
+                        {
+                            Cantidad = cantidadElegida,
+                            Color = new ColorArticulo() { DescripcionColor = colorElegido },
+                            Talle = new Talle() { DescripcionTalle = talleElegido },
+                            IdArticulo = articulo.IdCodigo,
+                            Articulo = new Articulo() { CodigoTienda = idArticulo },
+                        };
+
+                    var articuloStockViewModel = new ArticuloStockViewModel
+                        {
+                            Articulo = articulo,
+                            Stock = stock1,
+                            Cantidad = cantidadElegida // Quantity chosen by the user
+                        };
+
                     int cant = await _stockServicio.ObtenerCantidad(idArticulo, talleElegido, colorElegido);
+                    stockTabla.Add(stock1);
 
-                    if (result != null && cant>0)
+                    if (cant >= cantidadElegida)
                     {
-                        Snackbar.Add("Stock modificado", Severity.Success);
-                        Snackbar.Add("Articulo agregado", Severity.Success);
+                        var result = _stockServicio.ModificarCantidadStock(codigoTienda, talleElegido, colorElegido, stock1);
 
 
-                        LineaDeVenta lineaDeVenta = new LineaDeVenta();
-                        lineaDeVenta.IdArticulo = articulo.IdCodigo;
-                        lineaDeVenta.Cantidad = cantidadElegida;
-                        lineaDeVenta.IdVenta = venta1.IdVenta;
-                        var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
-                        if (response != null)
+                        if (result != null)
                         {
-                            ArticuloDTOs.Add(articulo);
-                            venta1.Total += articulo.PrecioDeVenta;
-                            Snackbar.Add("Linea de venta creada", Severity.Success);
+                            LineaDeVenta lineaDeVenta = new LineaDeVenta();
+                            lineaDeVenta.IdArticulo = articulo.IdCodigo;
+                            lineaDeVenta.Cantidad = cantidadElegida;
+                            lineaDeVenta.IdVenta = venta1.IdVenta;
+                            var response = await _lineadeventaServicio.AgregarLineaDeVenta(lineaDeVenta);
+                            listaLDV.Add(lineaDeVenta);
 
+                            if (response != null)
+                            {
+                                // listaArticulos.Add(articulo);
+                                listaArticulosModel.Add(articuloStockViewModel);
+                                listaArticuloss.Add(articulo);
+                                venta1.Total += (decimal)(articulo.PrecioDeVenta * cantidadElegida);
+                                Snackbar.Add("Articulo agregado", Severity.Success);
 
+                                talleElegido = "";
+                                colorElegido = "";
+                                cantidadElegida = 0;
+                                cantidadMaxima = 0;
 
-                            // Clear the fields
-                            talleElegido = "";
-                            colorElegido = "";
-                            cantidadElegida = 0;
-                            cantidadMaxima = 0; // Reset the maximum quantity as well
+                                
 
-                            StateHasChanged(); // Trigger a re-render to reflect changes
-
-
+                                StateHasChanged();
+                            }
+                            else
+                            {
+                                Snackbar.Add("No se pudo agregar el articulo a la linea de venta", Severity.Error);
+                            }
                         }
-                        else
-                        {
-                            Snackbar.Add("Fallo", Severity.Error);
-                        }
-
                     }
                     else
                     {
                         Snackbar.Add("Cantidad de producto solicitada mayor a existente!", Severity.Error);
                     }
+
                 }
                 else
                 {
                     Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
                 }
-
-
             }
-            catch(Exception ex)
+
+            catch (Exception ex)
             {
                 Snackbar.Add("Codigo Invalido", Severity.Warning);
             }
+
+
 
         }
         else
@@ -260,7 +293,11 @@
         {
             try
             {
-                ListaStock = await _stockServicio.ObtenerStock(codigoTienda);
+                var stockdb = await _stockServicio.ObtenerStock(codigoTienda);
+                foreach (var stock1 in stockdb)
+                {
+                    ListaStock.Add(stock1);
+                }
                 StateHasChanged();
                 Snackbar.Add("Codigo Valido", Severity.Success);
 
@@ -280,10 +317,15 @@
 
     private async void EliminarArticulo(int idArticulo)
     {
-        var articulo = ArticuloDTOs.FirstOrDefault(a => a.IdCodigo == idArticulo);
-        ArticuloDTOs.Remove(articulo);
+        var articulo = listaArticuloss.FirstOrDefault(a => a.IdCodigo == idArticulo);
 
-        venta1.Total -= articulo.PrecioDeVenta;
+
+
+         var stockElegido = ListaStock.FirstOrDefault(s => s.IdArticulo == idArticulo && s.Talle.DescripcionTalle == talleElegido && s.Color.DescripcionColor == colorElegido);
+
+        int cant = await _stockServicio.ObtenerCantidad(articulo.CodigoTienda, stockElegido.Talle.DescripcionTalle, stockElegido.Color.DescripcionColor);
+
+        venta1.Total -= (decimal)articulo.PrecioDeVenta * cant;
 
         LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
 
@@ -294,11 +336,14 @@
             Snackbar.Add("Línea de venta eliminada", Severity.Success);
             Stock stock1 = new Stock();
             stock1.Cantidad = cantidadElegida;
-            var result = _stockServicio.AgregarCantidadStock(TextCodigo, talleElegido, colorElegido, stock1);
+
+            //A revisar
+            var result = _stockServicio.AgregarCantidadStock(articulo.CodigoTienda, talleElegido, colorElegido, stock1);
             if (result != null)
             {
                 Snackbar.Add("Stock modificado", Severity.Success);
                 StateHasChanged();
+                listaArticuloss.Remove(articulo);
             }
         }
         else
@@ -315,7 +360,7 @@
     {
         if (talleElegido != "" && colorElegido != "")
         {
-            var result = await _stockServicio.ObtenerCantidad(TextCodigo, talleElegido, colorElegido);
+            var result = await _stockServicio.ObtenerCantidad(codigoTienda, talleElegido, colorElegido);
             if (result != null)
             {
                 cantidadMaxima = result; // Or any default value you want
@@ -324,8 +369,6 @@
         }
         
     }
-
-
 
     private async void Pagar()
     {
@@ -346,7 +389,6 @@
 
     }
 
-
     private async void CancelarVenta()
     {
         
@@ -354,19 +396,23 @@
         var response = await _ventaServicio.EliminarVenta(venta1.IdVenta);
         if (response != null)
         {
-            ArticuloDTOs.Clear();
+            listaArticuloss.Clear();
             Total = 0;
             _navManager.NavigateTo("/");
         }
     }
 
-    // Método para manejar el clic y redirigir a la página deseada
     private void IrAPagina()
     {
         _navManager.NavigateTo("/realizarpago");
     }
 
 
-
+    public class ArticuloStockViewModel
+    {
+        public Articulo Articulo { get; set; }
+        public Stock Stock { get; set; }
+        public int Cantidad { get; set; } // Quantity selected by the user
+    }
 
 }

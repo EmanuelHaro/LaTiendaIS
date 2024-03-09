@@ -14,7 +14,8 @@ namespace LaTiendaIS.Shared.Models
         [Key]
         public int IdVenta { get; set; }
         public DateTime FechaVenta { get; set; }
-        public double Total { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Total { get; set; }
 
         //// Relación de navegación
         //public virtual ICollection<LineaDeVenta> LineaDeVenta { get; set; }
