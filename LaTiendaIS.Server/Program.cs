@@ -12,9 +12,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DBLaTiendaContext>(options =>
+
+if(builder.Environment.EnvironmentName != "Testing")
+{
+    builder.Services.AddDbContext<DBLaTiendaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Conexion"))
 );
+}
+
 
 
 builder.Services.AddCors(opciones =>

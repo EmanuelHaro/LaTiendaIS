@@ -22,6 +22,32 @@ namespace LaTiendaIS.Server.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ListarStock()
+        {
+            var responseApi = new ResponseAPI<List<Stock>>();
+            var listaStock = new List<Stock>();
+            try
+            {
+                var stockdb = await _dbContext.Stock.ToListAsync();
+                foreach (var stock in stockdb)
+                {
+                    listaStock.Add(_mapper.Map<Stock>(stock));
+                }
+
+                responseApi.EsCorrecto = true;
+                responseApi.Valor = listaStock;
+            }
+            catch (Exception ex)
+            {
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi.Valor);
+        }
+
+
 
         [HttpGet]
         [Route("{codigoTienda}")] //localhost:5020/api/Stock/1000
@@ -72,7 +98,7 @@ namespace LaTiendaIS.Server.Controllers
                 responseApi.Mensaje = ex.Message;
             }
 
-            return Ok(responseApi);
+            return Ok(responseApi.Valor);
         }
 
 
@@ -253,6 +279,41 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
+
+
+        [HttpPost]
+        public async Task<ActionResult> AgregarStock(Stock stock)
+        {
+            var responseApi = new ResponseAPI<int>();
+            try
+            {
+
+                var dbStock = _mapper.Map<StockDTO>(stock);
+
+
+                _dbContext.Stock.Add(dbStock);
+                await _dbContext.SaveChangesAsync();
+
+                if (dbStock.IdStock != 0)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = dbStock.IdStock;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "No se pudo guardar al Articulo";
+                }
+            }
+            catch (Exception ex)
+            {
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
 
 
     }

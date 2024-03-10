@@ -97,19 +97,25 @@ this.ScenarioInitialize(scenarioInfo);
                             "Descripcion",
                             "Costo",
                             "MargenDeGanacia",
-                            "PorcentajeIVA"});
+                            "PorcentajeIVA",
+                            "Marca",
+                            "Categoria"});
                 table2.AddRow(new string[] {
                             "1000",
                             "Remera",
                             "1000",
                             "15",
-                            "0.21"});
+                            "0.21",
+                            "Adidas",
+                            "Ropa Deportiva"});
                 table2.AddRow(new string[] {
                             "1001",
                             "Pantalon",
                             "4000",
                             "20",
-                            "0.21"});
+                            "0.21",
+                            "Adidas",
+                            "Ropa Deportiva"});
 #line 7
  testRunner.Given("Existe el siguiente articulo:", ((string)(null)), table2, "Given ");
 #line hidden
@@ -132,7 +138,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "M",
                             "Rojo"});
                 table3.AddRow(new string[] {
-                            "1",
+                            "2",
                             "Barrio Norte",
                             "1000",
                             "L",
@@ -143,22 +149,10 @@ this.ScenarioInitialize(scenarioInfo);
                             "1001",
                             "S",
                             "Rojo"});
-                table3.AddRow(new string[] {
-                            "1",
-                            "Barrio Norte",
-                            "1001",
-                            "M",
-                            "Rojo"});
-                table3.AddRow(new string[] {
-                            "1",
-                            "Barrio Norte",
-                            "1001",
-                            "M",
-                            "Azul"});
 #line 11
  testRunner.And("el Stock:", ((string)(null)), table3, "And ");
 #line hidden
-#line 20
+#line 18
  testRunner.When("se introduce el codigo 1000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
                 TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
@@ -180,12 +174,12 @@ this.ScenarioInitialize(scenarioInfo);
                             "M",
                             "Rojo"});
                 table4.AddRow(new string[] {
-                            "1",
+                            "2",
                             "Barrio Norte",
                             "1000",
                             "L",
                             "Azul"});
-#line 21
+#line 19
  testRunner.Then("el sistema muestre la lista de Stock del articulo:", ((string)(null)), table4, "Then ");
 #line hidden
             }

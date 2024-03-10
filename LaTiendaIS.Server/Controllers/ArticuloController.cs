@@ -20,8 +20,6 @@ namespace LaTiendaIS.Server.Controllers
             _mapper = mapper;
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> ListarArticulos()
         {
@@ -52,7 +50,7 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{IdCodigo}")]
-        public async Task<ActionResult> ObtenerArticulo(int IdCodigo) //antes pasaba talle y color como parametro
+        public async Task<ActionResult> ObtenerArticulo(int IdCodigo) 
         {
             var responseApi = new ResponseAPI<Articulo>();
             var ArticuloDTO = new Articulo();
@@ -86,7 +84,7 @@ namespace LaTiendaIS.Server.Controllers
                 responseApi.Mensaje = ex.Message;
             }
 
-            return Ok(responseApi);
+            return Ok(responseApi.Valor);
         }
 
 

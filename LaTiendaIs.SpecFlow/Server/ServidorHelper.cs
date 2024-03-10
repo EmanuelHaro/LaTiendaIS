@@ -1,5 +1,6 @@
 ﻿using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,8 @@ namespace LaTiendaIs.SpecFlow.Server
             var application = new WebApplicationFactory<Program>()
                 .WithWebHostBuilder(builder =>
                 {
+                    builder.UseEnvironment("Testing");
+
                     builder.ConfigureServices(services =>
                     {
                         var descriptor = services.SingleOrDefault(
@@ -34,6 +37,8 @@ namespace LaTiendaIs.SpecFlow.Server
                         {
                             options.UseInMemoryDatabase("InMemoryDbForTesting");
                         });
+
+                        
 
                         var sp = services.BuildServiceProvider();
 
