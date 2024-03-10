@@ -168,8 +168,6 @@ namespace LaTiendaIS.Server.Controllers
                     responseApi.Mensaje = "Venta no encontrado";
                     return NotFound(responseApi);
                 }
-
-                // Update properties of dbVenta with values from VentaDTO
                 _mapper.Map(VentaDTO, dbVenta);
 
 
@@ -181,8 +179,6 @@ namespace LaTiendaIS.Server.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                // Manejar la excepción específica de concurrencia aquí
-                // Puedes agregar el código necesario para manejar esta situación
                 responseApi.EsCorrecto = false;
                 responseApi.Mensaje = "Error de concurrencia al intentar modificar el Venta. No se suministraron las claves primarias correctamente.";
                 return StatusCode(500, responseApi);
@@ -191,7 +187,7 @@ namespace LaTiendaIS.Server.Controllers
             {
                 responseApi.EsCorrecto = false;
                 responseApi.Mensaje = ex.Message;
-                return StatusCode(500, responseApi); // Internal Server Error
+                return StatusCode(500, responseApi); 
             }
 
             return Ok(responseApi);

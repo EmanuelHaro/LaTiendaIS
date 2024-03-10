@@ -57,7 +57,7 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{descMarca}")]
-        public async Task<ActionResult> ObtenerMarca(string descMarca) //antes pasaba talle y color como parametro
+        public async Task<ActionResult> ObtenerMarca(string descMarca) 
         {
             var responseApi = new ResponseAPI<Marca>();
             var marca = new Marca();

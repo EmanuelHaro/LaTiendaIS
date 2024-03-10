@@ -19,7 +19,7 @@ namespace LaTiendaIs.SpecFlow.Server
         public static HttpClient ArrancarServidor()
         {
             Hostname = $"http://localhost:4568";
-            //var factory = new Factory<> ;
+
             var application = new WebApplicationFactory<Program>()
                 .WithWebHostBuilder(builder =>
                 {

@@ -55,10 +55,9 @@ namespace LaTiendaIS.Server.Controllers
         }
 
 
-
         [HttpGet]
         [Route("{descColorArticulo}")]
-        public async Task<ActionResult> ObtenerColorArticulo(string descColorArticulo) //antes pasaba talle y color como parametro
+        public async Task<ActionResult> ObtenerColorArticulo(string descColorArticulo)
         {
             var responseApi = new ResponseAPI<ColorArticulo>();
             var ColorArticulo = new ColorArticulo();
@@ -66,7 +65,6 @@ namespace LaTiendaIS.Server.Controllers
             try
             {
                 var dbColorArticulo = await _dbContext.ColorArticulo.FirstOrDefaultAsync(f => f.DescripcionColor == descColorArticulo);
-
 
                 if (dbColorArticulo != null)
                 {

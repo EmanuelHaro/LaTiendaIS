@@ -61,9 +61,6 @@
     </div>
 </div>
 
-@* <div class="d-flex" style="max-width: 600px; margin: 20px ;">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(codigoTienda)">Agregar</MudButton>
-</div> *@
 
 <MudTable Items="@stockTabla" Dense="@dense" Hover="@hover" ReadOnly="false" CanCancelEdit="@canCancelEdit" Filter="new Func<Stock,bool>(FilterFunc)"
 @bind-SelectedItem="selectedItem1" SortLabel="Ordenar por" EditTrigger="TableEditTrigger.EditButton">
@@ -192,9 +189,6 @@
             {
                 var articulo = await _articuloServicio.ObtenerArticulo(idArticulo);
 
-                // if (!stockTabla.Any(stock => stock.IdArticulo == articulo.IdCodigo && stock.Talle.DescripcionTalle == talleElegido && stock.Color.DescripcionColor == colorElegido))
-                // {
-
                 var stockDelProductoSeleccionado = await _stockServicio.ObtenerStockPorArticulo(idArticulo, talleElegido, colorElegido);
 
                 int cant = await _stockServicio.ObtenerCantidad(idArticulo, talleElegido, colorElegido);
@@ -215,8 +209,6 @@
 
                         if (response != null)
                         {
-                            // listaArticulos.Add(articulo);
-                            //listaArticulosModel.Add(articuloStockViewModel);
                             listaArticulos.Add(articulo);
                             venta1.Total += (decimal)(articulo.PrecioDeVenta * cantidadElegida);
                             Snackbar.Add("Articulo agregado", Severity.Success);
@@ -243,11 +235,6 @@
                     Snackbar.Add("Cantidad de producto solicitada mayor a existente!", Severity.Error);
                 }
 
-                // }
-                // else
-                // {
-                //     Snackbar.Add("Articulo ya esta agregado", Severity.Warning);
-                // }
             }
 
             catch (Exception ex)

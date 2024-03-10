@@ -59,7 +59,7 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{descTalle}")]
-        public async Task<ActionResult> ObtenerTalle(string descTalle) //antes pasaba talle y color como parametro
+        public async Task<ActionResult> ObtenerTalle(string descTalle) 
         {
             var responseApi = new ResponseAPI<Talle>();
             var Talle = new Talle();

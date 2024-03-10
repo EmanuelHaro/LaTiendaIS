@@ -57,7 +57,7 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{descSucursal}")]
-        public async Task<ActionResult> ObtenerSucursal(string descSucursal) //antes pasaba talle y color como parametro
+        public async Task<ActionResult> ObtenerSucursal(string descSucursal) 
         {
             var responseApi = new ResponseAPI<Sucursal>();
             var Sucursal = new Sucursal();

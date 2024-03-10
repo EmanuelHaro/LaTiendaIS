@@ -20,8 +20,6 @@ namespace LaTiendaIS.Server.Controllers
             _mapper = mapper;
         }
 
-
-
         [HttpGet]
         [Route("{IdCliente}")]
         public async Task<ActionResult> ObtenerCliente(int IdCliente)
@@ -129,113 +127,6 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
-
-        //[HttpGet]
-        //[Route("Lista")]
-        //public async Task<IActionResult> ListarClientes()
-        //{
-        //    var responseApi = new ResponseAPI<List<ClienteDTO>>();
-        //    var listaClientesDTO = new List<ClienteDTO>();
-        //    try
-        //    {
-        //        var ClienteDb = await _dbContext.Cliente.ToListAsync();
-        //        foreach (var Cliente in ClienteDb)
-        //        {
-        //            Cliente.Marca = _dbContext.Marca.Find(Cliente.IdMarca);
-        //            Cliente.Talle = _dbContext.Talle.Find(Cliente.IdTalle);
-        //            Cliente.Talle.TipoTalle = _dbContext.TipoTalle.Find(Cliente.Talle.IdTipoTalle);
-        //            Cliente.Color = _dbContext.ColorCliente.Find(Cliente.IdColor);
-        //            Cliente.Categoria = _dbContext.Categoria.Find(Cliente.IdCategoria);
-        //            listaClientesDTO.Add(_mapper.Map<ClienteDTO>(Cliente));
-        //        }
-
-        //        responseApi.EsCorrecto = true;
-        //        responseApi.Valor = listaClientesDTO;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        responseApi.EsCorrecto = false;
-        //        responseApi.Mensaje = ex.Message;
-        //    }
-
-        //    return Ok(responseApi);
-        //}
-
-        //[HttpPut("{IdCodigo}")]
-        //public async Task<ActionResult> ModificarCliente(int IdCodigo, ClienteDTO ClienteDTO)
-        //{
-        //    var responseApi = new ResponseAPI<int>();
-
-        //    try
-        //    {
-        //        var dbCliente = await _dbContext.Cliente.Where(c => c.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
-
-        //        if (dbCliente == null)
-        //        {
-        //            responseApi.EsCorrecto = false;
-        //            responseApi.Mensaje = "Cliente no encontrado";
-        //            return NotFound(responseApi);
-        //        }
-
-        //        // Update properties of dbCliente with values from ClienteDTO
-        //        _mapper.Map(ClienteDTO, dbCliente);
-
-
-        //        _dbContext.Entry(dbCliente).State = EntityState.Modified;
-        //        await _dbContext.SaveChangesAsync();
-
-        //        responseApi.EsCorrecto = true;
-        //        responseApi.Valor = dbCliente.IdCodigo;
-        //    }
-        //    catch (DbUpdateConcurrencyException ex)
-        //    {
-        //        // Manejar la excepción específica de concurrencia aquí
-        //        // Puedes agregar el código necesario para manejar esta situación
-        //        responseApi.EsCorrecto = false;
-        //        responseApi.Mensaje = "Error de concurrencia al intentar modificar el Cliente. No se suministraron las claves primarias correctamente.";
-        //        return StatusCode(500, responseApi);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        responseApi.EsCorrecto = false;
-        //        responseApi.Mensaje = ex.Message;
-        //        return StatusCode(500, responseApi); // Internal Server Error
-        //    }
-
-        //    return Ok(responseApi);
-        //}
-
-
-        //[HttpDelete]
-        //[Route("{IdCodigo}")]
-        //public async Task<IActionResult> EliminarCliente(int IdCodigo)
-        //{
-        //    var responseApi = new ResponseAPI<int>();
-
-        //    try
-        //    {
-        //        var dbCliente = await _dbContext.Cliente.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
-        //        if (dbCliente != null)
-        //        {
-        //            _dbContext.Cliente.Remove(dbCliente);
-        //            await _dbContext.SaveChangesAsync();
-
-        //            responseApi.EsCorrecto = true;
-        //        }
-        //        else
-        //        {
-        //            responseApi.EsCorrecto = false;
-        //            responseApi.Mensaje = "Cliente no encontrado";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        responseApi.EsCorrecto = false;
-        //        responseApi.Mensaje = ex.Message;
-        //    }
-
-        //    return Ok(responseApi);
-        //}
 
     }
 }

@@ -20,6 +20,9 @@ namespace LaTiendaIS.Shared.Models
         public float PorcentajeIVA { get; set; }
 
         public int IdMarca { get; set; } //ID FK Marca
+
+
+
         [ForeignKey("IdMarca")] //FK Marca
         public virtual MarcaDTO? Marca { get; set; }
 

@@ -156,7 +156,6 @@ else
                 {
                     if (ldv.IdVenta == venta1.IdVenta)
                     {
-                        // ldv.Venta = venta1;
                         lineasDeVentaDTO.Add(ldv);
                     }
                 }
@@ -165,12 +164,10 @@ else
         }
         catch (NullReferenceException ex)
         {
-            // Maneja la excepción de referencia nula aquí
             Snackbar.Add("Error: Se ha encontrado una referencia nula.", Severity.Error);
         }
         catch (Exception ex)
         {
-            // Maneja cualquier otra excepción aquí
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }

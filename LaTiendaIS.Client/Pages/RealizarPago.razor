@@ -225,21 +225,17 @@
         {
             Snackbar.Add("Error al eliminar", Severity.Error);
         }
-
-
     }
 
     private async void Autorizar()
     {
         try
         {
-            //var token = await SolicitarTokenPago();
 
             var token = await _servicioExterno.ObtenerToken();
 
             if (!string.IsNullOrEmpty(token))
             {
-                //var pagoExitoso = await ConfirmarPago(token);
                 var pagoExitoso = await _servicioExterno.ConfirmarPago(token);
 
                 if (pagoExitoso)
@@ -287,8 +283,6 @@
 
     }
 
-
-
     private async void PagarConEfectivo()
     {
 
@@ -331,13 +325,10 @@
 
     }
 
-
     private async Task<IEnumerable<string>> Search1(string value)
     {
-        // In real life use an asynchronous function for fetching data from an api.
         await Task.Delay(5);
 
-        // if text is null or empty, show complete list
         if (string.IsNullOrEmpty(value))
             return states;
         return states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
