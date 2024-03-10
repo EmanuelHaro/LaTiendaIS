@@ -2,9 +2,24 @@
 
 <PageTitle>Inicio</PageTitle>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/listadoarticulos">Iniciar Venta</MudButton>
+<div class="d-flex flex-column align-center text-center my-5">
+    <h1>Bienvenido al Sistema de Ventas La Tienda</h1>
+    <h5 class="mt-3">Aquí podrás realizar tus ventas de manera fácil y eficiente</h5>
+</div>
 
-<h1 style="margin-left: 30px; margin-top: 10px;">Bienvenido al Sistema de Ventas La Tienda!</h1>
-<br />
+<div class="d-flex justify-center my-5">
+    <MudCard Class="mx-auto" Style="max-width: 500px;">
+        <MudCardContent>
+            <div class="d-flex justify-center mb-3">
+                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Large" />
+            </div>
+            <MudText Typo="Typo.body1" Align="Align.Center">
+                Nuestro sistema te permitirá gestionar de manera sencilla tus productos, clientes y ventas. Podrás llevar un control preciso de tus inventarios y generar facturas de forma rápida y profesional.
+            </MudText>
+        </MudCardContent>
+    </MudCard>
+</div>
 
-<h5 style="margin-left: 20px; margin-top: 10px;">Aquí podras realizar tus ventas.</h5>
+<div class="d-flex justify-center my-5">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/listadoarticulos">Iniciar Venta</MudButton>
+</div>

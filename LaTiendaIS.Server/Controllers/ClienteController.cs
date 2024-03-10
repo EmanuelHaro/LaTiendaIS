@@ -65,9 +65,6 @@ namespace LaTiendaIS.Server.Controllers
             var responseApi = new ResponseAPI<int>();
             try
             {
-                var dbCondTributaria = await _dbContext.CondicionTributaria.FirstOrDefaultAsync(cond => cond.Descripcion == cliente.CondicionTributaria.Descripcion);
-                cliente.IdCondicionTributaria = dbCondTributaria.IdCondicionTributaria;
-
                 var dbCliente = _mapper.Map<ClienteDTO>(cliente);
 
 
@@ -83,7 +80,7 @@ namespace LaTiendaIS.Server.Controllers
                 {
                     responseApi.EsCorrecto = false;
                     responseApi.Mensaje = "No se pudo guardar al Cliente";
-                }
+                } 
             }
             catch (Exception ex)
             {

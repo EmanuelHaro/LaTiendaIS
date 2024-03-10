@@ -25,12 +25,12 @@ namespace LaTiendaIS.Client.Service.Implementacion
 
         public async Task<Articulo> ObtenerArticulo(int idArticulo)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Articulo>>($"api/Articulo/{idArticulo}");
+            var result = await _httpClient.GetFromJsonAsync<Articulo>($"api/Articulo/{idArticulo}");
 
-            if (result!.EsCorrecto)
-                return result.Valor!;
+            if (result!=null)
+                return result!;
             else
-                throw new Exception(result.Mensaje);
+                throw new Exception(result.ToString());
         }
         
 

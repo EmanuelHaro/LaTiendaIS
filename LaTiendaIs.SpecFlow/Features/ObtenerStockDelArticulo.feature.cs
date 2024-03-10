@@ -92,7 +92,7 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                             "CodigoTienda",
                             "Descripcion",
                             "Costo",
@@ -100,7 +100,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "PorcentajeIVA",
                             "Marca",
                             "Categoria"});
-                table2.AddRow(new string[] {
+                table1.AddRow(new string[] {
                             "1000",
                             "Remera",
                             "1000",
@@ -108,7 +108,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "0.21",
                             "Adidas",
                             "Ropa Deportiva"});
-                table2.AddRow(new string[] {
+                table1.AddRow(new string[] {
                             "1001",
                             "Pantalon",
                             "4000",
@@ -117,7 +117,43 @@ this.ScenarioInitialize(scenarioInfo);
                             "Adidas",
                             "Ropa Deportiva"});
 #line 7
- testRunner.Given("Existe el siguiente articulo:", ((string)(null)), table2, "Given ");
+ testRunner.Given("Existe el siguiente articulo:", ((string)(null)), table1, "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Cantidad",
+                            "Sucursal",
+                            "Articulo",
+                            "Talle",
+                            "Color"});
+                table2.AddRow(new string[] {
+                            "2",
+                            "Barrio Norte",
+                            "1000",
+                            "S",
+                            "Rojo"});
+                table2.AddRow(new string[] {
+                            "2",
+                            "Barrio Norte",
+                            "1000",
+                            "M",
+                            "Rojo"});
+                table2.AddRow(new string[] {
+                            "2",
+                            "Barrio Norte",
+                            "1000",
+                            "L",
+                            "Azul"});
+                table2.AddRow(new string[] {
+                            "1",
+                            "Barrio Norte",
+                            "1001",
+                            "S",
+                            "Rojo"});
+#line 11
+ testRunner.And("el Stock:", ((string)(null)), table2, "And ");
+#line hidden
+#line 18
+ testRunner.When("se introduce el codigo 1000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
                 TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                             "Cantidad",
@@ -143,44 +179,8 @@ this.ScenarioInitialize(scenarioInfo);
                             "1000",
                             "L",
                             "Azul"});
-                table3.AddRow(new string[] {
-                            "1",
-                            "Barrio Norte",
-                            "1001",
-                            "S",
-                            "Rojo"});
-#line 11
- testRunner.And("el Stock:", ((string)(null)), table3, "And ");
-#line hidden
-#line 18
- testRunner.When("se introduce el codigo 1000", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
-                            "Cantidad",
-                            "Sucursal",
-                            "Articulo",
-                            "Talle",
-                            "Color"});
-                table4.AddRow(new string[] {
-                            "2",
-                            "Barrio Norte",
-                            "1000",
-                            "S",
-                            "Rojo"});
-                table4.AddRow(new string[] {
-                            "2",
-                            "Barrio Norte",
-                            "1000",
-                            "M",
-                            "Rojo"});
-                table4.AddRow(new string[] {
-                            "2",
-                            "Barrio Norte",
-                            "1000",
-                            "L",
-                            "Azul"});
 #line 19
- testRunner.Then("el sistema muestre la lista de Stock del articulo:", ((string)(null)), table4, "Then ");
+ testRunner.Then("el sistema muestre la lista de Stock del articulo:", ((string)(null)), table3, "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

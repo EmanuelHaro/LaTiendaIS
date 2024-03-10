@@ -22,7 +22,7 @@ namespace LaTiendaIS.Server.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet] //Realizado para testing
         public async Task<IActionResult> ListarStock()
         {
             var responseApi = new ResponseAPI<List<Stock>>();
@@ -50,7 +50,7 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpGet]
-        [Route("{codigoTienda}")] //localhost:5020/api/Stock/1000
+        [Route("Articulo/{codigoTienda}")] 
         public async Task<ActionResult> ObtenerListaDeTalleYColorDelStock(int codigoTienda)
         {
             var responseApi = new ResponseAPI<List<Stock>>();
@@ -70,6 +70,7 @@ namespace LaTiendaIS.Server.Controllers
                         {
                             stockItem.Talle = _dbContext.Talle.Find(stockItem.IdTalle);
                             stockItem.Color = _dbContext.ColorArticulo.Find(stockItem.IdColor);
+                            stockItem.Articulo = _dbContext.Articulo.Find(stockItem.IdArticulo);
                         }
 
                         Stock = _mapper.Map<List<Stock>>(dbStock);
@@ -103,7 +104,7 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpGet]
-        [Route("{codigoTienda}/{talle}/{color}")]
+        [Route("Cantidad/{codigoTienda}/{talle}/{color}")]
         public async Task<ActionResult> ObtenerCantidad(int codigoTienda,string talle, string color)
         {
             var responseApi = new ResponseAPI<int>();
@@ -138,10 +139,105 @@ namespace LaTiendaIS.Server.Controllers
                 responseApi.Mensaje = ex.Message;
             }
 
-            return Ok(responseApi);
+            return Ok(responseApi.Valor);
+        }
+
+        [HttpGet]
+        [Route("{codigoTienda}/{talle}/{color}")]
+        public async Task<ActionResult> ObtenerStockPorArticulo(int codigoTienda, string talle, string color)
+        {
+            var responseApi = new ResponseAPI<Stock>();
+            var stock = new Stock();
+
+            try
+            {
+                var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
+                var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
+                var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
+
+                var dbMarca = await _dbContext.Marca.Where(m => m.IdMarca == dbArticulo.IdMarca).FirstOrDefaultAsync();
+                var dbCategoria = await _dbContext.Categoria.Where(c => c.IdCategoria == dbArticulo.IdCategoria).FirstOrDefaultAsync();
+
+                if(dbMarca!=null && dbCategoria!=null)
+                {
+                    dbArticulo.Marca = dbMarca;
+                    dbArticulo.Categoria = dbCategoria;
+                    if (dbTalle != null && dbColor != null)
+                    {
+                        var dbStock = await _dbContext.Stock.Where(cant => cant.IdTalle == dbTalle.IdTalle && cant.IdColor == dbColor.IdColor && cant.IdArticulo == dbArticulo.IdCodigo).FirstOrDefaultAsync();
+
+                        if (dbStock != null)
+                        {
+                            stock = _mapper.Map<Stock>(dbStock);
+
+
+                            responseApi.EsCorrecto = true;
+                            responseApi.Valor = stock;
+                        }
+                        else
+                        {
+                            responseApi.EsCorrecto = false;
+                            responseApi.Mensaje = "No coinciden talle y color";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi.Valor);
         }
 
 
+        [HttpGet]
+        [Route("{idStock}")] //localhost:5020/api/Stock/1
+        public async Task<ActionResult> ObtenerStockPorId(int idStock)
+        {
+            var responseApi = new ResponseAPI<Stock>();
+            var stock = new Stock();
+
+            try
+            {
+                var dbStock = await _dbContext.Stock.Where(s => s.IdStock == idStock).FirstOrDefaultAsync();
+                if(dbStock != null)
+                {
+                    var dbTalle = await _dbContext.Talle.Where(t => t.IdTalle == dbStock.IdTalle).FirstOrDefaultAsync();
+                    var dbColor = await _dbContext.ColorArticulo.Where(t => t.IdColor == dbStock.IdColor).FirstOrDefaultAsync();
+                    var dbArticulo = await _dbContext.Articulo.Where(a => a.IdCodigo == dbStock.IdArticulo).FirstOrDefaultAsync();
+
+                    if (dbTalle != null && dbColor != null && dbArticulo!=null)
+                    {
+                        stock.Talle = _mapper.Map<Talle>(dbTalle);
+                        stock.Color = _mapper.Map<ColorArticulo>(dbColor);
+                        stock.Articulo = _mapper.Map<Articulo>(dbArticulo);
+                        
+
+
+                        stock = _mapper.Map<Stock>(dbStock);
+
+                        responseApi.EsCorrecto = true;
+                        responseApi.Valor = stock;
+                    }
+                    else
+                    {
+                        responseApi.EsCorrecto = false;
+                        responseApi.Mensaje = "No coinciden talle y color";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi.Valor);
+        }
 
         [HttpPut]
         [Route("Modificar/{codigoTienda}/{talle}/{color}")]
@@ -239,6 +335,7 @@ namespace LaTiendaIS.Server.Controllers
                         responseApi.Mensaje = "Stock no encontrado";
                         return NotFound(responseApi);
                     }
+
                     //Cambiar propiedades de stock
                     stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
                     stock.IdSucursal = dbStock.IdSucursal;

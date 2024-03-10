@@ -69,22 +69,43 @@ namespace LaTiendaIS.Client.Service.Implementacion
         public async Task<int> ObtenerCantidad(int codigoTienda, string talle, string color)
         {
 
-                var result = await _httpClient.GetFromJsonAsync<ResponseAPI<int>>($"api/Stock/{codigoTienda}/{talle}/{color}");
+                var result = await _httpClient.GetFromJsonAsync<int>($"api/Stock/Cantidad/{codigoTienda}/{talle}/{color}");
 
-                if (result!.EsCorrecto)
-                    return result.Valor!;
+                if (result!=null)
+                    return result!;
                 else
-                    throw new Exception(result.Mensaje);
+                    throw new Exception(result.ToString());
             }
 
-        public async Task<List<Stock>> ObtenerStock(int idArticulo)
+        public async Task<List<Stock>> ObtenerListaDeTalleYColorDelStock(int idArticulo)
         {
-            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<List<Stock>>>($"api/Stock/{idArticulo}");
+            var result = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Stock/Articulo/{idArticulo}");
 
-            if (result!.EsCorrecto)
-                return result.Valor!;
+            if (result != null)
+                return result!;
             else
-                throw new Exception(result.Mensaje);
+                throw new Exception(result.ToString());
+        }
+
+        public async Task<Stock> ObtenerStockPorArticulo(int codigoTienda, string talle, string color)
+        {
+
+            var result = await _httpClient.GetFromJsonAsync<Stock>($"api/Stock/{codigoTienda}/{talle}/{color}");
+
+            if (result != null)
+                return result!;
+            else
+                throw new Exception(result.ToString());
+        }
+
+        public async Task<Stock> ObtenerStockPorId(int idStock)
+        {
+            var result = await _httpClient.GetFromJsonAsync<Stock>($"api/Stock/{idStock}");
+
+            if (result != null)
+                return result!;
+            else
+                throw new Exception(result.ToString());
         }
     }
 }

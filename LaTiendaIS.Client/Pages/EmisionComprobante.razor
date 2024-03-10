@@ -57,11 +57,14 @@
     </div>
 
 }
+else
+{
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <h4 style="margin-left: 65px; margin-top: 10px;">Comprobante: Factura B</h4>
+    </div>
+}
 
-@* @if(cliente.CondicionTributaria.Descripcion != null)
-{ *@
 
-@* } *@
 
 <MudContainer>
     <MudPaper Elevation="3" Class="p-3">
@@ -174,23 +177,33 @@
 
     private async void VolverAInicio()
     {
-        
+
         try
         {
             Comprobante comprobante = new Comprobante();
             comprobante.IdVenta = venta1.IdVenta;
             comprobante.IdTipoDeComprobante = tipoComprobante;
 
-            var response = await _comprobanteServicio.AgregarComprobante(comprobante);
-            if (response != null)
+
+            if(cliente != null)
+            {
+                var response = await _comprobanteServicio.AgregarComprobante(comprobante);
+                if (response != null)
+                {
+                    Snackbar.Add("Se genero el comprobante con exito", Severity.Success);
+                    _navManager.NavigateTo("/");
+                }
+                else
+                {
+                    Snackbar.Add("Error en el comprobante", Severity.Error);
+                }
+            }
+            else
             {
                 Snackbar.Add("Se genero el comprobante con exito", Severity.Success);
                 _navManager.NavigateTo("/");
             }
-            else
-            {
-                Snackbar.Add("Error en el comprobante", Severity.Error);
-            }
+
         }
         catch (Exception ex)
         {

@@ -204,14 +204,19 @@ namespace LaTiendaIs.SpecFlow.StepDefinitions
         [When(@"se introduce el codigo (.*)")]
         public async Task WhenSeIntroduceElCodigo(int idArticulo)
         {
-            var listaStock = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Stock");
+            var listaStock = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Stock"); //para comprobar 
 
-
-            var result = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Stock/{idArticulo}");
-            if (result!= null)
-                _stockResultado =  result;
+            if(listaStock!=null)
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<Stock>>($"api/Stock/Articulo/{idArticulo}"); //error
+                if (result != null)
+                    _stockResultado = result;
+                else
+                    throw new Exception("El resultado de la llamada a la Api para buscar articulo es nulo");
+            }
             else
-                throw new Exception("El resultado de la llamada a la Api es nulo");
+                throw new Exception("El resultado de la llamada a la Api para buscar lista de stock es nulo");
+
 
         }
 

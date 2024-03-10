@@ -32,6 +32,8 @@ builder.Services.AddCors(opciones =>
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
+builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 
@@ -52,6 +54,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("nuevaPolitica");
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 

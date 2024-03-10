@@ -21,34 +21,6 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListarArticulos()
-        {
-            var responseApi = new ResponseAPI<List<Articulo>>();
-            var listaArticulosDTO = new List<Articulo>();
-            try
-            {
-                var ArticuloDb = await _dbContext.Articulo.ToListAsync();
-                foreach (var Articulo in ArticuloDb)
-                {
-                    Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
-                    Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
-                    listaArticulosDTO.Add(_mapper.Map<Articulo>(Articulo));
-                }
-
-                responseApi.EsCorrecto = true;
-                responseApi.Valor = listaArticulosDTO;
-            }
-            catch (Exception ex)
-            {
-                responseApi.EsCorrecto = false;
-                responseApi.Mensaje = ex.Message;
-            }
-
-            return Ok(responseApi);
-        }
-
-
-        [HttpGet]
         [Route("{IdCodigo}")]
         public async Task<ActionResult> ObtenerArticulo(int IdCodigo) 
         {
@@ -86,6 +58,34 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi.Valor);
         }
+        [HttpGet]
+        public async Task<IActionResult> ListarArticulos()
+        {
+            var responseApi = new ResponseAPI<List<Articulo>>();
+            var listaArticulosDTO = new List<Articulo>();
+            try
+            {
+                var ArticuloDb = await _dbContext.Articulo.ToListAsync();
+                foreach (var Articulo in ArticuloDb)
+                {
+                    Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
+                    Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
+                    listaArticulosDTO.Add(_mapper.Map<Articulo>(Articulo));
+                }
+
+                responseApi.EsCorrecto = true;
+                responseApi.Valor = listaArticulosDTO;
+            }
+            catch (Exception ex)
+            {
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+
 
 
         [HttpPost]
