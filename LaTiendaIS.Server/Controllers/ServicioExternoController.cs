@@ -87,7 +87,7 @@ namespace LaTiendaIS.Server.Controllers
             // Construir el cuerpo de la solicitud en formato JSON
             var requestBody = JsonSerializer.Serialize(new PaymentRequest
             {
-                site_transaction_id = Guid.NewGuid().ToString(), // Genera un ID de transacción único
+                site_transaction_id = Guid.NewGuid().ToString(), // Genera un ID de transacción único 
                 payment_method_id = 1,
                 token = token,
                 bin = "450799",

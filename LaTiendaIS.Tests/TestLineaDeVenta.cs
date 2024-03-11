@@ -17,28 +17,6 @@ namespace LaTiendaIS.Tests
     [TestClass]
     public class TestLineaDeVenta
     {
-        private DBLaTiendaContext GetInMemoryContext()
-        {
-            var options = new DbContextOptionsBuilder<DBLaTiendaContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
-            var context = new DBLaTiendaContext(options);
-
-            // Agrega un artículo y una venta
-            var articulo = new ArticuloDTO { IdCodigo = 1, Descripcion = "Remera", Costo = 1000, MargenDeGanacia = 15, 
-                PorcentajeIVA = 0.21f, CodigoTienda = 1000, IdCategoria = 1, IdMarca = 1 };
-            context.Articulo.Add(articulo);
-
-            var venta = new VentaDTO { IdVenta = 1, FechaVenta = DateTime.Now, Total = 13000 };
-            
-            context.Venta.Add(venta);
-
-            context.SaveChanges();
-
-            return context;
-        }
-
 
         [TestMethod]
         public async Task ObtenerListaDeTalleYColorDelStockDelArticulo1000_DebeRetornarListaCorrectaAsync()
@@ -47,6 +25,7 @@ namespace LaTiendaIS.Tests
             // Arrange
             var config = new MapperConfiguration(x => x.AddProfile(typeof(AutoMapperProfiles)));
             var mapper = config.CreateMapper();
+
             var context = GetInMemoryContext();
             var controller = new LineaDeVentaController(context, mapper);
 
@@ -72,5 +51,39 @@ namespace LaTiendaIS.Tests
 
 
         }
+
+        private DBLaTiendaContext GetInMemoryContext()
+        {
+            var options = new DbContextOptionsBuilder<DBLaTiendaContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            var context = new DBLaTiendaContext(options);
+
+            // Agrega un artículo y una venta
+            var articulo = new ArticuloDTO
+            {
+                IdCodigo = 1,
+                Descripcion = "Remera",
+                Costo = 1000,
+                MargenDeGanacia = 15,
+                PorcentajeIVA = 0.21f,
+                CodigoTienda = 1000,
+                IdCategoria = 1,
+                IdMarca = 1
+            };
+
+            context.Articulo.Add(articulo);
+
+            var venta = new VentaDTO { IdVenta = 1, FechaVenta = DateTime.Now, Total = 13000 };
+
+            context.Venta.Add(venta);
+
+            context.SaveChanges();
+
+            return context;
+        }
+
+
     }
 }
