@@ -7,8 +7,8 @@ namespace LaTiendaIS.ServiciosAPI.Contrato
         Task<List<Venta>> ListarVentas();
         Task<Venta> ObtenerVenta(int idVenta);
         Task<Venta> ObtenerUltimaVenta();
-        Task<int> AgregarVenta(Venta Venta);
-        Task<int> ModificarVenta(int idVenta, Venta Venta);
+        Task<bool> AgregarVenta(Venta Venta);
+        Task<bool> ModificarVenta(int idVenta, Venta Venta);
         Task<bool> EliminarVenta(int idVenta);
     }
 }

@@ -6,8 +6,8 @@ namespace LaTiendaIS.ServiciosAPI.Contrato
     {
         Task<List<Articulo>> ListarArticulos();
         Task<Articulo> ObtenerArticulo(int idArticulo);
-        Task<int> AgregarArticulo(Articulo Articulo);
-        Task<int> ModificarArticulo(int IdCodigo, Articulo articulo);
+        Task<bool> AgregarArticulo(Articulo Articulo);
+        Task<bool> ModificarArticulo(int IdCodigo, Articulo articulo);
         Task<bool> EliminarArticulo(int idArticulo);
     }
 }

@@ -43,12 +43,16 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbArticulo = await _modeloRepositorio.Consultar(c => c.CodigoTienda == idArticulo).FirstOrDefaultAsync();
+                var dbArticulo = await _modeloRepositorio.Obtener(c => c.CodigoTienda == idArticulo).FirstOrDefaultAsync();
 
                 if (dbArticulo == null)
                 {
                     throw new TaskCanceledException("No se encontraron resultados");
                 }
+
+                //IMPLEMENTAR CUANDO TENGAMOS MARCA Y CATEGORIA IMPLEMENTADO
+                //dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
+                //dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
 
                 var art = _mapper.Map<Articulo>(dbArticulo);
 
@@ -88,7 +92,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbArticulo = await _modeloRepositorio.Consultar(c => c.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
+                var dbArticulo = await _modeloRepositorio.Obtener(c => c.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
 
                 if (dbArticulo == null)
                     throw new TaskCanceledException("No se encontro al articulo");

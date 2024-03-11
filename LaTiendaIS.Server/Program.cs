@@ -3,6 +3,12 @@ using LaTiendaIS.Shared.Models;
 using LaTiendaIS.Utilidades;
 using AutoMapper;
 
+using LaTiendaIS.Repositorio.Contrato;
+using LaTiendaIS.Repositorio.Implementacio;
+
+using LaTiendaIS.ServiciosAPI.Implementacion;
+using LaTiendaIS.ServiciosAPI.Contrato;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,8 +18,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>)); //no sabemos con que modelo va a trabajar
 
-if(builder.Environment.EnvironmentName != "Testing")
+builder.Services.AddScoped<IArticuloServicio, ArticuloServicio>();
+
+
+if (builder.Environment.EnvironmentName != "Testing")
 {
     builder.Services.AddDbContext<DBLaTiendaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Conexion"))
@@ -40,7 +50,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
-    //dataContext.Database.Migrate();
+    dataContext.Database.Migrate();
 }
 
 

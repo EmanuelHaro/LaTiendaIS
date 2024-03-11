@@ -11,8 +11,8 @@ namespace LaTiendaIS.Repositorio.Implementacio
 {
     public class GenericoRepositorio<TModelo> : IGenericoRepositorio<TModelo> where TModelo : class
     {
-        private readonly DBLaTiendaContext2 _dbContext;
-        public GenericoRepositorio(DBLaTiendaContext2 dbContext)
+        private readonly DBLaTiendaContext _dbContext;
+        public GenericoRepositorio(DBLaTiendaContext dbContext)
         {
             _dbContext = dbContext;
         }

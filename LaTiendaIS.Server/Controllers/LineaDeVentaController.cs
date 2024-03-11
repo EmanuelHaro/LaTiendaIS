@@ -31,11 +31,6 @@ namespace LaTiendaIS.Server.Controllers
                 var LineaDeVentaDb = await _dbContext.LineaDeVenta.ToListAsync();
                 foreach (var LineaDeVenta in LineaDeVentaDb)
                 {
-                    //Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
-                    //Articulo.Talle = _dbContext.Talle.Find(Articulo.IdTalle);
-                    //Articulo.Talle.TipoTalle = _dbContext.TipoTalle.Find(Articulo.Talle.IdTipoTalle);
-                    //Articulo.Color = _dbContext.ColorArticulo.Find(Articulo.IdColor);
-                    //Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
                     LineaDeVenta.Articulo = _dbContext.Articulo.Find(LineaDeVenta.IdArticulo);
                     listaLineaDeVentasDTO.Add(_mapper.Map<LineaDeVenta>(LineaDeVenta));
                 }
