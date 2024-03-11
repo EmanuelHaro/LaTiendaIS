@@ -58,6 +58,7 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi.Valor);
         }
+
         [HttpGet]
         public async Task<IActionResult> ListarArticulos()
         {
@@ -84,9 +85,6 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
-
-
-
 
         [HttpPost]
         public async Task<ActionResult> AgregarArticulo(Articulo ArticuloDTO)
