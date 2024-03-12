@@ -15,7 +15,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
             _httpClient = httpClient;
         }
 
-        public async Task<int> AgregarCantidadStock(int codigoTienda, string talle, string color, Stock stock)
+        public async Task<bool> AgregarCantidadStock(int codigoTienda, string talle, string color, Stock stock)
         {
             HttpResponseMessage result;
 
@@ -23,7 +23,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
 
             if (result != null)
             {
-                var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+                var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
                 if (response!.EsCorrecto)
                 {
@@ -40,7 +40,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
             }
         }
 
-        public async Task<int> ModificarCantidadStock(int codigoTienda, string talle, string color, Stock stock)
+        public async Task<bool> ModificarCantidadStock(int codigoTienda, string talle, string color, Stock stock)
         {
             HttpResponseMessage result;
 
@@ -48,7 +48,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
 
             if(result!=null)
             {
-                var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+                var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
                 if (response!.EsCorrecto)
                 {

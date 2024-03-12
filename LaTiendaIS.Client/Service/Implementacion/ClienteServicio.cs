@@ -24,10 +24,10 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarCliente(Cliente Cliente)
+        public async Task<bool> AgregarCliente(Cliente Cliente)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Cliente", Cliente);
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.Valor!;

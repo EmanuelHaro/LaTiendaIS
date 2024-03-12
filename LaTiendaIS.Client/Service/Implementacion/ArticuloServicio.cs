@@ -34,17 +34,17 @@ namespace LaTiendaIS.Client.Service.Implementacion
         }
         
 
-        public async Task<int> AgregarArticulo(Articulo Articulo)
+        public async Task<bool> AgregarArticulo(Articulo Articulo)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Articulo", Articulo);
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.Valor!;
             else
                 throw new Exception(response.Mensaje);
         }
-        public async Task<int> ModificarArticulo(int idArticulo, Articulo Articulo)
+        public async Task<bool> ModificarArticulo(int idArticulo, Articulo Articulo)
         {
             HttpResponseMessage result;
 
@@ -57,7 +57,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 result = await _httpClient.PostAsJsonAsync("api/Articulo", idArticulo);
             }
 
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
             {
@@ -71,7 +71,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
         public async Task<bool> EliminarArticulo(int idArticulo)
         {
             var result = await _httpClient.DeleteAsync($"api/Articulo/{idArticulo}");
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.EsCorrecto!;
