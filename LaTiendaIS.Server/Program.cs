@@ -14,13 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>)); //no sabemos con que modelo va a trabajar
+builder.Services.AddTransient(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>)); //averiguar
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IArticuloServicio, ArticuloServicio>();
+builder.Services.AddScoped<IClienteServicio, ClienteServicio>();
+builder.Services.AddScoped<IComprobanteServicio, ComprobanteServicio>();
+
 
 
 if (builder.Environment.EnvironmentName != "Testing")

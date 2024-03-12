@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+
+using LaTiendaIS.ServiciosAPI.Contrato;
+
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,13 +14,11 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class LineaDeVentaController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly ILineaDeVentaServicio _LineaDeVentaServicio;
 
-        public LineaDeVentaController(DBLaTiendaContext dbContext, IMapper mapper)
+        public LineaDeVentaController(ILineaDeVentaServicio LineaDeVentaServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _LineaDeVentaServicio = LineaDeVentaServicio;
         }
 
         [HttpGet]
@@ -25,18 +26,16 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<IActionResult> ListarLineaDeVentas()
         {
             var responseApi = new ResponseAPI<List<LineaDeVenta>>();
-            var listaLineaDeVentasDTO = new List<LineaDeVenta>();
             try
             {
-                var LineaDeVentaDb = await _dbContext.LineaDeVenta.ToListAsync();
-                foreach (var LineaDeVenta in LineaDeVentaDb)
-                {
-                    LineaDeVenta.Articulo = _dbContext.Articulo.Find(LineaDeVenta.IdArticulo);
-                    listaLineaDeVentasDTO.Add(_mapper.Map<LineaDeVenta>(LineaDeVenta));
-                }
+                var listaLDV = await _LineaDeVentaServicio.ListarLineaDeVentas();
 
-                responseApi.EsCorrecto = true;
-                responseApi.Valor = listaLineaDeVentasDTO;
+                if(listaLDV!=null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = listaLDV;
+                }
+                
             }
             catch (Exception ex)
             {
@@ -53,20 +52,15 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerLineaDeVenta(int idLineaDeVenta)
         {
             var responseApi = new ResponseAPI<LineaDeVenta>();
-            var LineaDeVentaDTO = new LineaDeVenta();
 
             try
             {
-                var dbLineaDeVenta = await _dbContext.LineaDeVenta.FirstOrDefaultAsync(f => f.IdLineaDeVenta == idLineaDeVenta);
+                var lineaDeVenta = await _LineaDeVentaServicio.ObtenerLineaDeVenta(idLineaDeVenta);
 
-
-                if (dbLineaDeVenta != null)
+                if (lineaDeVenta != null)
                 {
-
-                    LineaDeVentaDTO = _mapper.Map<LineaDeVenta>(dbLineaDeVenta);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = LineaDeVentaDTO;
+                    responseApi.Valor = lineaDeVenta;
                 }
                 else
                 {
@@ -87,21 +81,16 @@ namespace LaTiendaIS.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbLineaDeVenta = _mapper.Map<LineaDeVentaDTO>(LineaDeVenta);
+                var ldvAgregada = await _LineaDeVentaServicio.AgregarLineaDeVenta(LineaDeVenta);
 
-                dbLineaDeVenta.Articulo = _dbContext.Articulo.FirstOrDefault(a => a.IdCodigo == LineaDeVenta.IdArticulo);
-                dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVenta.IdVenta);
 
-                _dbContext.LineaDeVenta.Add(dbLineaDeVenta);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbLineaDeVenta.IdLineaDeVenta != 0)
+                if (ldvAgregada)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbLineaDeVenta.IdLineaDeVenta;
+                    responseApi.Valor = ldvAgregada;
                 }
                 else
                 {
@@ -121,28 +110,21 @@ namespace LaTiendaIS.Server.Controllers
         [HttpPut("{IdLineaDeVenta}")]
         public async Task<ActionResult> ModificarLineaDeVenta(int IdLineaDeVenta, LineaDeVenta LineaDeVentaDTO)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbLineaDeVenta = await _dbContext.LineaDeVenta.Where(c => c.IdLineaDeVenta == IdLineaDeVenta).FirstOrDefaultAsync();
+                var lineaDeVentaModificada = await _LineaDeVentaServicio.ModificarLineaDeVenta(IdLineaDeVenta, LineaDeVentaDTO);
 
-                if (dbLineaDeVenta == null)
+                if (!lineaDeVentaModificada)
                 {
                     responseApi.EsCorrecto = false;
                     responseApi.Mensaje = "LineaDeVenta no encontrado";
                     return NotFound(responseApi);
                 }
 
-                // Update properties of dbLineaDeVenta with values from LineaDeVentaDTO
-                _mapper.Map(LineaDeVentaDTO, dbLineaDeVenta);
-
-
-                _dbContext.Entry(dbLineaDeVenta).State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
-
                 responseApi.EsCorrecto = true;
-                responseApi.Valor = dbLineaDeVenta.IdLineaDeVenta;
+                responseApi.Valor = lineaDeVentaModificada;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -167,21 +149,20 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdLineaDeVenta}")]
         public async Task<IActionResult> EliminarLineaDeVenta(int IdLineaDeVenta)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbLineaDeVenta = await _dbContext.LineaDeVenta.FirstOrDefaultAsync(f => f.IdLineaDeVenta == IdLineaDeVenta);
-                if (dbLineaDeVenta != null)
+                var ldvEliminada = await _LineaDeVentaServicio.EliminarLineaDeVenta(IdLineaDeVenta);
+                if (ldvEliminada)
                 {
-                    _dbContext.LineaDeVenta.Remove(dbLineaDeVenta);
-                    await _dbContext.SaveChangesAsync();
-
                     responseApi.EsCorrecto = true;
+                    responseApi.Valor = ldvEliminada;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
+                    responseApi.Valor = ldvEliminada;
                     responseApi.Mensaje = "LineaDeVenta no encontrado";
                 }
             }
@@ -199,27 +180,20 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerUltimaVenta()
         {
             var responseApi = new ResponseAPI<LineaDeVenta>();
-            var LineaDeVentaDTO = new LineaDeVenta();
 
             try
             {
-                var ultimaLineaDeVenta = await _dbContext.LineaDeVenta
-            .OrderByDescending(l => l.IdLineaDeVenta)
-            .FirstOrDefaultAsync();
+                var lineaDeVenta = await _LineaDeVentaServicio.ObtenerUltimaLineaDeVenta();
 
-
-                if (ultimaLineaDeVenta != null)
+                if (lineaDeVenta != null)
                 {
-
-                    LineaDeVentaDTO = _mapper.Map<LineaDeVenta>(ultimaLineaDeVenta);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = LineaDeVentaDTO;
+                    responseApi.Valor = lineaDeVenta;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Venta no encontrado";
+                    responseApi.Mensaje = "LineaDeVenta no encontrado";
                 }
             }
             catch (Exception ex)

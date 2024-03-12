@@ -4,6 +4,7 @@ using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,12 +17,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class StockServicio: IStockServicio
     {
-        private readonly IGenericoRepositorio<StockDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
         private readonly IMapper _mapper;
 
-        public StockServicio(IGenericoRepositorio<StockDTO> modeloRepositorio, IMapper mapper)
+        public StockServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -29,25 +30,25 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdStock == idStock).FirstOrDefaultAsync();
+                var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdStock == idStock).FirstOrDefaultAsync();
 
                 if (dbStock == null)
                 {
                     throw new TaskCanceledException("No se encontraron resultados");
                 }
 
-                //TODO: STOCK SERVICIO - OBTENERSTOCKPORID
-                //var dbTalle = await _dbContext.Talle.Where(t => t.IdTalle == dbStock.IdTalle).FirstOrDefaultAsync();
-                //var dbColor = await _dbContext.ColorArticulo.Where(t => t.IdColor == dbStock.IdColor).FirstOrDefaultAsync();
-                //var dbArticulo = await _dbContext.Articulo.Where(a => a.IdCodigo == dbStock.IdArticulo).FirstOrDefaultAsync();
-
-                //if (dbTalle != null && dbColor != null && dbArticulo != null)
-                //{
-                //    stock.Talle = _mapper.Map<Talle>(dbTalle);
-                //    stock.Color = _mapper.Map<ColorArticulo>(dbColor);
-                //    stock.Articulo = _mapper.Map<Articulo>(dbArticulo);
+                var dbTalle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.IdTalle == dbStock.IdTalle).FirstOrDefaultAsync();
+                var dbColor = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.IdColor == dbStock.IdColor).FirstOrDefaultAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.IdCodigo == dbStock.IdArticulo).FirstOrDefaultAsync();
 
                 var Stock = _mapper.Map<Stock>(dbStock);
+
+                if (dbTalle != null && dbColor != null && dbArticulo != null)
+                {
+                    Stock.Talle = _mapper.Map<Talle>(dbTalle);
+                    Stock.Color = _mapper.Map<ColorArticulo>(dbColor);
+                    Stock.Articulo = _mapper.Map<Articulo>(dbArticulo);
+                }
 
                 return Stock;
 
@@ -61,21 +62,24 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                //TODO: STOCK SERVICIO - OBTENER CANTIDAD
-                //var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                //var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                //var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-                //if (dbTalle != null && dbColor != null)
-                //{
+                var dbTalle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.DescripcionTalle== talle).FirstOrDefaultAsync();
+                var dbColor = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.DescripcionColor == color).FirstOrDefaultAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
 
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdArticulo == 1 && c.IdTalle == 1 && c.IdColor == 1).FirstOrDefaultAsync();
 
-                if (dbStock == null)
+                if (dbTalle != null && dbColor != null && dbArticulo != null)
                 {
-                    throw new TaskCanceledException("No se encontraron resultados");
-                }
 
-                return dbStock.Cantidad;
+                    var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo 
+                    && c.IdTalle == dbTalle.IdTalle && c.IdColor == dbColor.IdColor).FirstOrDefaultAsync();
+
+                    if (dbStock != null)
+                    {
+                        return dbStock.Cantidad;
+                    }
+                }
+                
+                throw new TaskCanceledException("No se encontraron resultados");
 
             }
             catch (Exception ex)
@@ -85,27 +89,24 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         }
         public async Task<List<Stock>> ObtenerListaDeStockPorArticulo(int idArticulo)
         {
-            //TODO: STOCKSERVICIO - OBTENERLISTADETALLEYCOLORDELSTOCK
-            //var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-            //if (dbArticulo != null)
-            //{
 
             try
             {
-                //hardcodeado porque no tenemos codigoTienda
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdArticulo == 1 && a.Cantidad > 0).ToListAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.CodigoTienda == idArticulo).FirstOrDefaultAsync();
+
+                var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo && c.Cantidad > 0).ToListAsync();
 
                 if (dbStock == null)
                 {
-                    throw new TaskCanceledException("No se encontraron resultados");
+                    throw new TaskCanceledException("No se encontraro el stock para el articulo");
                 }
 
-                //foreach (var stockItem in dbStock)
-                //{
-                //    stockItem.Talle = _dbContext.Talle.Find(stockItem.IdTalle);
-                //    stockItem.Color = _dbContext.ColorArticulo.Find(stockItem.IdColor);
-                //    stockItem.Articulo = _dbContext.Articulo.Find(stockItem.IdArticulo);
-                //}
+                foreach (var stockItem in dbStock)
+                {
+                    stockItem.Talle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.IdTalle == stockItem.IdTalle).FirstOrDefaultAsync();
+                    stockItem.Color = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.IdColor == stockItem.IdColor).FirstOrDefaultAsync(); ;
+                    stockItem.Articulo = dbArticulo;
+                }
 
                 var stock = _mapper.Map<List<Stock>>(dbStock);
 
@@ -114,7 +115,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             }
             catch (Exception ex)
             {
-                throw;
+                throw new TaskCanceledException("No se encontraro al Articulo");
             }
 
         }
@@ -122,23 +123,26 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                //TODO: STOCK SERVICIO - ObtenerStockPorArticulo
-                //var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                //var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                //var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-                //if (dbTalle != null && dbColor != null)
-                //{
+                var dbTalle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.DescripcionTalle == talle).FirstOrDefaultAsync();
+                var dbColor = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.DescripcionColor == color).FirstOrDefaultAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
 
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdArticulo == 1 && c.IdTalle == 1 && c.IdColor == 1).FirstOrDefaultAsync();
-
-                if (dbStock == null)
+                if (dbTalle != null && dbColor != null && dbArticulo != null)
                 {
-                    throw new TaskCanceledException("No se encontraron resultados");
+                    var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo
+                    && c.IdTalle == dbTalle.IdTalle && c.IdColor == dbColor.IdColor).FirstOrDefaultAsync();
+
+                    if (dbStock == null)
+                    {
+                        throw new TaskCanceledException("No se encontraron resultados");
+                    }
+
+                    var Stock = _mapper.Map<Stock>(dbStock);
+
+                    return Stock;
                 }
 
-                var Stock = _mapper.Map<Stock>(dbStock);
-
-                return Stock;
+                throw new TaskCanceledException("No se encontraron articulo,talle,color");
 
             }
             catch (Exception ex)
@@ -150,40 +154,47 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                //TODO: STOCK SERVICIO - ModificarCantidad
-                //var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                //var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                //var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-                //if (dbTalle != null && dbColor != null)
-                //{
+                var dbTalle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.DescripcionTalle == talle).FirstOrDefaultAsync();
+                var dbColor = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.DescripcionColor == color).FirstOrDefaultAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
 
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdArticulo == 1 && c.IdTalle == 1 && c.IdColor == 1).FirstOrDefaultAsync();
-
-                if (dbStock == null)
-                    throw new TaskCanceledException("No se encontro al articulo");
-
-                // actualizo propiedades
-                //Cambiar propiedades de stock
-                if (dbStock.Cantidad - stock.Cantidad >= 0)
+                if (dbTalle != null && dbColor != null && dbArticulo != null)
                 {
-                    stock.Cantidad = dbStock.Cantidad - stock.Cantidad;
-                    stock.IdSucursal = dbStock.IdSucursal;
-                    stock.IdArticulo = dbStock.IdArticulo;
-                    stock.IdTalle = dbStock.IdTalle;
-                    stock.IdColor = dbStock.IdColor;
-                    stock.IdStock = dbStock.IdStock;
-                    stock.Articulo = null;
-                    stock.Color = null;
-                    stock.Talle = null;
+                    var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo
+                    && c.IdTalle == dbTalle.IdTalle && c.IdColor == dbColor.IdColor).FirstOrDefaultAsync();
+
+                    if (dbStock == null)
+                    {
+                        throw new TaskCanceledException("No se encontraron resultados");
+                    }
+
+                    // actualizo propiedades
+                    //Cambiar propiedades de stock
+                    if (dbStock.Cantidad - stock.Cantidad >= 0)
+                    {
+                        stock.Cantidad = dbStock.Cantidad - stock.Cantidad;
+                        stock.IdSucursal = dbStock.IdSucursal;
+                        stock.IdArticulo = dbStock.IdArticulo;
+                        stock.IdTalle = dbStock.IdTalle;
+                        stock.IdColor = dbStock.IdColor;
+                        stock.IdStock = dbStock.IdStock;
+                        stock.Articulo = null;
+                        stock.Color = null;
+                        stock.Talle = null;
+
+
+                        _mapper.Map(stock, dbStock);
+
+                        var respuesta = await _unitofwork.Repository<StockDTO>().Modificar(dbStock);
+
+                        if (!respuesta)
+                            throw new TaskCanceledException("No se pudo editar");
+                        return respuesta;
+                    }
+
                 }
 
-                _mapper.Map(stock, dbStock);
-
-                var respuesta = await _modeloRepositorio.Modificar(dbStock);
-
-                if (!respuesta)
-                    throw new TaskCanceledException("No se pudo editar");
-                return respuesta;
+                throw new TaskCanceledException("No se encontro articulo,talle,color");
 
             }
             catch (Exception ex)
@@ -195,39 +206,46 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                //TODO: STOCK SERVICIO - AgregarCantidadStock
-                //var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                //var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                //var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-                //if (dbTalle != null && dbColor != null)
-                //{
+                var dbTalle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.DescripcionTalle == talle).FirstOrDefaultAsync();
+                var dbColor = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.DescripcionColor == color).FirstOrDefaultAsync();
+                var dbArticulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
 
-                var dbStock = await _modeloRepositorio.Obtener(c => c.IdArticulo == 1 && c.IdTalle == 1 && c.IdColor == 1).FirstOrDefaultAsync();
+                if (dbTalle != null && dbColor != null && dbArticulo != null)
+                {
+                    var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo
+                    && c.IdTalle == dbTalle.IdTalle && c.IdColor == dbColor.IdColor).FirstOrDefaultAsync();
 
-                if (dbStock == null)
-                    throw new TaskCanceledException("No se encontro al articulo");
+                    if (dbStock == null)
+                    {
+                        throw new TaskCanceledException("No se encontraron resultados");
+                    }
 
-                // actualizo propiedades
-                //Cambiar propiedades de stock
+                    // actualizo propiedades
+                    //Cambiar propiedades de stock
+                    
+                    stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
+                    stock.IdSucursal = dbStock.IdSucursal;
+                    stock.IdArticulo = dbStock.IdArticulo;
+                    stock.IdTalle = dbStock.IdTalle;
+                    stock.IdColor = dbStock.IdColor;
+                    stock.IdStock = dbStock.IdStock;
+                    stock.Articulo = null;
+                    stock.Color = null;
+                    stock.Talle = null;
 
-                stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
-                stock.IdSucursal = dbStock.IdSucursal;
-                stock.IdArticulo = dbStock.IdArticulo;
-                stock.IdTalle = dbStock.IdTalle;
-                stock.IdColor = dbStock.IdColor;
-                stock.IdStock = dbStock.IdStock;
-                stock.Articulo = null;
-                stock.Color = null;
-                stock.Talle = null;
-                
 
-                _mapper.Map(stock, dbStock);
+                    _mapper.Map(stock, dbStock);
 
-                var respuesta = await _modeloRepositorio.Modificar(dbStock);
+                    var respuesta = await _unitofwork.Repository<StockDTO>().Modificar(dbStock);
 
-                if (!respuesta)
-                    throw new TaskCanceledException("No se pudo editar");
-                return respuesta;
+                    if (!respuesta)
+                        throw new TaskCanceledException("No se pudo editar");
+                    return respuesta;
+                    
+
+                }
+
+                throw new TaskCanceledException("No se encontro articulo,talle,color");
 
             }
             catch (Exception ex)
@@ -236,6 +254,26 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             }
         }
 
+        public async Task<List<Stock>> ListarStock()
+        {
+            try
+            {
+                var dbStock = await _unitofwork.Repository<StockDTO>().Obtener().ToListAsync();
 
+                if (dbStock == null)
+                {
+                    throw new TaskCanceledException("No se encontraron resultados");
+                }
+
+                var Stock = _mapper.Map<List<Stock>>(dbStock);
+
+                return Stock;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        } //PARA TESTING
     }
 }

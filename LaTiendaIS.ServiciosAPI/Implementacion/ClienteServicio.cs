@@ -14,12 +14,13 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class ClienteServicio: IClienteServicio
     {
-        private readonly IGenericoRepositorio<ClienteDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
+        //private readonly IGenericoRepositorio<ClienteDTO> _modeloRepositorio;
         private readonly IMapper _mapper;
 
-        public ClienteServicio(IGenericoRepositorio<ClienteDTO> modeloRepositorio, IMapper mapper)
+        public ClienteServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -30,7 +31,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 var dbCliente = _mapper.Map<ClienteDTO>(Cliente);
 
 
-                var respModelo = await _modeloRepositorio.Crear(dbCliente);
+                var respModelo = await _unitofwork.Repository<ClienteDTO>().Crear(dbCliente);
 
                 if (!respModelo)
                     throw new TaskCanceledException("No se pudo agregar el Cliente");
@@ -48,18 +49,18 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbcliente = await _modeloRepositorio.Obtener(c => c.IdCliente == idCliente).FirstOrDefaultAsync();
+                var dbcliente = await _unitofwork.Repository<ClienteDTO>().Obtener(c => c.IdCliente == idCliente).FirstOrDefaultAsync();
 
                 if (dbcliente == null)
                 {
                     throw new TaskCanceledException("No se encontraron resultados");
                 }
 
-                //TODO: CLIENTE SERVICIO
-                //dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
-                var art = _mapper.Map<Cliente>(dbcliente);
 
-                return art;
+                dbcliente.CondicionTributaria = await _unitofwork.Repository<CondicionTributariaDTO>().Obtener(c => c.IdCondicionTributaria == dbcliente.IdCondicionTributaria).FirstOrDefaultAsync();
+                var cliente = _mapper.Map<Cliente>(dbcliente);
+
+                return cliente;
 
             }
             catch (Exception ex)
@@ -72,7 +73,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var listaCliente = await _modeloRepositorio.Obtener().ToListAsync();
+                var listaCliente = await _unitofwork.Repository<ClienteDTO>().Obtener().ToListAsync();
                 
 
                 if (listaCliente == null)
@@ -80,12 +81,14 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                     throw new TaskCanceledException("No se encontraron resultados");
                 }
 
-                //TODO: CLIENTE SERVICIO 
-                //dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
-                var cliente = listaCliente.OrderByDescending(c => c.IdCliente);
-                var cliente1 = _mapper.Map<Cliente>(cliente);
+                var dbcliente = listaCliente.OrderByDescending(c => c.IdCliente).FirstOrDefault();
 
-                return cliente1;
+                dbcliente.CondicionTributaria = await _unitofwork.Repository<CondicionTributariaDTO>().Obtener(c => c.IdCondicionTributaria == dbcliente.IdCondicionTributaria).FirstOrDefaultAsync();
+
+
+                var cliente = _mapper.Map<Cliente>(dbcliente);
+
+                return cliente;
 
             }
             catch (Exception ex)

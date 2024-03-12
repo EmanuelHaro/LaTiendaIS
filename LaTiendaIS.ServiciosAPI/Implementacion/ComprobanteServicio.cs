@@ -14,12 +14,14 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class ComprobanteServicio: IComprobanteServicio
     {
-        private readonly IGenericoRepositorio<ComprobanteDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
+        //private readonly IGenericoRepositorio<ComprobanteDTO> _modeloRepositorio; 
+
         private readonly IMapper _mapper;
 
-        public ComprobanteServicio(IGenericoRepositorio<ComprobanteDTO> modeloRepositorio, IMapper mapper)
+        public ComprobanteServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -30,7 +32,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 var dbComprobante = _mapper.Map<ComprobanteDTO>(Comprobante);
 
 
-                var respModelo = await _modeloRepositorio.Crear(dbComprobante);
+                var respModelo = await _unitofwork.Repository<ComprobanteDTO>().Crear(dbComprobante);
 
                 if (!respModelo)
                     throw new TaskCanceledException("No se pudo agregar el Comprobante");
@@ -48,7 +50,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbComp = await _modeloRepositorio.Obtener(c => c.IdComprobante == idComprobante).FirstOrDefaultAsync();
+                var dbComp = await _unitofwork.Repository<ComprobanteDTO>().Obtener(c => c.IdComprobante == idComprobante).FirstOrDefaultAsync();
 
                 if (dbComp == null)
                 {

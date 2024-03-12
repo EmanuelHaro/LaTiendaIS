@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -13,30 +14,32 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class StockController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IStockServicio _StockServicio;
 
-        public StockController(DBLaTiendaContext dbContext, IMapper mapper)
+        public StockController(IStockServicio StockServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _StockServicio = StockServicio;
         }
 
         [HttpGet] //Realizado para testing
         public async Task<IActionResult> ListarStock()
         {
             var responseApi = new ResponseAPI<List<Stock>>();
-            var listaStock = new List<Stock>();
+
             try
             {
-                var stockdb = await _dbContext.Stock.ToListAsync();
-                foreach (var stock in stockdb)
+                var lista = await _StockServicio.ListarStock();
+                if(lista!=null)
                 {
-                    listaStock.Add(_mapper.Map<Stock>(stock));
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = lista;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Valor = null;
                 }
 
-                responseApi.EsCorrecto = true;
-                responseApi.Valor = listaStock;
             }
             catch (Exception ex)
             {
@@ -51,44 +54,25 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("Articulo/{codigoTienda}")] 
-        public async Task<ActionResult> ObtenerListaDeTalleYColorDelStock(int codigoTienda)
+        public async Task<ActionResult> ObtenerListaDeStockPorArticulo(int codigoTienda)
         {
             var responseApi = new ResponseAPI<List<Stock>>();
             var Stock = new List<Stock>();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
-                if (dbArticulo != null)
+                var listaStock = await _StockServicio.ObtenerListaDeStockPorArticulo(codigoTienda);
+
+                if (listaStock != null)
                 {
-                    var dbStock = await _dbContext.Stock.Where(a => a.IdArticulo == dbArticulo.IdCodigo && a.Cantidad > 0).ToListAsync();
 
-
-                    if (dbStock != null)
-                    {
-                        foreach (var stockItem in dbStock)
-                        {
-                            stockItem.Talle = _dbContext.Talle.Find(stockItem.IdTalle);
-                            stockItem.Color = _dbContext.ColorArticulo.Find(stockItem.IdColor);
-                            stockItem.Articulo = _dbContext.Articulo.Find(stockItem.IdArticulo);
-                        }
-
-                        Stock = _mapper.Map<List<Stock>>(dbStock);
-
-                        responseApi.EsCorrecto = true;
-                        responseApi.Valor = Stock;
-                    }
-                    else
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "Articulo no encontrado en Stock/Cantidad insuficiente";
-                    }
-
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = Stock;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Codigo de Articulo no coincide";
+                    responseApi.Mensaje = "Articulo no encontrado en Stock/Cantidad insuficiente";
                 }
 
             }
@@ -108,28 +92,20 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerCantidad(int codigoTienda,string talle, string color)
         {
             var responseApi = new ResponseAPI<int>();
-            var Stock = new List<Stock>();
 
             try
             {
-                var dbTalle = await _dbContext.Talle.Where(t=>t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
+                var cant = await _StockServicio.ObtenerCantidad(codigoTienda,talle,color); 
 
-                if (dbTalle != null && dbColor != null)
+                if (cant != null)
                 {
-                    var dbStock = await _dbContext.Stock.Where(cant => cant.IdTalle == dbTalle.IdTalle && cant.IdColor == dbColor.IdColor && cant.IdArticulo == dbArticulo.IdCodigo).FirstOrDefaultAsync();
-
-                    if (dbStock != null)
-                    {
-                        responseApi.EsCorrecto = true;
-                        responseApi.Valor = dbStock.Cantidad;
-                    }
-                    else
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "No coinciden talle y color";
-                    }
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = cant;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "No coinciden talle y color";
                 }
             }
             catch (Exception ex)
@@ -147,39 +123,21 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerStockPorArticulo(int codigoTienda, string talle, string color)
         {
             var responseApi = new ResponseAPI<Stock>();
-            var stock = new Stock();
 
             try
             {
-                var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                var dbArticulo = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
+                var stock = await _StockServicio.ObtenerStockPorArticulo(codigoTienda,talle,color);
 
-                var dbMarca = await _dbContext.Marca.Where(m => m.IdMarca == dbArticulo.IdMarca).FirstOrDefaultAsync();
-                var dbCategoria = await _dbContext.Categoria.Where(c => c.IdCategoria == dbArticulo.IdCategoria).FirstOrDefaultAsync();
-
-                if(dbMarca!=null && dbCategoria!=null)
+                if (stock != null)
                 {
-                    dbArticulo.Marca = dbMarca;
-                    dbArticulo.Categoria = dbCategoria;
-                    if (dbTalle != null && dbColor != null)
-                    {
-                        var dbStock = await _dbContext.Stock.Where(cant => cant.IdTalle == dbTalle.IdTalle && cant.IdColor == dbColor.IdColor && cant.IdArticulo == dbArticulo.IdCodigo).FirstOrDefaultAsync();
 
-                        if (dbStock != null)
-                        {
-                            stock = _mapper.Map<Stock>(dbStock);
-
-
-                            responseApi.EsCorrecto = true;
-                            responseApi.Valor = stock;
-                        }
-                        else
-                        {
-                            responseApi.EsCorrecto = false;
-                            responseApi.Mensaje = "No coinciden talle y color";
-                        }
-                    }
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = stock;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "No coinciden talle y color";
                 }
             }
             catch (Exception ex)
@@ -198,35 +156,20 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerStockPorId(int idStock)
         {
             var responseApi = new ResponseAPI<Stock>();
-            var stock = new Stock();
 
             try
             {
-                var dbStock = await _dbContext.Stock.Where(s => s.IdStock == idStock).FirstOrDefaultAsync();
-                if(dbStock != null)
+                var stock = await _StockServicio.ObtenerStockPorId(idStock);
+
+                if (stock != null)
                 {
-                    var dbTalle = await _dbContext.Talle.Where(t => t.IdTalle == dbStock.IdTalle).FirstOrDefaultAsync();
-                    var dbColor = await _dbContext.ColorArticulo.Where(t => t.IdColor == dbStock.IdColor).FirstOrDefaultAsync();
-                    var dbArticulo = await _dbContext.Articulo.Where(a => a.IdCodigo == dbStock.IdArticulo).FirstOrDefaultAsync();
-
-                    if (dbTalle != null && dbColor != null && dbArticulo!=null)
-                    {
-                        stock.Talle = _mapper.Map<Talle>(dbTalle);
-                        stock.Color = _mapper.Map<ColorArticulo>(dbColor);
-                        stock.Articulo = _mapper.Map<Articulo>(dbArticulo);
-                        
-
-
-                        stock = _mapper.Map<Stock>(dbStock);
-
-                        responseApi.EsCorrecto = true;
-                        responseApi.Valor = stock;
-                    }
-                    else
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "No coinciden talle y color";
-                    }
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = stock;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "No coinciden talle y color";
                 }
             }
             catch (Exception ex)
@@ -243,56 +186,21 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Modificar/{codigoTienda}/{talle}/{color}")]
         public async Task<ActionResult> ModificarCantidad(int codigoTienda, string talle, string color, Stock stock)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                var dbArticulos = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
+                var cantidadModificada = await _StockServicio.ModificarCantidad(codigoTienda, talle, color,stock);
 
-                if (dbTalle != null && dbColor != null)
+                if (!cantidadModificada)
                 {
-                    var dbStock = await _dbContext.Stock.Where(cant => cant.IdTalle == dbTalle.IdTalle && cant.IdColor == dbColor.IdColor && cant.IdArticulo == dbArticulos.IdCodigo).FirstOrDefaultAsync();
-
-                    if (dbStock == null)
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "Stock no encontrado";
-                        return NotFound(responseApi);
-                    }
-                    //Cambiar propiedades de stock
-                    if(dbStock.Cantidad - stock.Cantidad >= 0)
-                    {
-                        stock.Cantidad = dbStock.Cantidad - stock.Cantidad;
-                        stock.IdSucursal = dbStock.IdSucursal;
-                        stock.IdArticulo = dbStock.IdArticulo;
-                        stock.IdTalle = dbStock.IdTalle;
-                        stock.IdColor = dbStock.IdColor;
-                        stock.IdStock = dbStock.IdStock;
-                        stock.Articulo = null;
-                        stock.Color = null;
-                        stock.Talle = null;
-
-                        // Update properties of dbArticulo with values from ArticuloDTO
-                        _mapper.Map(stock, dbStock);
-
-
-                        _dbContext.Entry(dbStock).State = EntityState.Modified;
-                        await _dbContext.SaveChangesAsync();
-
-                        responseApi.EsCorrecto = true;
-                        responseApi.Valor = dbStock.IdStock;
-                    }
-                    else
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "Stock negativo";
-                        return NotFound(responseApi);
-                    }
-                    
-
-                    
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Stock no encontrado";
+                    return NotFound(responseApi);
                 }
+
+                responseApi.EsCorrecto = true;
+                responseApi.Valor = cantidadModificada;
+
             }
 
             catch (DbUpdateConcurrencyException ex)
@@ -317,46 +225,21 @@ namespace LaTiendaIS.Server.Controllers
         [Route("Agregar/{codigoTienda}/{talle}/{color}")]
         public async Task<ActionResult> AgregarCantidad(int codigoTienda, string talle, string color, Stock stock)
         {
-            var responseApi = new ResponseAPI<int>();
-
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbTalle = await _dbContext.Talle.Where(t => t.DescripcionTalle == talle).FirstOrDefaultAsync();
-                var dbColor = await _dbContext.ColorArticulo.Where(t => t.DescripcionColor == color).FirstOrDefaultAsync();
-                var dbArticulos = await _dbContext.Articulo.Where(a => a.CodigoTienda == codigoTienda).FirstOrDefaultAsync();
+                var cantidadAgregada = await _StockServicio.AgregarCantidadStock(codigoTienda, talle, color, stock);
 
-                if (dbTalle != null && dbColor != null)
+                if (!cantidadAgregada)
                 {
-                    var dbStock = await _dbContext.Stock.Where(cant => cant.IdTalle == dbTalle.IdTalle && cant.IdColor == dbColor.IdColor && cant.IdArticulo == dbArticulos.IdCodigo).FirstOrDefaultAsync();
-
-                    if (dbStock == null)
-                    {
-                        responseApi.EsCorrecto = false;
-                        responseApi.Mensaje = "Stock no encontrado";
-                        return NotFound(responseApi);
-                    }
-
-                    //Cambiar propiedades de stock
-                    stock.Cantidad = dbStock.Cantidad + stock.Cantidad;
-                    stock.IdSucursal = dbStock.IdSucursal;
-                    stock.IdArticulo = dbStock.IdArticulo;
-                    stock.IdTalle = dbStock.IdTalle;
-                    stock.IdColor = dbStock.IdColor;
-                    stock.IdStock = dbStock.IdStock;
-                    stock.Articulo = null;
-                    stock.Color = null;
-                    stock.Talle = null;
-
-                    // Update properties of dbArticulo with values from ArticuloDTO
-                    _mapper.Map(stock, dbStock);
-
-
-                    _dbContext.Entry(dbStock).State = EntityState.Modified;
-                    await _dbContext.SaveChangesAsync();
-
-                    responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbStock.IdStock;
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Stock no encontrado";
+                    return NotFound(responseApi);
                 }
+
+                responseApi.EsCorrecto = true;
+                responseApi.Valor = cantidadAgregada;
+
             }
 
             catch (DbUpdateConcurrencyException ex)
@@ -379,7 +262,7 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> AgregarStock(Stock stock)
+        public async Task<ActionResult> AgregarStock(Stock stock) //ME QUEDE EN ESTA FUNCION
         {
             var responseApi = new ResponseAPI<int>();
             try

@@ -14,12 +14,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class VentaServicio: IVentaServicio
     {
-        private readonly IGenericoRepositorio<VentaDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
         private readonly IMapper _mapper;
 
-        public VentaServicio(IGenericoRepositorio<VentaDTO> modeloRepositorio, IMapper mapper)
+        public VentaServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -30,7 +30,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 var dbVenta = _mapper.Map<VentaDTO>(Venta);
 
 
-                var respModelo = await _modeloRepositorio.Crear(dbVenta);
+                var respModelo = await _unitofwork.Repository<VentaDTO>().Crear(dbVenta);
 
                 if (!respModelo)
                     throw new TaskCanceledException("No se pudo agregar el Venta");
@@ -48,12 +48,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbventa= _modeloRepositorio.Obtener(p => p.IdVenta == idVenta); //devuelve un IQueryable
+                var dbventa= _unitofwork.Repository<VentaDTO>().Obtener(p => p.IdVenta == idVenta); //devuelve un IQueryable
                 var fromDbModelo = await dbventa.FirstOrDefaultAsync(); // a revisar
 
                 if (fromDbModelo != null)
                 {
-                    var respuesta = await _modeloRepositorio.Eliminar(fromDbModelo);
+                    var respuesta = await _unitofwork.Repository<VentaDTO>().Eliminar(fromDbModelo);
                     if (!respuesta)
                         throw new TaskCanceledException("No se pudo eliminar");
                     return respuesta;
@@ -72,7 +72,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var listaDB = await _modeloRepositorio.Obtener().ToListAsync();
+                var listaDB = await _unitofwork.Repository<VentaDTO>().Obtener().ToListAsync();
 
                 List<Venta> lista = _mapper.Map<List<Venta>>(listaDB);
                 return lista;
@@ -88,7 +88,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbVenta = await _modeloRepositorio.Obtener(c => c.IdVenta == idVenta).FirstOrDefaultAsync();
+                var dbVenta = await _unitofwork.Repository<VentaDTO>().Obtener(c => c.IdVenta == idVenta).FirstOrDefaultAsync();
 
                 if (dbVenta == null)
                     throw new TaskCanceledException("No se encontro al Venta");
@@ -96,7 +96,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 // actualizo propiedades
                 _mapper.Map(Venta, dbVenta);
 
-                var respuesta = await _modeloRepositorio.Modificar(dbVenta);
+                var respuesta = await _unitofwork.Repository<VentaDTO>().Modificar(dbVenta);
 
                 if (!respuesta)
                     throw new TaskCanceledException("No se pudo editar");
@@ -113,7 +113,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var listaVenta = await _modeloRepositorio.Obtener().ToListAsync();
+                var listaVenta = await _unitofwork.Repository<VentaDTO>().Obtener().ToListAsync();
 
 
                 if (listaVenta == null)
@@ -136,7 +136,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbVenta = await _modeloRepositorio.Obtener(c => c.IdVenta == idVenta).FirstOrDefaultAsync();
+                var dbVenta = await _unitofwork.Repository<VentaDTO>().Obtener(c => c.IdVenta == idVenta).FirstOrDefaultAsync();
 
                 if (dbVenta == null)
                 {

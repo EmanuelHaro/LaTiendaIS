@@ -6,6 +6,7 @@ using LaTiendaIS.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +15,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class CondicionTServicio: ICondicionTServicio
     {
-        private readonly IGenericoRepositorio<CondicionTributariaDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
         private readonly IMapper _mapper;
 
-        public CondicionTServicio(IGenericoRepositorio<CondicionTributariaDTO> modeloRepositorio, IMapper mapper)
+        public CondicionTServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -27,7 +28,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbCondicionT = await _modeloRepositorio.Obtener(c => c.Descripcion == descCondicion).FirstOrDefaultAsync();
+                var dbCondicionT = await _unitofwork.Repository<CondicionTributariaDTO>().Obtener(c => c.Descripcion == descCondicion).FirstOrDefaultAsync();
 
                 if (dbCondicionT == null)
                 {

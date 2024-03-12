@@ -14,12 +14,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 {
     public class LineaDeVentaServicio: ILineaDeVentaServicio
     {
-        private readonly IGenericoRepositorio<LineaDeVentaDTO> _modeloRepositorio;
+        private readonly IUnitOfWork _unitofwork;
         private readonly IMapper _mapper;
 
-        public LineaDeVentaServicio(IGenericoRepositorio<LineaDeVentaDTO> modeloRepositorio, IMapper mapper)
+        public LineaDeVentaServicio(IUnitOfWork unitofwork, IMapper mapper)
         {
-            _modeloRepositorio = modeloRepositorio;
+            _unitofwork = unitofwork;
             _mapper = mapper;
         }
 
@@ -29,11 +29,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             {
                 var dbLDV = _mapper.Map<LineaDeVentaDTO>(LineaDeVenta);
 
-                //TODO: LINEA DE VENTA SERVICIO
-                //dbLineaDeVenta.LineaDeVenta = _dbContext.LineaDeVenta.FirstOrDefault(a => a.IdCodigo == LineaDeVenta.IdLineaDeVenta);
-                //dbLineaDeVenta.Venta = _dbContext.Venta.FirstOrDefault(v => v.IdVenta == LineaDeVenta.IdVenta);
-
-                var respModelo = await _modeloRepositorio.Crear(dbLDV);
+                var respModelo = await _unitofwork.Repository<LineaDeVentaDTO>().Crear(dbLDV);
 
                 if (!respModelo)
                     throw new TaskCanceledException("No se pudo agregar el LineaDeVenta");
@@ -51,12 +47,12 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbrticulo = _modeloRepositorio.Obtener(p => p.IdLineaDeVenta == idLineaDeVenta); //devuelve un IQueryable
+                var dbrticulo = _unitofwork.Repository<LineaDeVentaDTO>().Obtener(p => p.IdLineaDeVenta == idLineaDeVenta); //devuelve un IQueryable
                 var fromDbModelo = await dbrticulo.FirstOrDefaultAsync(); // a revisar
 
                 if (fromDbModelo != null)
                 {
-                    var respuesta = await _modeloRepositorio.Eliminar(fromDbModelo);
+                    var respuesta = await _unitofwork.Repository<LineaDeVentaDTO>().Eliminar(fromDbModelo);
                     if (!respuesta)
                         throw new TaskCanceledException("No se pudo eliminar");
                     return respuesta;
@@ -75,9 +71,18 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var listaDB = await _modeloRepositorio.Obtener().ToListAsync();
+                List<LineaDeVentaDTO> listaDeLDV = new List<LineaDeVentaDTO> ();
 
-                List<LineaDeVenta> lista = _mapper.Map<List<LineaDeVenta>>(listaDB);
+                var listaDB = await _unitofwork.Repository<LineaDeVentaDTO>().Obtener().ToListAsync();
+
+                foreach (var LineaDeVenta in listaDB)
+                {
+                    LineaDeVenta.Articulo = await _unitofwork.Repository<ArticuloDTO>().Obtener(c => c.IdCodigo == LineaDeVenta.IdArticulo).FirstOrDefaultAsync();
+                    listaDeLDV.Add(LineaDeVenta);
+                }
+
+
+                List<LineaDeVenta> lista = _mapper.Map<List<LineaDeVenta>>(listaDeLDV);
                 return lista;
 
             }
@@ -91,7 +96,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbLineaDeVenta = await _modeloRepositorio.Obtener(c => c.IdLineaDeVenta == idLineaDeVenta).FirstOrDefaultAsync();
+                var dbLineaDeVenta = await _unitofwork.Repository<LineaDeVentaDTO>().Obtener(c => c.IdLineaDeVenta == idLineaDeVenta).FirstOrDefaultAsync();
 
                 if (dbLineaDeVenta == null)
                     throw new TaskCanceledException("No se encontro la LineaDeVenta");
@@ -99,7 +104,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 // actualizo propiedades
                 _mapper.Map(LineaDeVenta, dbLineaDeVenta);
 
-                var respuesta = await _modeloRepositorio.Modificar(dbLineaDeVenta);
+                var respuesta = await _unitofwork.Repository<LineaDeVentaDTO>().Modificar(dbLineaDeVenta);
 
                 if (!respuesta)
                     throw new TaskCanceledException("No se pudo editar");
@@ -116,7 +121,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var dbLineaDeVenta = await _modeloRepositorio.Obtener(c => c.IdLineaDeVenta == idLineaDeVenta).FirstOrDefaultAsync();
+                var dbLineaDeVenta = await _unitofwork.Repository<LineaDeVentaDTO>().Obtener(c => c.IdLineaDeVenta == idLineaDeVenta).FirstOrDefaultAsync();
 
                 if (dbLineaDeVenta == null)
                 {
@@ -138,7 +143,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
         {
             try
             {
-                var listaLineaDeVenta = await _modeloRepositorio.Obtener().ToListAsync();
+                var listaLineaDeVenta = await _unitofwork.Repository<LineaDeVentaDTO>().Obtener().ToListAsync();
 
 
                 if (listaLineaDeVenta == null)
