@@ -120,7 +120,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 {
                     throw new TaskCanceledException("No se encontraron resultados");
                 }
-                var Venta = listaVenta.OrderByDescending(c => c.IdVenta);
+                var Venta = listaVenta.OrderByDescending(c => c.IdVenta).First();
                 var Venta1 = _mapper.Map<Venta>(Venta);
 
                 return Venta1;

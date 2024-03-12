@@ -9,6 +9,7 @@ using LaTiendaIS.Repositorio.Implementacio;
 using LaTiendaIS.ServiciosAPI.Implementacion;
 using LaTiendaIS.ServiciosAPI.Contrato;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,7 +24,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IArticuloServicio, ArticuloServicio>();
 builder.Services.AddScoped<IClienteServicio, ClienteServicio>();
 builder.Services.AddScoped<IComprobanteServicio, ComprobanteServicio>();
-
+builder.Services.AddScoped<ICondicionTServicio, CondicionTServicio>();
+builder.Services.AddScoped<ILineaDeVentaServicio,LineaDeVentaServicio>();
+builder.Services.AddScoped<IStockServicio, StockServicio>();
+builder.Services.AddScoped<IVentaServicio, VentaServicio>();
 
 
 if (builder.Environment.EnvironmentName != "Testing")

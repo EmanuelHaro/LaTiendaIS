@@ -96,6 +96,8 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 
                 var dbStock = await _unitofwork.Repository<StockDTO>().Obtener(c => c.IdArticulo == dbArticulo.IdCodigo && c.Cantidad > 0).ToListAsync();
 
+
+
                 if (dbStock == null)
                 {
                     throw new TaskCanceledException("No se encontraro el stock para el articulo");
@@ -104,7 +106,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 foreach (var stockItem in dbStock)
                 {
                     stockItem.Talle = await _unitofwork.Repository<TalleDTO>().Obtener(c => c.IdTalle == stockItem.IdTalle).FirstOrDefaultAsync();
-                    stockItem.Color = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.IdColor == stockItem.IdColor).FirstOrDefaultAsync(); ;
+                    stockItem.Color = await _unitofwork.Repository<ColorArticuloDTO>().Obtener(c => c.IdColor == stockItem.IdColor).FirstOrDefaultAsync();
                     stockItem.Articulo = dbArticulo;
                 }
 
@@ -275,5 +277,26 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 throw;
             }
         } //PARA TESTING
+
+        public async Task<bool> AgregarStock(Stock stock) //PARA TESTING
+        {
+            try
+            {
+                var dbStock = _mapper.Map<StockDTO>(stock);
+
+
+                var respModelo = await _unitofwork.Repository<StockDTO>().Crear(dbStock);
+
+                if (!respModelo)
+                    throw new TaskCanceledException("No se pudo agregar el articulo");
+
+                return respModelo;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

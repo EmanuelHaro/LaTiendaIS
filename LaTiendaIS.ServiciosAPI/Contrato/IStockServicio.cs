@@ -13,5 +13,7 @@ namespace LaTiendaIS.ServiciosAPI.Contrato
         Task<Stock> ObtenerStockPorId(int idStock);
 
         Task<List<Stock>> ListarStock( );
+        Task<bool> AgregarStock(Stock stock);
+
     } 
 }

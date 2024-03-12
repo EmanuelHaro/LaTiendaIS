@@ -57,8 +57,6 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerListaDeStockPorArticulo(int codigoTienda)
         {
             var responseApi = new ResponseAPI<List<Stock>>();
-            var Stock = new List<Stock>();
-
             try
             {
                 var listaStock = await _StockServicio.ObtenerListaDeStockPorArticulo(codigoTienda);
@@ -67,7 +65,7 @@ namespace LaTiendaIS.Server.Controllers
                 {
 
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = Stock;
+                    responseApi.Valor = listaStock;
                 }
                 else
                 {
@@ -262,22 +260,17 @@ namespace LaTiendaIS.Server.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> AgregarStock(Stock stock) //ME QUEDE EN ESTA FUNCION
+        public async Task<ActionResult> AgregarStock(Stock stock)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
+                var stockAgregado = await _StockServicio.AgregarStock(stock);
 
-                var dbStock = _mapper.Map<StockDTO>(stock);
-
-
-                _dbContext.Stock.Add(dbStock);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbStock.IdStock != 0)
+                if (stockAgregado)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbStock.IdStock;
+                    responseApi.Valor = stockAgregado;
                 }
                 else
                 {
@@ -292,7 +285,7 @@ namespace LaTiendaIS.Server.Controllers
             }
 
             return Ok(responseApi);
-        }
+        } //PARA TESTING
 
 
 
