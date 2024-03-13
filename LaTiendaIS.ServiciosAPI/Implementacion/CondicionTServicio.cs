@@ -24,6 +24,8 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             _mapper = mapper;
         }
 
+        
+
         public async Task<CondicionTributaria> ObtenerCondicionTributaria(string descCondicion)
         {
             try

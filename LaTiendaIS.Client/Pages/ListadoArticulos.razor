@@ -30,9 +30,6 @@
                 <MudTextField @bind-Value="codigoTienda" Variant="Variant.Text" Label="Ingresar Codigo"></MudTextField>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ObtenerStock(codigoTienda)">Buscar</MudButton>
             </div>
-            <div class="d-flex" style="margin-bottom: 20px;">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(codigoTienda)">Agregar</MudButton>
-            </div>
         </div>
         <div class="col-md-6">
             @* Ingreso de talle *@
@@ -56,6 +53,9 @@
             @* Ingreso de cantidad *@
             <div class="d-flex" style="margin-bottom: 20px;">
                 <MudNumericField @bind-Value="cantidadElegida" Label="Cantidad" Variant="Variant.Text" Min="0" Max="cantidadMaxima" />
+            </div>
+            <div class="d-flex" style="margin-bottom: 20px;">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => AgregarArticulo(codigoTienda)">Agregar</MudButton>
             </div>
         </div>
     </div>

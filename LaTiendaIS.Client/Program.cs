@@ -20,6 +20,8 @@ builder.Services.AddScoped<IComprobanteServicio, ComprobanteServicio>();
 builder.Services.AddScoped<IStockServicio, StockServicio>();
 builder.Services.AddScoped<IServicioExternoServicio, ServicioExternoServicio>();
 builder.Services.AddScoped<ICondicionTServicio, CondicionTributariaServicio>();
+builder.Services.AddScoped<ITipoDeComprobante, TipoDeComprobanteServicio>();
+
 
 // Añado MudBlazor
 builder.Services.AddMudServices();

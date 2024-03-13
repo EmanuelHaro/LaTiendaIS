@@ -77,5 +77,7 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
+
+        
     }
     }

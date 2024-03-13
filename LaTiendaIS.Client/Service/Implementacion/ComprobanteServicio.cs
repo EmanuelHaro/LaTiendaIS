@@ -35,5 +35,6 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(response.Mensaje);
         }
 
+        
     }
 }

@@ -35,6 +35,9 @@ builder.Services.AddScoped<IMarcaServicio, MarcaServicio>();
 builder.Services.AddScoped<ISucursalServicio, SucursalServicio>();
 builder.Services.AddScoped<ITalleServicio, TalleServicio>();
 
+builder.Services.AddScoped<ITipoDeComprobanteServicio, TipoDeComprobanteServicio>();
+
+
 
 if (builder.Environment.EnvironmentName != "Testing")
 {

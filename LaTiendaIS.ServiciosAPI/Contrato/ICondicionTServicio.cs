@@ -6,5 +6,7 @@ namespace LaTiendaIS.ServiciosAPI.Contrato
     {
 
         Task<CondicionTributaria> ObtenerCondicionTributaria(string descCondicion);
+
+        
     }
 }

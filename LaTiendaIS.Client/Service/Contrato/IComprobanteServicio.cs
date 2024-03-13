@@ -6,5 +6,6 @@ namespace LaTiendaIS.Client.Service.Contrato
     {
         Task<Comprobante> ObtenerComprobante(int idComprobante);
         Task<bool> AgregarComprobante(Comprobante Comprobante);
+
     }
 }
