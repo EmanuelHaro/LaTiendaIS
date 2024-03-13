@@ -28,6 +28,12 @@ builder.Services.AddScoped<ICondicionTServicio, CondicionTServicio>();
 builder.Services.AddScoped<ILineaDeVentaServicio,LineaDeVentaServicio>();
 builder.Services.AddScoped<IStockServicio, StockServicio>();
 builder.Services.AddScoped<IVentaServicio, VentaServicio>();
+builder.Services.AddScoped<ISExternoServicio, SExternoServicio>();
+builder.Services.AddScoped<ICategoriaServicio, CategoriaServicio>();
+builder.Services.AddScoped<IColorArticuloServicio, ColorArticuloServicio>();
+builder.Services.AddScoped<IMarcaServicio, MarcaServicio>();
+builder.Services.AddScoped<ISucursalServicio, SucursalServicio>();
+builder.Services.AddScoped<ITalleServicio, TalleServicio>();
 
 
 if (builder.Environment.EnvironmentName != "Testing")
@@ -54,11 +60,11 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
-{
-    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
-    dataContext.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
+//{
+//    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
+//    dataContext.Database.Migrate();
+//}
 
 
 // Configure the HTTP request pipeline.

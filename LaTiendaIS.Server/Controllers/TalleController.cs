@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,31 +15,25 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class TalleController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly ITalleServicio _TalleServicio;
 
-        public TalleController(DBLaTiendaContext dbContext, IMapper mapper)
+        public TalleController(ITalleServicio TalleServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _TalleServicio = TalleServicio;
         }
 
         [HttpPost]
         public async Task<ActionResult> AgregarTalle(Talle Talle)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbTalle = _mapper.Map<TalleDTO>(Talle);
+                var TalleAgregada = await _TalleServicio.AgregarTalle(Talle);
 
-
-                _dbContext.Talle.Add(dbTalle);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbTalle.IdTalle != 0)
+                if (TalleAgregada)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbTalle.IdTalle;
+                    responseApi.Valor = TalleAgregada;
                 }
                 else
                 {
@@ -55,31 +50,25 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
-
-
         [HttpGet]
         [Route("{descTalle}")]
-        public async Task<ActionResult> ObtenerTalle(string descTalle) 
+        public async Task<ActionResult> ObtenerTalle(string descTalle)
         {
             var responseApi = new ResponseAPI<Talle>();
-            var Talle = new Talle();
 
             try
             {
-                var dbTalle = await _dbContext.Talle.FirstOrDefaultAsync(f => f.DescripcionTalle == descTalle);
+                var Talle = await _TalleServicio.ObtenerTalle(descTalle);
 
-
-                if (dbTalle != null)
+                if (Talle != null)
                 {
-                    Talle = _mapper.Map<Talle>(dbTalle);
-
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = Talle;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Talle no encontrado";
+                    responseApi.Mensaje = "Articulo no encontrado";
                 }
             }
             catch (Exception ex)

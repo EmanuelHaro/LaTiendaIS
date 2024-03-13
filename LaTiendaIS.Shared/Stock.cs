@@ -40,4 +40,6 @@ namespace LaTiendaIS.Shared
         public virtual ColorArticulo? Color { get; set; }
 
     }
+
+    
 }

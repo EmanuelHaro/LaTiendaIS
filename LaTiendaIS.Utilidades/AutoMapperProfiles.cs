@@ -26,6 +26,9 @@ namespace LaTiendaIS.Utilidades
             CreateMap<TipoDeComprobanteDTO, TipoDeComprobante>().ReverseMap();
             CreateMap<TipoTalleDTO, TipoTalle>().ReverseMap();
             CreateMap<VentaDTO, Venta>().ReverseMap();
+
+            CreateMap<StockUpdateDto, StockDTO>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcVal) => srcVal != null));
         }
     }
 }

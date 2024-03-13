@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,31 +15,25 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class MarcaController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IMarcaServicio _MarcaServicio;
 
-        public MarcaController(DBLaTiendaContext dbContext, IMapper mapper)
+        public MarcaController(IMarcaServicio MarcaServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _MarcaServicio = MarcaServicio;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarMarca(Marca marca)
+        public async Task<ActionResult> AgregarMarca(Marca Marca)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbMarca = _mapper.Map<MarcaDTO>(marca);
+                var MarcaAgregada = await _MarcaServicio.AgregarMarca(Marca);
 
-
-                _dbContext.Marca.Add(dbMarca);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbMarca.IdMarca != 0)
+                if (MarcaAgregada)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbMarca.IdMarca;
+                    responseApi.Valor = MarcaAgregada;
                 }
                 else
                 {
@@ -60,24 +55,20 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerMarca(string descMarca) 
         {
             var responseApi = new ResponseAPI<Marca>();
-            var marca = new Marca();
 
             try
             {
-                var dbMarca = await _dbContext.Marca.FirstOrDefaultAsync(f => f.DescripcionMarca == descMarca);
+                var Marca = await _MarcaServicio.ObtenerMarca(descMarca);
 
-
-                if (dbMarca != null)
+                if (Marca != null)
                 {
-                    marca = _mapper.Map<Marca>(dbMarca);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = marca;
+                    responseApi.Valor = Marca;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Marca no encontrado";
+                    responseApi.Mensaje = "Articulo no encontrado";
                 }
             }
             catch (Exception ex)
@@ -89,7 +80,5 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi.Valor);
         }
-
-
     }
 }

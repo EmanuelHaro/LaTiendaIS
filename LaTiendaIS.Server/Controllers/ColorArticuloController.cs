@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,30 +15,25 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class ColorArticuloController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IColorArticuloServicio _ColorArticuloServicio;
 
-        public ColorArticuloController(DBLaTiendaContext dbContext, IMapper mapper)
+        public ColorArticuloController(IColorArticuloServicio ColorArticuloServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _ColorArticuloServicio = ColorArticuloServicio;
         }
 
         [HttpPost]
         public async Task<ActionResult> AgregarColorArticulo(ColorArticulo ColorArticulo)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbColorArticulo = _mapper.Map<ColorArticuloDTO>(ColorArticulo);
+                var ColorAgregado = await _ColorArticuloServicio.AgregarColorArticulo(ColorArticulo);
 
-                _dbContext.ColorArticulo.Add(dbColorArticulo);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbColorArticulo.IdColor != 0)
+                if (ColorAgregado)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbColorArticulo.IdColor;
+                    responseApi.Valor = ColorAgregado;
                 }
                 else
                 {
@@ -54,29 +50,25 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
-
         [HttpGet]
         [Route("{descColorArticulo}")]
         public async Task<ActionResult> ObtenerColorArticulo(string descColorArticulo)
         {
             var responseApi = new ResponseAPI<ColorArticulo>();
-            var ColorArticulo = new ColorArticulo();
 
             try
             {
-                var dbColorArticulo = await _dbContext.ColorArticulo.FirstOrDefaultAsync(f => f.DescripcionColor == descColorArticulo);
+                var ColorArticulo = await _ColorArticuloServicio.ObtenerColorArticulo(descColorArticulo);
 
-                if (dbColorArticulo != null)
+                if (ColorArticulo != null)
                 {
-                    ColorArticulo = _mapper.Map<ColorArticulo>(dbColorArticulo);
-
                     responseApi.EsCorrecto = true;
                     responseApi.Valor = ColorArticulo;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "ColorArticulo no encontrado";
+                    responseApi.Mensaje = "Articulo no encontrado";
                 }
             }
             catch (Exception ex)

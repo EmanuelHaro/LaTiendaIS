@@ -24,22 +24,19 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             _mapper = mapper;
         }
 
-        public async Task<List<Articulo>> ListarArticulos()
+        public async Task<bool> AgregarArticulo(Articulo articulo)
         {
             try
             {
-                List<ArticuloDTO> listaArticulos = new List<ArticuloDTO>();
-                var listaDB = await _unitofwork.Repository<ArticuloDTO>().Obtener().ToListAsync();
+                var dbArticulo = _mapper.Map<ArticuloDTO>(articulo);
 
-                foreach (var Articulo in listaDB)
-                {
-                    Articulo.Marca = await _unitofwork.Repository<MarcaDTO>().Obtener(c => c.IdMarca == Articulo.IdMarca).FirstOrDefaultAsync();
-                    Articulo.Categoria = await _unitofwork.Repository<CategoriaDTO>().Obtener(c => c.IdCategoria == Articulo.IdCategoria).FirstOrDefaultAsync();
-                    listaArticulos.Add(Articulo);
-                }
 
-                List<Articulo> lista = _mapper.Map<List<Articulo>>(listaArticulos);
-                return lista;
+                var respModelo = await _unitofwork.Repository<ArticuloDTO>().Crear(dbArticulo);
+
+                if (!respModelo)
+                    throw new TaskCanceledException("No se pudo agregar el articulo");
+
+                return respModelo;
 
             }
             catch (Exception ex)
@@ -47,8 +44,6 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 throw;
             }
         }
-
-
         public async Task<Articulo> ObtenerArticulo(int idArticulo)
         {
             try
@@ -76,21 +71,22 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
 
 
         }
-
-
-        public async Task<bool> AgregarArticulo(Articulo articulo)
+        public async Task<List<Articulo>> ListarArticulos()
         {
             try
             {
-                var dbArticulo = _mapper.Map<ArticuloDTO>(articulo);
+                List<ArticuloDTO> listaArticulos = new List<ArticuloDTO>();
+                var listaDB = await _unitofwork.Repository<ArticuloDTO>().Obtener().ToListAsync();
 
+                foreach (var Articulo in listaDB)
+                {
+                    Articulo.Marca = await _unitofwork.Repository<MarcaDTO>().Obtener(c => c.IdMarca == Articulo.IdMarca).FirstOrDefaultAsync();
+                    Articulo.Categoria = await _unitofwork.Repository<CategoriaDTO>().Obtener(c => c.IdCategoria == Articulo.IdCategoria).FirstOrDefaultAsync();
+                    listaArticulos.Add(Articulo);
+                }
 
-                var respModelo = await _unitofwork.Repository<ArticuloDTO>().Crear(dbArticulo);
-
-                if (!respModelo)
-                    throw new TaskCanceledException("No se pudo agregar el articulo");
-
-                return respModelo;
+                List<Articulo> lista = _mapper.Map<List<Articulo>>(listaArticulos);
+                return lista;
 
             }
             catch (Exception ex)
@@ -98,6 +94,10 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 throw;
             }
         }
+
+
+
+
 
         public async Task<bool> ModificarArticulo(int IdCodigo, Articulo articulo)
         {

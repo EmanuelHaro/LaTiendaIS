@@ -128,10 +128,10 @@ else
     {
         try
         {
-            var response = await _ventaServicio.ObtenerUltimaVenta();
-            if (response != null)
+            var responseVenta = await _ventaServicio.ObtenerUltimaVenta();
+            if (responseVenta != null)
             {
-                venta1 = response;
+                venta1 = responseVenta;
                 totalAPagar = venta1.Total;
             }
 

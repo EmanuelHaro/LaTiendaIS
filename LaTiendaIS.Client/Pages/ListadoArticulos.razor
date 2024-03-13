@@ -260,7 +260,15 @@
                     ListaStock.Add(stock1);
                 }
                 StateHasChanged();
-                Snackbar.Add("Codigo Valido", Severity.Success);
+                if(ListaStock.Count > 0)
+                {
+                    Snackbar.Add("Codigo Valido", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("No hay Stock de Articulo", Severity.Error);
+                }
+
 
 
             }
