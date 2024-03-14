@@ -8,6 +8,6 @@ namespace LaTiendaIS.Shared
 {
     public class PagoEfectivo: Pago
     {
-        public double Monto { get; set; }
+        public decimal Monto { get; set; }
     }
 }

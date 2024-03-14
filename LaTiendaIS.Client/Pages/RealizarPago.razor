@@ -18,6 +18,8 @@
 @inject IServicioExternoServicio _servicioExterno
 @inject ICondicionTServicio _condTributariaServicio
 
+@inject IPagoEfectivoServicio _pagoEfect
+@inject IPagoConTarjetaServicio _pagoTarjeta
 
 @using System.Net.Http.Json
 
@@ -30,8 +32,9 @@
 
 @inject HttpClient httpClient
 
+
 <h2 style="margin-left: 20px; margin-top: 10px;">Realizar el pago</h2>
-<div class="d-flex" style="max-width: 600px; margin: 20px ;">
+<div class="d-flex" style="max-width: 600px; margin: 20px;">
     <MudSelect T="string" Label="Elegir medio de pago" AnchorOrigin="Origin.BottomCenter" @bind-Value="medioDePago">
         <MudSelectItem Value="@("")" />
         <MudSelectItem Value="@("Efectivo")" />
@@ -44,110 +47,97 @@
     {
         <p>Por favor, selecciona un medio de pago.</p>
     }
-    else if (medioDePago == "Efectivo")
+    else
     {
         <div>
-            <p>Total a pagar: @totalAPagar.ToString("0.00")</p>
-            <br />
-            <p>Monto Recibido: <input type="number" @bind="montoRecibido" /></p>
-            <br />
-            <p>
-                @if (montoRecibido >= totalAPagar)
-                {
-                    Vuelto = calcularVuelto();
-                
-                }
-                else
-                {
-                    Vuelto = "Cantidad insuficiente";
-                }
-                Vuelto: @Vuelto
-            </p>
-        </div>
-        <div>
-            @if (totalAPagar >= 10000)
+            @if (totalAPagar > 10000 || medioDePago == "Con Tarjeta")
             {
                 <MudGrid Class="justify-space-between" Style="max-width: 300px;">
                     <MudItem xs="12">
-                        <MudTextField Label="Nombre del Titular" @bind-Value="nombreTitular" Variant="@Variant.Text" MaxLength="40" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
-                        <span>-@dniTitular-</span>
-                        <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <!-- Autocompletar o seleccionar la Condición Tributaria -->
-                        <MudAutocomplete T="string" Label="Seleccione Condicion Tributaria" @bind-Value="condTributaria" SearchFunc="@Search1" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        Nombre del Titular: <b>@nombreTitular</b><br />
-                        DNI: <b>@dniTitular</b><br />
-                        CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
-                        Condicion Tributaria: <b>@condTributaria</b><br />
+                        <MudTextField Label="CUIT" @bind-Value="cuitBuscado" Variant="@Variant.Text" />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="BuscarCliente">Buscar Cliente</MudButton>
                     </MudItem>
                 </MudGrid>
+                @if (clienteEncontrado != null)
+                {
+                    <p>Nombre: @clienteEncontrado.Nombre</p>
+                    <p>CUIT: @clienteEncontrado.CUIT</p>
+                    <p>Condición Tributaria: @clienteEncontrado.CondicionTributaria.Descripcion</p>
+                }
+                else
+                {
+                    if (agregarCliente)
+                    {
+                        <div>
+                            <MudGrid Class="justify-space-between" Style="max-width: 300px;">
+                                <MudItem xs="12">
+                                    <MudTextField Label="Nombre del Titular" @bind-Value="nombreTitular" Variant="@Variant.Text" MaxLength="40" />
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
+                                    <span>-@dniTitular-</span>
+                                    <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudAutocomplete T="string" Label="Seleccione Condición Tributaria" @bind-Value="condTributaria" SearchFunc="@Search1" />
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    }
 
+                }
             }
+            
         </div>
-        <div class="d-flex" style="max-width: 300px; margin: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => PagarConEfectivo()" style="margin-left: 30px;">Pagar</MudButton>
-        </div>
-    }
-    else if (medioDePago == "Con Tarjeta")
-    {
-        <div>
-                    <MudGrid Class="justify-space-between" Style="max-width: 300px;">
-                        <MudItem xs="12">
-                    <MudTextField Label="Nombre del Titular" @bind-Value="nombreTitular" Variant="@Variant.Text" MaxLength="40" />
-                        </MudItem>
-                        <MudItem xs="6">
-                    <MudTextField Mask="@(new PatternMask("00000000"))" Label="DNI" @bind-Value="dniTitular" Variant="@Variant.Text" />
-                        </MudItem>
+
+        @if (medioDePago == "Efectivo")
+        {
+            <div>
+                <p>Total a pagar: @totalAPagar.ToString("0.00")</p>
+                <br />
+                <p>Monto Recibido: <input type="number" @bind="montoRecibido" /></p>
+                <br />
+                <p>
+                    @if (montoRecibido >= totalAPagar)
+                    {
+                        Vuelto = calcularVuelto();
+                    }
+                    else
+                    {
+                        Vuelto = "Cantidad insuficiente";
+                    }
+                    Vuelto: @Vuelto
+                </p>
+            </div>
+            <div class="d-flex" style="max-width: 300px; margin: 20px;">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => PagarConEfectivo()" style="margin-left: 30px;">Pagar</MudButton>
+            </div>
+        }
+        else if (medioDePago == "Con Tarjeta")
+        {
+            <div>
+                <MudGrid Class="justify-space-between" Style="max-width: 300px;">
                     <MudItem xs="12">
-                        <MudTextField Label="CUIT" @bind-Value="cuitPrefix" Variant="@Variant.Text" />
-                        <span>-@dniTitular-</span>
-                        <MudTextField Label="Último dígito" @bind-Value="cuitLastDigit" Variant="@Variant.Text" />
-                    </MudItem>
-                        <MudItem xs="12">
-                            <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Numero de Tarjeta"
-                                          @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
-                         </MudItem>
-                         <MudItem xs="4">
-                             <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Vencimiento"
-                                           @bind-Value="expiration" Variant="@Variant.Text" />
-                         </MudItem>
-                        <MudItem xs="4" />
-                        <MudItem xs="4">
-                             <MudTextField Mask="@(new PatternMask("000"))" Label="CVV"
-                                @bind-Value="cvv" Variant="@Variant.Text" />
-                        </MudItem>
-                 <MudItem xs="12">
-                     <!-- Autocompletar o seleccionar la Condición Tributaria -->
-                     <MudAutocomplete T="string" Label="Seleccione Condicion Tributaria" @bind-Value="condTributaria" SearchFunc="@Search1" />
-                 </MudItem>
-                 
-
-                         <MudItem xs="12">
-                            Nombre del Titular: <b>@nombreTitular</b><br />
-                            DNI: <b>@dniTitular</b><br />
-                            CUIT: <b>@cuitPrefix-@dniTitular-@cuitLastDigit</b><br />
-                            Numero de Tarjeta: <b>@creditCard</b><br />
-                            Fecha de Venc: <b>@expiration</b><br />
-                            CVV: <b>@cvv</b>
-                            Condicion Tributaria: <b>@condTributaria</b><br />
-                        </MudItem>
-                    </MudGrid>
-
-        </div>
-        <div class="d-flex" style="max-width: 300px; margin: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Autorizar()" style=" margin-left: 30px;">Autorizar Pago</MudButton>
-        </div>       
+                        <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Número de Tarjeta" @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
+                     </MudItem>
+                     <MudItem xs="4">
+                         <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Vencimiento" @bind-Value="expiration" Variant="@Variant.Text" />
+                     </MudItem>
+                     <MudItem xs="4" />
+                     <MudItem xs="4">
+                         <MudTextField Mask="@(new PatternMask("000"))" Label="CVV" @bind-Value="cvv" Variant="@Variant.Text" />
+                     </MudItem>
+                 </MudGrid>
+             </div>
+            <div class="d-flex" style="max-width: 300px; margin: 20px;">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Cancelar">Cancelar</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Autorizar()" style=" margin-left: 30px;">Autorizar Pago</MudButton>
+            </div>
+        }
     }
 </div>
 
@@ -174,13 +164,36 @@
     private string[] states =
     {"Responsable Inscripto","Monotributo","Exento","No Responsable","Consumidor Final" };
 
+    private bool agregarCliente = false;
+
     int condT = 0;
 
     private string Vuelto;
 
     public Venta venta1;
 
-    private readonly HttpClient _httpClient = new HttpClient();
+    private string cuitBuscado;
+    private Cliente clienteEncontrado;
+
+    private PagoEfectivo pagoEfectivo = new PagoEfectivo();
+    private PagoConTarjeta pagoConTarjeta = new PagoConTarjeta();
+
+
+    private async void BuscarCliente()
+    {
+        try
+        {
+            clienteEncontrado = await _clienteServicio.ObtenerClientePorCUIT(cuitBuscado);
+            Snackbar.Add("Cliente Encontrado", Severity.Success);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("No se encontro cliente, proceda a crear uno nuevo", Severity.Warning);
+            agregarCliente = true;
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -241,29 +254,67 @@
                 if (pagoExitoso)
                 {
 
-                    var condTributariaDB = await _condTributariaServicio.ObtenerCondicionTributaria(condTributaria);
-
                     //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-                    Cliente cliente = new Cliente();
-                    cliente.IdCondicionTributaria = condTributariaDB.IdCondicionTributaria;
-                    cliente.Nombre = nombreTitular;
-                    cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-
-
-
-                    //servicio cliente -> agregar cliente
-                    var response = _clienteServicio.AgregarCliente(cliente);
-
-                    if (response != null)
+                    if (clienteEncontrado!= null)
                     {
-                        Snackbar.Add("Pago autorizado correctamente", Severity.Success);
-                        _navManager.NavigateTo("/comprobante");
+
+                        pagoConTarjeta.Cantidad = venta1.Total;
+                        pagoConTarjeta.NombreTitular = clienteEncontrado.Nombre;
+                        pagoConTarjeta.IdVenta = venta1.IdVenta;
+                        pagoConTarjeta.IdCliente = clienteEncontrado.IdCliente;
+                        var pagoRealizado = await _pagoTarjeta.AgregarPago(pagoConTarjeta);
+
+                        if(pagoRealizado)
+                        {
+                            Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                            _navManager.NavigateTo("/comprobante");
+                        }
+
+                        else
+                        {
+                            Snackbar.Add("Error al guardar el pago", Severity.Success);
+                        }
+
                     }
                     else
                     {
-                        Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                        var condTributariaDB = await _condTributariaServicio.ObtenerCondicionTributaria(condTributaria);
+
+                        Cliente cliente = new Cliente();
+                        cliente.IdCondicionTributaria = condTributariaDB.IdCondicionTributaria;
+                        cliente.Nombre = nombreTitular;
+                        cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
+
+                        var response = await _clienteServicio.AgregarCliente(cliente);
+
+                        if (response)
+                        {
+                            var clienteBuscado = await _clienteServicio.ObtenerClientePorCUIT(cliente.CUIT);
+
+                            pagoConTarjeta.Cantidad = venta1.Total;
+                            pagoConTarjeta.NombreTitular = nombreTitular;
+                            pagoConTarjeta.IdVenta = venta1.IdVenta;
+                            pagoConTarjeta.IdCliente = clienteBuscado.IdCliente;
+                            var pagoRealizado = await _pagoTarjeta.AgregarPago(pagoConTarjeta);
+
+                            if (pagoRealizado)
+                            {
+                                Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                                _navManager.NavigateTo("/comprobante");
+                            }
+
+                            else
+                            {
+                                Snackbar.Add("Error al guardar el pago", Severity.Success);
+                            };
+                        }
+                        else
+                        {
+                            Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                        }
                     }
-                    // Aquí puedes realizar cualquier acción adicional después de que el pago se haya autorizado
+
+
                 }
                 else
                 {
@@ -272,14 +323,14 @@
             }
             else
             {
-                Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
+                Snackbar.Add("Error al solicitar el token de pago ", Severity.Error);
             }
         }catch(Exception ex)
         {
-            Snackbar.Add("Error al solicitar el token de pago", Severity.Error);
+            Snackbar.Add("Error al solicitar el token de pago/Datos de Cliente incorrectos", Severity.Error);
         }
 
-        
+
 
     }
 
@@ -290,30 +341,87 @@
         {
             if (totalAPagar>10000)
             {
-                //pido datos del cliente y realizo factura dependiendo de condicion tributaria
-                Cliente cliente = new Cliente();
-                cliente.Nombre = nombreTitular;
-                cliente.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
-                CondicionTributaria cond = new CondicionTributaria();
-                cond.Descripcion = condTributaria;
-                cliente.CondicionTributaria = cond;
-
-
-                var response = _clienteServicio.AgregarCliente(cliente);
-
-                if (response != null)
+                if (clienteEncontrado != null)
                 {
-                    _navManager.NavigateTo("/comprobante");
-                    Snackbar.Add("Pagó", Severity.Success);
+                    pagoEfectivo.Cantidad = venta1.Total;
+                    pagoEfectivo.Monto = montoRecibido;
+                    pagoEfectivo.IdVenta = venta1.IdVenta;
+                    pagoEfectivo.IdCliente = clienteEncontrado.IdCliente;
+                    var pagoRealizado = await _pagoEfect.AgregarPago(pagoEfectivo);
+
+                    if (pagoRealizado)
+                    {
+                        Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                        _navManager.NavigateTo("/comprobante");
+                    }
+
+                    else
+                    {
+                        Snackbar.Add("Error al guardar el pago", Severity.Success);
+                    }
+
                 }
                 else
                 {
-                    Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                    var condTributariaDB = await _condTributariaServicio.ObtenerCondicionTributaria(condTributaria);
+
+                    Cliente clienteNuevo = new Cliente();
+                    clienteNuevo.IdCondicionTributaria = condTributariaDB.IdCondicionTributaria;
+                    clienteNuevo.Nombre = nombreTitular;
+                    clienteNuevo.CUIT = cuitPrefix + "-" + dniTitular + "-" + cuitLastDigit;
+
+                    var responseCliente = await _clienteServicio.AgregarCliente(clienteNuevo);
+
+                    if (responseCliente)
+                    {
+                        var clienteBuscado = await _clienteServicio.ObtenerClientePorCUIT(clienteNuevo.CUIT);
+
+                        pagoEfectivo.Cantidad = venta1.Total;
+                        pagoEfectivo.Monto = montoRecibido;
+                        pagoEfectivo.IdVenta = venta1.IdVenta;
+                        pagoEfectivo.IdCliente = clienteBuscado.IdCliente;
+                        var pagoRealizado = await _pagoEfect.AgregarPago(pagoEfectivo);
+
+                        if (pagoRealizado)
+                        {
+                            Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                            _navManager.NavigateTo("/comprobante");
+                        }
+
+                        else
+                        {
+                            Snackbar.Add("Error al guardar el pago", Severity.Success);
+                        };
+                    }
+                    else
+                    {
+                        Snackbar.Add("Datos de Cliente incorrectos", Severity.Error);
+                    }
                 }
 
             }
             else
             {
+
+                PagoEfectivo pago = new PagoEfectivo();
+                pago.Cantidad = venta1.Total;
+                pago.Monto = montoRecibido;
+                pago.IdVenta = venta1.IdVenta;
+
+                pago.IdCliente = 19; //hardcodeado
+                var pagoRealizado = await _pagoEfect.AgregarPago(pago);
+
+                if (pagoRealizado)
+                {
+                    Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                    _navManager.NavigateTo("/comprobante");
+                }
+
+                else
+                {
+                    Snackbar.Add("Error al guardar el pago", Severity.Success);
+                }
+
                 Snackbar.Add("Cliente debe pagar mas de 10000 para recibir factura nominal", Severity.Warning);
                 _navManager.NavigateTo("/comprobante");
             }

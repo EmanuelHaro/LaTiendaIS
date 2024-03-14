@@ -50,6 +50,39 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Anonimo")]
+        public async Task<ActionResult> ObtenerClienteAnonimo()
+        {
+            var responseApi = new ResponseAPI<Cliente>();
+
+            try
+            {
+                var cliente = await _clienteServicio.ObtenerClienteAnonimo();
+
+                if (cliente != null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = cliente;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Cliente no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult> AgregarCliente(Cliente cliente)
         {
@@ -87,6 +120,37 @@ namespace LaTiendaIS.Server.Controllers
             try
             {
                 var cliente = await _clienteServicio.ObtenerUltimaCliente();
+
+                if (cliente != null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = cliente;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Cliente no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+        [HttpGet]
+        [Route("CUIT/{cuit}")]
+        public async Task<ActionResult> ObtenerClientePorCuit(string cuit)
+        {
+            var responseApi = new ResponseAPI<Cliente>();
+
+            try
+            {
+                var cliente = await _clienteServicio.ObtenerClientePorCuit(cuit);
 
                 if (cliente != null)
                 {

@@ -69,6 +69,54 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             }
         }
 
+        public async Task<Cliente> ObtenerClienteAnonimo()
+        {
+            try
+            {
+                var dbcliente = await _unitofwork.Repository<ClienteDTO>().Obtener(c => c.Nombre == "Cliente Anonimo").FirstOrDefaultAsync();
+
+                if (dbcliente == null)
+                {
+                    throw new TaskCanceledException("No se encontraron resultados");
+                }
+
+
+                dbcliente.CondicionTributaria = await _unitofwork.Repository<CondicionTributariaDTO>().Obtener(c => c.IdCondicionTributaria == dbcliente.IdCondicionTributaria).FirstOrDefaultAsync();
+                var cliente = _mapper.Map<Cliente>(dbcliente);
+
+                return cliente;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Cliente> ObtenerClientePorCuit(string cuit)
+        {
+            try
+            {
+                var dbcliente = await _unitofwork.Repository<ClienteDTO>().Obtener(c => c.CUIT == cuit).FirstOrDefaultAsync();
+
+                if (dbcliente == null)
+                {
+                    throw new TaskCanceledException("No se encontraron resultados");
+                }
+
+
+                dbcliente.CondicionTributaria = await _unitofwork.Repository<CondicionTributariaDTO>().Obtener(c => c.IdCondicionTributaria == dbcliente.IdCondicionTributaria).FirstOrDefaultAsync();
+                var cliente = _mapper.Map<Cliente>(dbcliente);
+
+                return cliente;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<Cliente> ObtenerUltimaCliente()
         {
             try

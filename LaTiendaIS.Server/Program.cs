@@ -34,9 +34,12 @@ builder.Services.AddScoped<IColorArticuloServicio, ColorArticuloServicio>();
 builder.Services.AddScoped<IMarcaServicio, MarcaServicio>();
 builder.Services.AddScoped<ISucursalServicio, SucursalServicio>();
 builder.Services.AddScoped<ITalleServicio, TalleServicio>();
-
 builder.Services.AddScoped<ITipoDeComprobanteServicio, TipoDeComprobanteServicio>();
 
+builder.Services.AddScoped<IPagoEfectivoServicio, PagoEfectivoServicio>();
+builder.Services.AddScoped<IPagoConTarjetaServicio, PagoConTarjetaServicio>();
+
+builder.Services.AddScoped<IPagoServicio, PagoServicio>();
 
 
 if (builder.Environment.EnvironmentName != "Testing")
@@ -63,11 +66,11 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-//using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
-//{
-//    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
-//    dataContext.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope()) //Comentar para no hacer la migracion
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DBLaTiendaContext>();
+    dataContext.Database.Migrate();
+}
 
 
 // Configure the HTTP request pipeline.

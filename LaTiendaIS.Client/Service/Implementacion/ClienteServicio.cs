@@ -44,5 +44,24 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
+        public async Task<Cliente> ObtenerClientePorCUIT(string cuit)
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Cliente>>($"api/Cliente/CUIT/{cuit}");
+
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
+
+        public async Task<Cliente> ObtenerClienteAnonimo()
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<Cliente>>($"api/Cliente/Anonimo");
+
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
     }
 }

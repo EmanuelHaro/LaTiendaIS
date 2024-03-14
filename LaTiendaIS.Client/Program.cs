@@ -22,6 +22,12 @@ builder.Services.AddScoped<IServicioExternoServicio, ServicioExternoServicio>();
 builder.Services.AddScoped<ICondicionTServicio, CondicionTributariaServicio>();
 builder.Services.AddScoped<ITipoDeComprobante, TipoDeComprobanteServicio>();
 
+builder.Services.AddScoped<IPagoEfectivoServicio, PagoEfectivoServicio>();
+builder.Services.AddScoped<IPagoConTarjetaServicio, PagoConTarjetaServicio>();
+
+builder.Services.AddScoped<IPagoServicio, PagoServicio>();
+
+
 
 // Añado MudBlazor
 builder.Services.AddMudServices();
