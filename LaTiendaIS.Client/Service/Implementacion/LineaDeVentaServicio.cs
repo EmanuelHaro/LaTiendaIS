@@ -42,17 +42,17 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
+        public async Task<bool> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
         {
             var result = await _httpClient.PostAsJsonAsync("api/LineaDeVenta", LineaDeVenta);
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.Valor!;
             else
                 throw new Exception(response.Mensaje);
         }
-        public async Task<int> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVenta LineaDeVenta)
+        public async Task<bool> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVenta LineaDeVenta)
         {
             HttpResponseMessage result;
 
@@ -67,7 +67,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 result = await _httpClient.PostAsJsonAsync("api/Cliente", idLineaDeVenta);
             }
 
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
             {
@@ -81,7 +81,7 @@ namespace LaTiendaIS.Client.Service.Implementacion
         public async Task<bool> EliminarLineaDeVenta(int idLineaDeVenta)
         {
             var result = await _httpClient.DeleteAsync($"api/LineaDeVenta/{idLineaDeVenta}");
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.EsCorrecto!;
@@ -89,5 +89,14 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(response.Mensaje);
         }
 
+        public async Task<LineaDeVenta> ObtenerLineaDeVentaPorArticulo(int idArticulo)
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVenta>>($"api/LineaDeVenta/Articulo/{idArticulo}");
+
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
     }
 }

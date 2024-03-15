@@ -7,8 +7,8 @@ namespace LaTiendaIS.Client.Service.Contrato
         Task<List<Stock>> ObtenerListaDeTalleYColorDelStock(int idArticulo);
         Task<int> ObtenerCantidad(int codigoTienda, string talle, string color);
         Task<Stock> ObtenerStockPorArticulo(int codigoTienda, string talle, string color);
-        Task<int> ModificarCantidadStock(int codigoTienda, string talle, string color, Stock stock);
-        Task<int> AgregarCantidadStock(int codigoTienda, string talle, string color, Stock stock);
+        Task<bool> ModificarCantidadStock(int codigoTienda, string talle, string color, Stock stock);
+        Task<bool> AgregarCantidadStock(int codigoTienda, string talle, string color, Stock stock);
 
         Task<Stock> ObtenerStockPorId(int idStock);
     } 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,13 +12,11 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class VentaController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IVentaServicio _VentaServicio;
 
-        public VentaController(DBLaTiendaContext dbContext, IMapper mapper)
+        public VentaController(IVentaServicio VentaServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _VentaServicio = VentaServicio;
         }
 
         [HttpGet]
@@ -25,17 +24,22 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<IActionResult> ListarVentas()
         {
             var responseApi = new ResponseAPI<List<Venta>>();
-            var listaVentasDTO = new List<Venta>();
+            
             try
             {
-                var VentaDb = await _dbContext.Venta.ToListAsync();
-                foreach (var Venta in VentaDb)
-                {
-                    listaVentasDTO.Add(_mapper.Map<Venta>(Venta));
-                }
+                var lista = await _VentaServicio.ListarVentas();
 
-                responseApi.EsCorrecto = true;
-                responseApi.Valor = listaVentasDTO;
+                if(lista!=null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = lista;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Valor = null;
+                }
+                
             }
             catch (Exception ex)
             {
@@ -49,28 +53,23 @@ namespace LaTiendaIS.Server.Controllers
 
         [HttpGet]
         [Route("{idVenta}")]
-        public async Task<ActionResult> ObtenerVenta(int idVenta, int idTalle, int idColor)
+        public async Task<ActionResult> ObtenerVenta(int idVenta)
         {
             var responseApi = new ResponseAPI<Venta>();
-            var VentaDTO = new Venta();
 
             try
             {
-                var dbVenta = await _dbContext.Venta.FirstOrDefaultAsync(f => f.IdVenta == idVenta);
+                var venta = await _VentaServicio.ObtenerVenta(idVenta);
 
-
-                if (dbVenta != null)
+                if (venta != null)
                 {
-
-                    VentaDTO = _mapper.Map<Venta>(dbVenta);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = VentaDTO;
+                    responseApi.Valor = venta;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Venta no encontrado";
+                    responseApi.Mensaje = "Venta no encontrada";
                 }
             }
             catch (Exception ex)
@@ -88,27 +87,20 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerUltimaVenta()
         {
             var responseApi = new ResponseAPI<Venta>();
-            var VentaDTO = new Venta();
 
             try
             {
-                var dbVenta = await _dbContext.Venta
-                .OrderByDescending(v => v.FechaVenta) // Ordenar las ventas por fecha de venta en orden descendente
-                .FirstOrDefaultAsync(); // Tomar la primera venta (la última en la secuencia ordenada) 
+                var ultimaVenta = await _VentaServicio.ObtenerUltimaVenta();
 
-
-                if (dbVenta != null)
+                if (ultimaVenta != null)
                 {
-
-                    VentaDTO = _mapper.Map<Venta>(dbVenta);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = VentaDTO;
+                    responseApi.Valor = ultimaVenta;
                 }
                 else
                 {
                     responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Venta no encontrado";
+                    responseApi.Mensaje = "Ultima Venta no encontrada";
                 }
             }
             catch (Exception ex)
@@ -122,21 +114,18 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarVenta(Venta VentaDTO)
+        public async Task<ActionResult> AgregarVenta(Venta Venta)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbVenta = _mapper.Map<VentaDTO>(VentaDTO);
+                
+                var ventaAgregada = await _VentaServicio.AgregarVenta(Venta);
 
-
-                _dbContext.Venta.Add(dbVenta);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbVenta.IdVenta != 0)
+                if (ventaAgregada)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbVenta.IdVenta;
+                    responseApi.Valor = ventaAgregada;
                 }
                 else
                 {
@@ -154,28 +143,23 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPut("{IdVenta}")]
-        public async Task<ActionResult> ModificarVenta(int IdVenta, Venta VentaDTO)
+        public async Task<ActionResult> ModificarVenta(int IdVenta, Venta venta)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbVenta = await _dbContext.Venta.Where(c => c.IdVenta == IdVenta).FirstOrDefaultAsync();
-
-                if (dbVenta == null)
+                var ventaModificada = await _VentaServicio.ModificarVenta(IdVenta, venta);
+   
+                if (!ventaModificada)
                 {
                     responseApi.EsCorrecto = false;
                     responseApi.Mensaje = "Venta no encontrado";
                     return NotFound(responseApi);
                 }
-                _mapper.Map(VentaDTO, dbVenta);
-
-
-                _dbContext.Entry(dbVenta).State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
 
                 responseApi.EsCorrecto = true;
-                responseApi.Valor = dbVenta.IdVenta;
+                responseApi.Valor = ventaModificada;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -198,17 +182,16 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdVenta}")]
         public async Task<IActionResult> EliminarVenta(int IdVenta)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbVenta = await _dbContext.Venta.FirstOrDefaultAsync(f => f.IdVenta == IdVenta);
-                if (dbVenta != null)
-                {
-                    _dbContext.Venta.Remove(dbVenta);
-                    await _dbContext.SaveChangesAsync();
+                var ventaELiminada = await _VentaServicio.EliminarVenta(IdVenta);
 
+                if (ventaELiminada)
+                {
                     responseApi.EsCorrecto = true;
+                    responseApi.Valor = ventaELiminada;
                 }
                 else
                 {

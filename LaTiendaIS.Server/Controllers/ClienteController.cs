@@ -4,6 +4,7 @@ using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using LaTiendaIS.ServiciosAPI.Contrato;
 
 namespace LaTiendaIS.Server.Controllers
 {
@@ -11,13 +12,11 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class ClienteController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IClienteServicio _clienteServicio;
 
-        public ClienteController(DBLaTiendaContext dbContext, IMapper mapper)
+        public ClienteController(IClienteServicio clienteServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _clienteServicio = clienteServicio;
         }
 
         [HttpGet]
@@ -25,21 +24,15 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerCliente(int IdCliente)
         {
             var responseApi = new ResponseAPI<Cliente>();
-            var ClienteDTO = new Cliente();
 
             try
             {
-                var dbCliente = await _dbContext.Cliente.FirstOrDefaultAsync(f => f.IdCliente == IdCliente);
+                var cliente = await _clienteServicio.ObtenerCliente(IdCliente);
 
-
-                if (dbCliente != null)
+                if (cliente != null)
                 {
-                    dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
-
-                    ClienteDTO = _mapper.Map<Cliente>(dbCliente);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = ClienteDTO;
+                    responseApi.Valor = cliente;
                 }
                 else
                 {
@@ -57,22 +50,51 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Anonimo")]
+        public async Task<ActionResult> ObtenerClienteAnonimo()
+        {
+            var responseApi = new ResponseAPI<Cliente>();
+
+            try
+            {
+                var cliente = await _clienteServicio.ObtenerClienteAnonimo();
+
+                if (cliente != null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = cliente;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Cliente no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult> AgregarCliente(Cliente cliente)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbCliente = _mapper.Map<ClienteDTO>(cliente);
+                var clienteAgregado = await _clienteServicio.AgregarCliente(cliente);
 
-
-                _dbContext.Cliente.Add(dbCliente);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbCliente.IdCliente != 0)
+                if (clienteAgregado)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbCliente.IdCliente;
+                    responseApi.Valor = clienteAgregado;
                 }
                 else
                 {
@@ -94,23 +116,46 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerUltimaCliente()
         {
             var responseApi = new ResponseAPI<Cliente>();
-            var ClienteDTO = new Cliente();
 
             try
             {
-                var dbCliente = await _dbContext.Cliente
-                .OrderByDescending(c => c.IdCliente)
-                .FirstOrDefaultAsync();
+                var cliente = await _clienteServicio.ObtenerUltimaCliente();
 
-                if (dbCliente != null)
+                if (cliente != null)
                 {
-
-                    dbCliente.CondicionTributaria = _dbContext.CondicionTributaria.Find(dbCliente.IdCondicionTributaria);
-
-                    ClienteDTO = _mapper.Map<Cliente>(dbCliente);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = ClienteDTO;
+                    responseApi.Valor = cliente;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "Cliente no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+        [HttpGet]
+        [Route("CUIT/{cuit}")]
+        public async Task<ActionResult> ObtenerClientePorCuit(string cuit)
+        {
+            var responseApi = new ResponseAPI<Cliente>();
+
+            try
+            {
+                var cliente = await _clienteServicio.ObtenerClientePorCuit(cuit);
+
+                if (cliente != null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = cliente;
                 }
                 else
                 {

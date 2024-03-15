@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,31 +15,25 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly ICategoriaServicio _CategoriaServicio;
 
-        public CategoriaController(DBLaTiendaContext dbContext, IMapper mapper)
+        public CategoriaController(ICategoriaServicio CategoriaServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _CategoriaServicio = CategoriaServicio;
         }
 
         [HttpPost]
         public async Task<ActionResult> AgregarCategoria(Categoria Categoria)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbCategoria = _mapper.Map<CategoriaDTO>(Categoria);
+                var categoriaAgregada = await _CategoriaServicio.AgregarCategoria(Categoria);
 
-
-                _dbContext.Categoria.Add(dbCategoria);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbCategoria.IdCategoria != 0)
+                if (categoriaAgregada)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbCategoria.IdCategoria;
+                    responseApi.Valor = categoriaAgregada;
                 }
                 else
                 {
@@ -60,20 +55,15 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerCategoria(string descCategoria) //antes pasaba talle y color como parametro
         {
             var responseApi = new ResponseAPI<Categoria>();
-            var Categoria = new Categoria();
 
             try
             {
-                var dbCategoria = await _dbContext.Categoria.FirstOrDefaultAsync(f => f.DescripcionCategoria == descCategoria);
+                var categoria = await _CategoriaServicio.ObtenerCategoria(descCategoria);
 
-
-                if (dbCategoria != null)
+                if (categoria != null)
                 {
-
-                    Categoria = _mapper.Map<Categoria>(dbCategoria);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = Categoria;
+                    responseApi.Valor = categoria;
                 }
                 else
                 {

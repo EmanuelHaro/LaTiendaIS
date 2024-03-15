@@ -2,15 +2,19 @@
 
 @using LaTiendaIS.Shared;
 @using LaTiendaIS.Client.Service.Contrato;
+
+@using MudBlazor
+@inject ISnackbar Snackbar
+@inject NavigationManager _navManager
+
 @inject IArticuloServicio _articuloServicio
 @inject IVentaServicio _ventaServicio
 @inject ILineaDeVentaServicio _lineaDeVentaServicio
 @inject IClienteServicio _clienteServicio
 @inject IComprobanteServicio _comprobanteServicio
+@inject ITipoDeComprobante _tipoDeComprobante
+@inject IPagoServicio _pagoServicio
 
-@using MudBlazor
-@inject ISnackbar Snackbar
-@inject NavigationManager _navManager
 
 <div>
     <h3 class="text-center" style=" margin-top: 10px; font-weight: bold;">Emisión de Comprobante</h3>
@@ -35,22 +39,9 @@
                 CUIT: <b>@cliente.CUIT</b>
             </MudItem>
             <div>
-                @switch (condicionTributariaDescripcion)
+                @if (tipoDeComprobante!=null)
                 {
-                    case "Responsable Inscripto":
-                        <p>Comprobante: Factura A</p>
-                        tipoComprobante = 1;
-                        break;
-
-                    case "Monotributo":
-                        <p>Comprobante: Factura A</p>
-                        tipoComprobante = 1;
-                        break;
-
-                    default:
-                        <p>Comprobante: Factura B</p>
-                        tipoComprobante = 2;
-                        break;
+                    <p>Comprobante: @tipoDeComprobante.Descripcion</p>
                 }
             </div>
         </div>
@@ -116,11 +107,10 @@ else
     private Cliente cliente;
     private decimal totalAPagar; // Cargado en OnInitializedAsync
 
-    private TipoDeComprobante tipoDeComprobanteDTO; //factura A o B
+    private TipoDeComprobante tipoDeComprobante; //factura A o B
     private CondicionTributaria condicionTributariaDTO; //monotributista, ...
 
     private string condicionTributariaDescripcion = " ";
-    private int tipoComprobante = 0;
 
     private readonly HttpClient _httpClient = new HttpClient();
 
@@ -128,26 +118,51 @@ else
     {
         try
         {
-            var response = await _ventaServicio.ObtenerUltimaVenta();
-            if (response != null)
+            var responseVenta = await _ventaServicio.ObtenerUltimaVenta();
+            if (responseVenta != null)
             {
-                venta1 = response;
+                venta1 = responseVenta;
                 totalAPagar = venta1.Total;
             }
 
             if(totalAPagar>=10000)
             {
-                var responseClient = await _clienteServicio.ObtenerUltimaCliente();
-                if (responseClient!=null)
-                {                   
-                    cliente = responseClient;
-                    condicionTributariaDescripcion = cliente.CondicionTributaria?.Descripcion ?? " ";
 
+                var responsePago = await _pagoServicio.ObtenerConVentaPago(venta1.IdVenta);
+                if(responsePago!=null)
+                {
+                    var responseCliente = await _clienteServicio.ObtenerCliente(responsePago.IdCliente);
+                    if(responseCliente!=null)
+                    {
+                        cliente = responseCliente;
+                        condicionTributariaDescripcion = cliente.CondicionTributaria?.Descripcion ?? " ";
+
+                        var responseTipoComprobante = await _tipoDeComprobante.ObtenerComprobanteConCondicionTributaria(condicionTributariaDescripcion); //falla
+
+                        if (responseTipoComprobante != null)
+                        {
+                            tipoDeComprobante = responseTipoComprobante;
+                        }
+                    }
                 }
             }
+            else
+            {
+                var responseCliente = await _clienteServicio.ObtenerClienteAnonimo();
+                if (responseCliente != null)
+                {
+                    cliente = responseCliente;
+                    condicionTributariaDescripcion = cliente.CondicionTributaria?.Descripcion ?? " ";
 
+                    var responseTipoComprobante = await _tipoDeComprobante.ObtenerComprobanteConCondicionTributaria(condicionTributariaDescripcion);
 
-
+                    if (responseTipoComprobante != null)
+                    {
+                        tipoDeComprobante = responseTipoComprobante;
+                    }
+                }
+                
+            }
 
             var lineasdeventas = await _lineaDeVentaServicio.ListarLineaDeVentas();
             if (lineasdeventas!=null)
@@ -174,32 +189,23 @@ else
 
     private async void VolverAInicio()
     {
-
         try
         {
             Comprobante comprobante = new Comprobante();
             comprobante.IdVenta = venta1.IdVenta;
-            comprobante.IdTipoDeComprobante = tipoComprobante;
+            comprobante.IdTipoDeComprobante = tipoDeComprobante.IdTipoDeComprobante;
+            var response = await _comprobanteServicio.AgregarComprobante(comprobante);
 
-
-            if(cliente != null)
-            {
-                var response = await _comprobanteServicio.AgregarComprobante(comprobante);
-                if (response != null)
-                {
-                    Snackbar.Add("Se genero el comprobante con exito", Severity.Success);
-                    _navManager.NavigateTo("/");
-                }
-                else
-                {
-                    Snackbar.Add("Error en el comprobante", Severity.Error);
-                }
-            }
-            else
+            if (response != null)
             {
                 Snackbar.Add("Se genero el comprobante con exito", Severity.Success);
                 _navManager.NavigateTo("/");
             }
+            else
+            {
+                Snackbar.Add("Error en el comprobante", Severity.Error);
+            }
+
 
         }
         catch (Exception ex)

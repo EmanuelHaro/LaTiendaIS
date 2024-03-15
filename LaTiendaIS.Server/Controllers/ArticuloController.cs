@@ -4,6 +4,7 @@ using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using LaTiendaIS.ServiciosAPI.Contrato;
 
 namespace LaTiendaIS.Server.Controllers
 {
@@ -11,13 +12,11 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class ArticuloController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
-
-        public ArticuloController(DBLaTiendaContext dbContext, IMapper mapper)
+        private readonly IArticuloServicio _articuloServicio;
+        
+        public ArticuloController(IArticuloServicio articuloServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _articuloServicio = articuloServicio;
         }
 
         [HttpGet]
@@ -25,23 +24,15 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerArticulo(int IdCodigo) 
         {
             var responseApi = new ResponseAPI<Articulo>();
-            var ArticuloDTO = new Articulo();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.CodigoTienda == IdCodigo);
-                
+                var dbArticulo = await _articuloServicio.ObtenerArticulo(IdCodigo);             
 
                 if (dbArticulo != null)
                 {
-                    
-                    dbArticulo.Marca = _dbContext.Marca.Find(dbArticulo.IdMarca);
-                    dbArticulo.Categoria = _dbContext.Categoria.Find(dbArticulo.IdCategoria);
-
-                    ArticuloDTO = _mapper.Map<Articulo>(dbArticulo);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = ArticuloDTO;
+                    responseApi.Valor = dbArticulo;
                 }
                 else
                 {
@@ -63,19 +54,12 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<IActionResult> ListarArticulos()
         {
             var responseApi = new ResponseAPI<List<Articulo>>();
-            var listaArticulosDTO = new List<Articulo>();
             try
             {
-                var ArticuloDb = await _dbContext.Articulo.ToListAsync();
-                foreach (var Articulo in ArticuloDb)
-                {
-                    Articulo.Marca = _dbContext.Marca.Find(Articulo.IdMarca);
-                    Articulo.Categoria = _dbContext.Categoria.Find(Articulo.IdCategoria);
-                    listaArticulosDTO.Add(_mapper.Map<Articulo>(Articulo));
-                }
-
+                var lista = await _articuloServicio.ListarArticulos();
+                
                 responseApi.EsCorrecto = true;
-                responseApi.Valor = listaArticulosDTO;
+                responseApi.Valor = lista;
             }
             catch (Exception ex)
             {
@@ -87,21 +71,17 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarArticulo(Articulo ArticuloDTO)
+        public async Task<ActionResult> AgregarArticulo(Articulo Articulo)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbArticulo = _mapper.Map<ArticuloDTO>(ArticuloDTO);
-                
+                var articuloCreado = await _articuloServicio.AgregarArticulo(Articulo);
 
-                _dbContext.Articulo.Add(dbArticulo);
-                await _dbContext.SaveChangesAsync();
-
-                if (dbArticulo.IdCodigo != 0)
+                if (articuloCreado)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbArticulo.IdCodigo;
+                    responseApi.Valor = articuloCreado;
                 }
                 else
                 {
@@ -119,30 +99,19 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPut("{IdCodigo}")]
-        public async Task<ActionResult> ModificarArticulo(int IdCodigo, Articulo ArticuloDTO)
+        public async Task<ActionResult> ModificarArticulo(int IdCodigo, Articulo Articulo)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.Where(c => c.CodigoTienda == IdCodigo).FirstOrDefaultAsync();
-
-                if (dbArticulo == null)
+                var articuloModificado = await _articuloServicio.ModificarArticulo(IdCodigo, Articulo);
+                if (articuloModificado)
                 {
-                    responseApi.EsCorrecto = false;
-                    responseApi.Mensaje = "Articulo no encontrado";
-                    return NotFound(responseApi);
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = articuloModificado;
                 }
-
-                // Update properties of dbArticulo with values from ArticuloDTO
-                _mapper.Map(ArticuloDTO, dbArticulo);
-
-
-                _dbContext.Entry(dbArticulo).State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
-
-                responseApi.EsCorrecto = true;
-                responseApi.Valor = dbArticulo.IdCodigo;
+                
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -166,16 +135,14 @@ namespace LaTiendaIS.Server.Controllers
         [Route("{IdCodigo}")]
         public async Task<IActionResult> EliminarArticulo(int IdCodigo)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
 
             try
             {
-                var dbArticulo = await _dbContext.Articulo.FirstOrDefaultAsync(f => f.IdCodigo == IdCodigo);
-                if (dbArticulo != null)
+                var articuloEliminado = await _articuloServicio.EliminarArticulo(IdCodigo);
+                if (articuloEliminado)
                 {
-                    _dbContext.Articulo.Remove(dbArticulo);
-                    await _dbContext.SaveChangesAsync();
-
+                    responseApi.Valor = articuloEliminado;
                     responseApi.EsCorrecto = true;
                 }
                 else

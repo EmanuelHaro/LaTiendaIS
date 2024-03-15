@@ -24,10 +24,10 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(result.Mensaje);
         }
 
-        public async Task<int> AgregarComprobante(Comprobante Comprobante)
+        public async Task<bool> AgregarComprobante(Comprobante Comprobante)
         {
             var result = await _httpClient.PostAsJsonAsync("api/Comprobante", Comprobante);
-            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<int>>();
+            var response = await result.Content.ReadFromJsonAsync<ResponseAPI<bool>>();
 
             if (response!.EsCorrecto)
                 return response.Valor!;
@@ -35,5 +35,6 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(response.Mensaje);
         }
 
+        
     }
 }

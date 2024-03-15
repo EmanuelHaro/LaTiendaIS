@@ -222,10 +222,15 @@ namespace LaTiendaIS.Shared.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdVenta")
                         .HasColumnType("int");
 
                     b.HasKey("IdPago");
+
+                    b.HasIndex("IdCliente");
 
                     b.HasIndex("IdVenta");
 
@@ -517,11 +522,19 @@ namespace LaTiendaIS.Shared.Migrations
 
             modelBuilder.Entity("LaTiendaIS.Shared.Models.PagoDTO", b =>
                 {
+                    b.HasOne("LaTiendaIS.Shared.Models.ClienteDTO", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LaTiendaIS.Shared.Models.VentaDTO", "Venta")
                         .WithMany()
                         .HasForeignKey("IdVenta")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cliente");
 
                     b.Navigation("Venta");
                 });

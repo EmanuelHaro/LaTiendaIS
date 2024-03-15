@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,13 +12,11 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class CondicionTributariaController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly ICondicionTServicio _CondicionTributariaServicio;
 
-        public CondicionTributariaController(DBLaTiendaContext dbContext, IMapper mapper)
+        public CondicionTributariaController(ICondicionTServicio CondicionTributariaServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _CondicionTributariaServicio = CondicionTributariaServicio;
         }
 
         [HttpGet]
@@ -25,19 +24,15 @@ namespace LaTiendaIS.Server.Controllers
         public async Task<ActionResult> ObtenerCondicionTributaria(string descCondicion)
         {
             var responseApi = new ResponseAPI<CondicionTributaria>();
-            var CondicionTributariaDTO = new CondicionTributaria();
 
             try
             {
-                var dbCondicionTributaria = await _dbContext.CondicionTributaria.FirstOrDefaultAsync(f => f.Descripcion == descCondicion);
+                var condTributaria = await _CondicionTributariaServicio.ObtenerCondicionTributaria(descCondicion);
 
-
-                if (dbCondicionTributaria != null)
+                if (condTributaria != null)
                 {
-                    CondicionTributariaDTO = _mapper.Map<CondicionTributaria>(dbCondicionTributaria);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = CondicionTributariaDTO;
+                    responseApi.Valor = condTributaria;
                 }
                 else
                 {

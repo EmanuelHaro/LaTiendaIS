@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIS.Tests", "LaTiend
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaTiendaIs.SpecFlow", "LaTiendaIs.SpecFlow\LaTiendaIs.SpecFlow.csproj", "{17F6244C-82E8-41AE-B491-0DF1044E3F62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.Repositorio", "LaTiendaIS.Repositorio\LaTiendaIS.Repositorio.csproj", "{8503EE4B-DB01-48FC-A124-728E1AA316B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaTiendaIS.ServiciosAPI", "LaTiendaIS.ServiciosAPI\LaTiendaIS.ServiciosAPI.csproj", "{E5793D3F-0231-4F09-8B31-44309883ADB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17F6244C-82E8-41AE-B491-0DF1044E3F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8503EE4B-DB01-48FC-A124-728E1AA316B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8503EE4B-DB01-48FC-A124-728E1AA316B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8503EE4B-DB01-48FC-A124-728E1AA316B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8503EE4B-DB01-48FC-A124-728E1AA316B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5793D3F-0231-4F09-8B31-44309883ADB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5793D3F-0231-4F09-8B31-44309883ADB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5793D3F-0231-4F09-8B31-44309883ADB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5793D3F-0231-4F09-8B31-44309883ADB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

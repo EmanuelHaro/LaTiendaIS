@@ -17,5 +17,9 @@ namespace LaTiendaIS.Shared.Models
         public int IdVenta { get; set; }
         [ForeignKey("IdVenta")]
         public virtual VentaDTO Venta { get; set; }
+
+        public int IdCliente { get; set; }
+        [ForeignKey("IdCliente")]
+        public virtual ClienteDTO? Cliente { get; set; }
     }
 }

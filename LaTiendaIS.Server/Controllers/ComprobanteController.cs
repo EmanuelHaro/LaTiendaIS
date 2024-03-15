@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LaTiendaIS.ServiciosAPI.Contrato;
 using LaTiendaIS.Shared;
 using LaTiendaIS.Shared.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,37 +12,27 @@ namespace LaTiendaIS.Server.Controllers
     [ApiController]
     public class ComprobanteController : ControllerBase
     {
-        private DBLaTiendaContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IComprobanteServicio _ComprobanteServicio;
 
-        public ComprobanteController(DBLaTiendaContext dbContext, IMapper mapper)
+        public ComprobanteController(IComprobanteServicio ComprobanteServicio)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _ComprobanteServicio = ComprobanteServicio;
         }
-
-
 
         [HttpGet]
         [Route("{IdComprobante}")]
         public async Task<ActionResult> ObtenerComprobante(int IdComprobante)
         {
             var responseApi = new ResponseAPI<Comprobante>();
-            var ComprobanteDTO = new Comprobante();
 
             try
             {
-                var dbComprobante = await _dbContext.Comprobante.FirstOrDefaultAsync(f => f.IdComprobante == IdComprobante);
+                var comprobante = await _ComprobanteServicio.ObtenerComprobante(IdComprobante);
 
-
-                if (dbComprobante != null)
+                if (comprobante != null)
                 {
-
-
-                    ComprobanteDTO = _mapper.Map<Comprobante>(dbComprobante);
-
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = ComprobanteDTO;
+                    responseApi.Valor = comprobante;
                 }
                 else
                 {
@@ -60,21 +51,17 @@ namespace LaTiendaIS.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AgregarComprobante(Comprobante ComprobanteDTO)
+        public async Task<ActionResult> AgregarComprobante(Comprobante Comprobante)
         {
-            var responseApi = new ResponseAPI<int>();
+            var responseApi = new ResponseAPI<bool>();
             try
             {
-                var dbComprobante = _mapper.Map<ComprobanteDTO>(ComprobanteDTO);
+                var comprobanteAgregado = await _ComprobanteServicio.AgregarComprobante(Comprobante);
 
-
-                _dbContext.Comprobante.Add(dbComprobante);
-                await _dbContext.SaveChangesAsync(); //Error que da excepcion
-
-                if (dbComprobante.IdComprobante != 0)
+                if (comprobanteAgregado)
                 {
                     responseApi.EsCorrecto = true;
-                    responseApi.Valor = dbComprobante.IdComprobante;
+                    responseApi.Valor = comprobanteAgregado;
                 }
                 else
                 {
@@ -90,5 +77,7 @@ namespace LaTiendaIS.Server.Controllers
 
             return Ok(responseApi);
         }
+
+        
     }
     }

@@ -246,6 +246,7 @@ namespace LaTiendaIS.Shared.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Cantidad = table.Column<double>(type: "float", nullable: false),
                     IdVenta = table.Column<int>(type: "int", nullable: false),
+                    IdCliente = table.Column<int>(type: "int", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumeroDeTarjeta = table.Column<long>(type: "bigint", nullable: true),
                     FechaVencimiento = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -256,6 +257,12 @@ namespace LaTiendaIS.Shared.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pago", x => x.IdPago);
+                    table.ForeignKey(
+                        name: "FK_Pago_Cliente_IdCliente",
+                        column: x => x.IdCliente,
+                        principalTable: "Cliente",
+                        principalColumn: "IdCliente",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Pago_Venta_IdVenta",
                         column: x => x.IdVenta,
@@ -388,6 +395,11 @@ namespace LaTiendaIS.Shared.Migrations
                 column: "IdVenta");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Pago_IdCliente",
+                table: "Pago",
+                column: "IdCliente");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pago_IdVenta",
                 table: "Pago",
                 column: "IdVenta");
@@ -432,9 +444,6 @@ namespace LaTiendaIS.Shared.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Cliente");
-
-            migrationBuilder.DropTable(
                 name: "Comprobante");
 
             migrationBuilder.DropTable(
@@ -450,10 +459,10 @@ namespace LaTiendaIS.Shared.Migrations
                 name: "Stock");
 
             migrationBuilder.DropTable(
-                name: "CondicionTributaria");
+                name: "TipoDeComprobante");
 
             migrationBuilder.DropTable(
-                name: "TipoDeComprobante");
+                name: "Cliente");
 
             migrationBuilder.DropTable(
                 name: "Venta");
@@ -469,6 +478,9 @@ namespace LaTiendaIS.Shared.Migrations
 
             migrationBuilder.DropTable(
                 name: "Talle");
+
+            migrationBuilder.DropTable(
+                name: "CondicionTributaria");
 
             migrationBuilder.DropTable(
                 name: "Categoria");
