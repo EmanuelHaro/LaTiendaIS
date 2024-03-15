@@ -139,6 +139,28 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
             }
         }
 
+        public async Task<LineaDeVenta> ObtenerLineaDeVentaPorArticulo(int idArticulo)
+        {
+            try
+            {
+                var dbLineaDeVenta = await _unitofwork.Repository<LineaDeVentaDTO>().Obtener(c => c.IdArticulo == idArticulo).FirstOrDefaultAsync();
+
+                if (dbLineaDeVenta == null)
+                {
+                    throw new TaskCanceledException("No se encontraron resultados");
+                }
+
+                var art = _mapper.Map<LineaDeVenta>(dbLineaDeVenta);
+
+                return art;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<LineaDeVenta> ObtenerUltimaLineaDeVenta()
         {
             try
@@ -152,7 +174,7 @@ namespace LaTiendaIS.ServiciosAPI.Implementacion
                 }
 
                 
-                var LineaDeVenta = listaLineaDeVenta.OrderByDescending(c => c.IdLineaDeVenta);
+                var LineaDeVenta = listaLineaDeVenta.OrderByDescending(c => c.IdLineaDeVenta).FirstOrDefault();
                 var LineaDeVenta1 = _mapper.Map<LineaDeVenta>(LineaDeVenta);
 
                 return LineaDeVenta1;

@@ -6,6 +6,7 @@ namespace LaTiendaIS.ServiciosAPI.Contrato
     {
         Task<List<LineaDeVenta>> ListarLineaDeVentas();
         Task<LineaDeVenta> ObtenerLineaDeVenta(int idLineaDeVenta);
+        Task<LineaDeVenta> ObtenerLineaDeVentaPorArticulo(int idArticulo);
         Task<LineaDeVenta> ObtenerUltimaLineaDeVenta();
         Task<bool> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta);
         Task<bool> ModificarLineaDeVenta(int idLineaDeVenta, LineaDeVenta LineaDeVenta);

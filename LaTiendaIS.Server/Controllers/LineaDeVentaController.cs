@@ -78,6 +78,40 @@ namespace LaTiendaIS.Server.Controllers
             return Ok(responseApi);
         }
 
+        [HttpGet]
+        [Route("Articulo/{idArticulo}")]
+        public async Task<ActionResult> ObtenerLineaDeVentaPorArticulo(int idArticulo)
+        {
+            var responseApi = new ResponseAPI<LineaDeVenta>();
+
+            try
+            {
+                var lineaDeVenta = await _LineaDeVentaServicio.ObtenerLineaDeVentaPorArticulo(idArticulo);
+
+                if (lineaDeVenta != null)
+                {
+                    responseApi.EsCorrecto = true;
+                    responseApi.Valor = lineaDeVenta;
+                }
+                else
+                {
+                    responseApi.EsCorrecto = false;
+                    responseApi.Mensaje = "LineaDeVenta no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                responseApi.EsCorrecto = false;
+                responseApi.Mensaje = ex.Message;
+            }
+
+            return Ok(responseApi);
+        }
+
+
+
+
         [HttpPost]
         public async Task<ActionResult> AgregarLineaDeVenta(LineaDeVenta LineaDeVenta)
         {

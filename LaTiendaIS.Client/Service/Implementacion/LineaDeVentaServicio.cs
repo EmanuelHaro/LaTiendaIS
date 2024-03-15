@@ -89,5 +89,14 @@ namespace LaTiendaIS.Client.Service.Implementacion
                 throw new Exception(response.Mensaje);
         }
 
+        public async Task<LineaDeVenta> ObtenerLineaDeVentaPorArticulo(int idArticulo)
+        {
+            var result = await _httpClient.GetFromJsonAsync<ResponseAPI<LineaDeVenta>>($"api/LineaDeVenta/Articulo/{idArticulo}");
+
+            if (result!.EsCorrecto)
+                return result.Valor!;
+            else
+                throw new Exception(result.Mensaje);
+        }
     }
 }

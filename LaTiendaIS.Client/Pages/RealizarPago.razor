@@ -32,7 +32,6 @@
 
 @inject HttpClient httpClient
 
-
 <h2 style="margin-left: 20px; margin-top: 10px;">Realizar el pago</h2>
 <div class="d-flex" style="max-width: 600px; margin: 20px;">
     <MudSelect T="string" Label="Elegir medio de pago" AnchorOrigin="Origin.BottomCenter" @bind-Value="medioDePago">
@@ -408,22 +407,27 @@
                 pago.Monto = montoRecibido;
                 pago.IdVenta = venta1.IdVenta;
 
-                pago.IdCliente = 19; //hardcodeado
-                var pagoRealizado = await _pagoEfect.AgregarPago(pago);
-
-                if (pagoRealizado)
+                var clienteAnonimo = await _clienteServicio.ObtenerClienteAnonimo();
+                if(clienteAnonimo!=null)
                 {
-                    Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                    pago.IdCliente = clienteAnonimo.IdCliente;
+                    var pagoRealizado = await _pagoEfect.AgregarPago(pago);
+
+                    if (pagoRealizado)
+                    {
+                        Snackbar.Add("Pago autorizado correctamente", Severity.Success);
+                        _navManager.NavigateTo("/comprobante");
+                    }
+
+                    else
+                    {
+                        Snackbar.Add("Error al guardar el pago", Severity.Success);
+                    }
+
+                    Snackbar.Add("Cliente debe pagar mas de 10000 para recibir factura nominal", Severity.Warning);
                     _navManager.NavigateTo("/comprobante");
                 }
 
-                else
-                {
-                    Snackbar.Add("Error al guardar el pago", Severity.Success);
-                }
-
-                Snackbar.Add("Cliente debe pagar mas de 10000 para recibir factura nominal", Severity.Warning);
-                _navManager.NavigateTo("/comprobante");
             }
         }
         else

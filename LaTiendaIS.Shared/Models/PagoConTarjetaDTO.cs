@@ -10,10 +10,6 @@ namespace LaTiendaIS.Shared.Models
 {
     public class PagoConTarjetaDTO: PagoDTO
     {
-        
-        public long NumeroDeTarjeta{ get; set; }
-        public DateTime FechaVencimiento { get; set; }
-        public int CVV { get; set; }
 
         public string NombreTitular { get; set; }
 

@@ -290,36 +290,46 @@
         {
             var dbStock = await _stockServicio.ObtenerStockPorId(idStock);
 
-            LineaDeVenta ultimaLDV = await _lineadeventaServicio.ObtenerUltimaLineaDeVenta();
-            var response = await _lineadeventaServicio.EliminarLineaDeVenta(ultimaLDV.IdLineaDeVenta);
-
-            if (response != null)
+            if(dbStock!=null)
             {
 
-                Stock stock1 = new Stock();
-                stock1.Cantidad = dbStock.Cantidad;
+                LineaDeVenta ldv = await _lineadeventaServicio.ObtenerLineaDeVentaPorArticulo(dbStock.IdArticulo);
+                var response = await _lineadeventaServicio.EliminarLineaDeVenta(ldv.IdLineaDeVenta);
 
-                var stockSeleccionado = stockTabla.Find(s => s.IdArticulo == dbStock.IdArticulo);
-                dbStock.Cantidad = stockSeleccionado.Cantidad;
-                var result = _stockServicio.AgregarCantidadStock(dbStock.Articulo.CodigoTienda, dbStock.Talle.DescripcionTalle, dbStock.Color.DescripcionColor, dbStock);
-                if (result != null)
+                if (response != null)
                 {
-                    stockTabla.Remove(stockSeleccionado);
-                    listaArticulos.Remove(dbStock.Articulo);
-                    venta1.Total -= (decimal)dbStock.Articulo.PrecioDeVenta * dbStock.Cantidad;
-                    Snackbar.Add("Línea de venta eliminada", Severity.Success);
-                    Snackbar.Add("Stock modificado", Severity.Success);
-                    StateHasChanged();
+
+                    Stock stock1 = new Stock();
+                    stock1.Cantidad = dbStock.Cantidad;
+
+                    var stockSeleccionado = stockTabla.Find(s => s.IdArticulo == dbStock.IdArticulo);
+                    dbStock.Cantidad = stockSeleccionado.Cantidad;
+                    var result = _stockServicio.AgregarCantidadStock(dbStock.Articulo.CodigoTienda, dbStock.Talle.DescripcionTalle, dbStock.Color.DescripcionColor, dbStock);
+                    if (result != null)
+                    {
+                        stockTabla.Remove(stockSeleccionado);
+                        listaArticulos.Remove(dbStock.Articulo);
+                        venta1.Total -= (decimal)dbStock.Articulo.PrecioDeVenta * dbStock.Cantidad;
+                        Snackbar.Add("Línea de venta eliminada", Severity.Success);
+                        Snackbar.Add("Stock modificado", Severity.Success);
+                        StateHasChanged();
+                    }
                 }
+                else
+                {
+                    Snackbar.Add("Línea de venta no eliminada", Severity.Error);
+                }
+
+
+                StateHasChanged();
+                Snackbar.Add("Artículo eliminado", Severity.Warning);
             }
             else
             {
-                Snackbar.Add("Línea de venta no eliminada", Severity.Error);
+                Snackbar.Add("Error al buscar stock", Severity.Error);
             }
 
-
-            StateHasChanged();
-            Snackbar.Add("Artículo eliminado", Severity.Warning);
+            
         }
         catch(Exception ex)
         {
